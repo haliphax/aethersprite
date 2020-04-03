@@ -7,7 +7,7 @@ from math import floor
 import typing
 # local
 from .. import bot, log
-from ..common import get_next_tick, normalize_username
+from ..common import THUMBS_DOWN, get_next_tick, normalize_username
 
 # constants
 MINUTE = 60
@@ -27,7 +27,7 @@ async def tick(ctx, n: typing.Optional[int] = 1):
 
     if -TICK_LIMIT > n or n > TICK_LIMIT:
         # let's not be silly, now
-        await ctx.message.add_reaction('\U0001F44E')
+        await ctx.message.add_reaction(THUMBS_DOWN)
         log.warn(f'{ctx.author} made rejected next tick request of {n}')
         return
 

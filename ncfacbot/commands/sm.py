@@ -9,7 +9,8 @@ import typing
 from discord import DMChannel
 # local
 from .. import bot, log
-from ..common import FIVE_MINS, FIFTEEN_MINS, get_next_tick, normalize_username
+from ..common import (FIVE_MINS, FIFTEEN_MINS, THUMBS_DOWN, get_next_tick,
+                      normalize_username,)
 
 #: Maximum allowed timer length
 SM_LIMIT = 120
@@ -62,7 +63,7 @@ async def sm(ctx, n: typing.Optional[int]):
 
     if n > SM_LIMIT:
         # let's not be silly, now
-        await ctx.message.add_reaction('\U0001F44E')
+        await ctx.message.add_reaction(THUMBS_DOWN)
         log.warn(f'{ctx.author} made rejected SM countdown request of {n} '
                  f'{minutes}')
         return

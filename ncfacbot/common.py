@@ -9,6 +9,9 @@ from math import floor
 FIVE_MINS = 300
 FIFTEEN_MINS = 900
 
+#: :thumbsdown: emoji
+THUMBS_DOWN = '\U0001F44E'
+
 
 def get_next_tick(n=1):
     "Calculate future tick as datetime in GMT"
