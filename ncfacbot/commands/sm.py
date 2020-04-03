@@ -12,7 +12,7 @@ FIVE_MINS = 60 * 5
 FIFTEEN_MINS = 60 * 15
 
 
-@bot.command(help='Start a Sorcerers Might timer for <n> minutes')
+@bot.command(help='Start a Sorcerers Might timer for <n> minutes, 0 to cancel')
 async def sm(ctx, n: int):
     if ctx.channel is DMChannel:
         await ctx.send('Sorry, but this command must be used in a channel.')
@@ -28,6 +28,13 @@ async def sm(ctx, n: int):
         timers[name].cancel()
         del timers[name]
         await ctx.send('Your existing timer has been canceled.')
+
+        if n < 1:
+            return
+
+    if n < 1:
+        await ctx.send('You do not currently have a timer.')
+        return
 
     now = time()
     sm_end = now + (60 * n)
@@ -46,9 +53,11 @@ async def sm(ctx, n: int):
             next_tick = next_tick + FIFTEEN_MINS
             sm_end -= FIVE_MINS
 
-        reduced = int((sm_end - now) / 60)
-        output += f' (Adjusting to {reduced} due to SM bug.)'
-        n = reduced
+        reduced = max(1, int((sm_end - now) / 60))
+
+        if reduced != n:
+            output += f' (Adjusting to {reduced} due to SM bug.)'
+            n = reduced
 
     output += '```'
     await ctx.send(output)
