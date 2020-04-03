@@ -9,11 +9,11 @@ from .. import bot, log
 from ..common import FIFTEEN_MINS, THUMBS_DOWN, get_next_tick
 
 
-@bot.command(brief='Get closest tick to provided time')
+@bot.command(brief='Get closest tick to time offset')
 async def closest(ctx, hours: typing.Optional[int] = 0,
                   minutes: typing.Optional[int] = 0):
     """
-    Get closest tick to provided time
+    Get closest tick to time offset
 
     Displays the GMT time of the closest tick which occurs after the provided offset. You may omit minutes, but hours are required. If you wish to omit hours and only use minutes, use a value of 0. If no values are provided, the next tick is shown.
     """
