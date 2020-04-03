@@ -27,7 +27,7 @@ async def sm(ctx, n: int):
     if name in timers:
         timers[name].cancel()
         del timers[name]
-        await ctx.send('Your existing timer has been removed.')
+        await ctx.send('Your existing timer has been canceled.')
 
     now = time()
     sm_end = now + (60 * n)
