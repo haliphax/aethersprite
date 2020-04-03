@@ -2,8 +2,8 @@
 
 # stdlib
 import asyncio as aio
+from datetime import datetime, timezone, timedelta
 from math import ceil
-from time import time
 import typing
 # 3rd party
 from discord import DMChannel
@@ -95,8 +95,9 @@ async def sm(ctx, n: typing.Optional[int]):
               f'{minutes}.')
 
     # adjust for SM bug
-    now = time()
-    sm_end = now + (60 * n)
+    now = datetime.now(timezone.utc)
+    sm_end = datetime.now(timezone.utc)
+    sm_end += timedelta(minutes=n)
     next_tick = get_next_tick()
 
     if sm_end > next_tick:
@@ -106,20 +107,20 @@ async def sm(ctx, n: typing.Optional[int]):
         while True:
             diff = dummy_sm - next_tick
 
-            if diff < FIVE_MINS:
-                # less than 5 minute(s) left; shave off the difference and break
+            if diff.total_seconds() < FIVE_MINS:
+                # less than 5 minute(s) left; shave off the difference
                 dummy_sm -= diff
                 break
 
-            next_tick = next_tick + FIFTEEN_MINS
-            dummy_sm -= FIVE_MINS
+            next_tick = next_tick + timedelta(minutes=15)
+            dummy_sm -= timedelta(minutes=5)
 
-        reduced = max(1, int((dummy_sm - now) / 60))
+        reduced = max(1, int((dummy_sm - now).total_seconds() / 60))
 
         if reduced != n:
             output += f' (Adjusting to {reduced} due to SM bug.)'
             n = reduced
-            sm_end = now + (60 * n)
+            sm_end = now + timedelta(minutes=n)
 
     output += '```'
 
