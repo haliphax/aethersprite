@@ -51,15 +51,22 @@ async def sm(ctx, n: typing.Optional[int]):
             await ctx.send('You do not currently have a countdown.')
             return
 
-        remaining = ceil((countdowns[name][0] - time()) / 60)
+        # get remaining time
+        remaining = round((countdowns[name][0] - time()) / 60)
+        
+        if remaining > 1:
+            remaining = ceil(remaining)
+
+        remaining = int(remaining)
         minutes = 'minutes' if remaining > 1 else 'minute'
 
         if remaining < 1:
             await ctx.send('Less than 1 minute remaining!')
         else:
-            await ctx.send(f'{remaining} {minutes} to go.')
+            await ctx.send(f'About {remaining} {minutes} to go.')
 
-        log.info(f'{ctx.author} checking SM status: {remaining} {minutes}')
+        log.info(f'{ctx.author} checking SM status: '
+                 f'{"<1" if remaining < 1 else remaining} {minutes}')
         return
             
     minutes = 'minutes' if n > 1 else 'minute'
