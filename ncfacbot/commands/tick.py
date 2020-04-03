@@ -28,7 +28,7 @@ async def tick(ctx, n: typing.Optional[int] = 1):
     if -TICK_LIMIT > n or n > TICK_LIMIT:
         # let's not be silly, now
         await ctx.message.add_reaction('\U0001F44E')
-        log.info(f'{ctx.author} made rejected next tick request of {n}')
+        log.warn(f'{ctx.author} made rejected next tick request of {n}')
         return
 
     name = normalize_username(ctx.author)

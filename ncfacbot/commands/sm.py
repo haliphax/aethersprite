@@ -63,7 +63,7 @@ async def sm(ctx, n: typing.Optional[int]):
     if n > SM_LIMIT:
         # let's not be silly, now
         await ctx.message.add_reaction('\U0001F44E')
-        log.info(f'{ctx.author} made rejected SM countdown request of {n} '
+        log.warn(f'{ctx.author} made rejected SM countdown request of {n} '
                  f'{minutes}')
         return
 
@@ -75,7 +75,7 @@ async def sm(ctx, n: typing.Optional[int]):
             del countdowns[name]
         except KeyError:
             # overlapping requests due to lag can get out of sync
-            pass
+            log.error(f'Failed removing countdown for {name}')
 
         await ctx.send('Your countdown has been canceled.')
         log.info(f'{ctx.author} canceled SM countdown')
@@ -85,7 +85,7 @@ async def sm(ctx, n: typing.Optional[int]):
             return
     elif n < 1:
         await ctx.send('You do not currently have a countdown.')
-        log.info(f'{ctx.author} failed to cancel nonexistent SM countdown')
+        log.warn(f'{ctx.author} failed to cancel nonexistent SM countdown')
         return
 
     output = (f'```{name} has started a Sorcerers Might countdown for {n} '
