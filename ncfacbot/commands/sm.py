@@ -36,7 +36,7 @@ async def sm(ctx, n: int):
 
     # adjust for SM bug
     if sm_end > next_tick:
-        while sm_end > next_tick:
+        while True:
             diff = sm_end - next_tick
 
             if diff <= FIVE_MINS:
@@ -47,7 +47,7 @@ async def sm(ctx, n: int):
             sm_end -= FIVE_MINS
 
         reduced = int((sm_end - now) / 60)
-        output += f' Adjusting to {reduced} due to SM bug.'
+        output += f' (Adjusting to {reduced} due to SM bug.)'
         n = reduced
 
     output += '```'
