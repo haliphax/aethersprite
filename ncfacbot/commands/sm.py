@@ -58,7 +58,7 @@ async def sm(ctx, n: int):
         while True:
             diff = sm_end - next_tick
 
-            if diff <= FIVE_MINS:
+            if diff < FIVE_MINS:
                 # less than 5 minutes left; shave off the difference and break
                 sm_end -= diff
                 break
