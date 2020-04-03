@@ -14,13 +14,6 @@ FIFTEEN_MINS = 60 * 15
 
 @bot.command(help='Start a Sorcerers Might timer for <n> minutes')
 async def sm(ctx, n: int):
-    def f(name):
-        try:
-            aio.gather(loop.create_task(ctx.send(
-                f'```Sorcerers Might countdown ended for {name}!```')))
-        finally:
-            del timers[name]
-
     if ctx.channel is DMChannel:
         await ctx.send('Sorry, but this command must be used in a channel.')
         return
@@ -60,4 +53,14 @@ async def sm(ctx, n: int):
     output += '```'
     await ctx.send(output)
     loop = aio.get_event_loop()
+
+    def f(name):
+        "Countdown completed callback"
+
+        try:
+            aio.gather(loop.create_task(ctx.send(
+                f'```Sorcerers Might countdown ended for {name}!```')))
+        finally:
+            del timers[name]
+
     timers[name] = loop.call_later(60 * n, f, name)
