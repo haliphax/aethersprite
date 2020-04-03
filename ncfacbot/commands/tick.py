@@ -23,6 +23,8 @@ async def tick(ctx, n: typing.Optional[int] = 1):
     Next game tick
 
     Show the next game tick in GMT. Provide a value for <n> to get the GMT timestamp of <n> ticks from now. For past ticks, use a negative number.
+
+    Values of n between -1000 and 1000 are allowed.
     """
 
     if -TICK_LIMIT > n or n > TICK_LIMIT:
