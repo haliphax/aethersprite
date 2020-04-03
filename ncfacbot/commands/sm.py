@@ -10,9 +10,13 @@ from .. import bot, log
 from discord import DMChannel
 
 # constants
+
 FIVE_MINS = 60 * 5
 FIFTEEN_MINS = 60 * 15
-# countdown callback handles
+#: Maximum allowed timer length
+SM_LIMIT = 120
+
+#: Countdown callback handles
 countdowns = {}
 
 
@@ -24,12 +28,13 @@ async def sm(ctx, n: int):
         return
 
     # normalize nick
+
     name = ctx.author.name
 
     if ctx.author.nick is not None:
         name = ctx.author.nick
 
-    if n > 120:
+    if n > SM_LIMIT:
         # let's not be silly, now
         await ctx.message.add_reaction('\U0001F44E')
         log.info(f'{ctx.author} made rejected SM timer request of {n} minutes')
