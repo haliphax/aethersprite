@@ -1,3 +1,5 @@
+"Sorcerers Might countdown command"
+
 # stdlib
 import asyncio as aio
 from datetime import datetime as dt
