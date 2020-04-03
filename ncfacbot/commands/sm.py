@@ -119,7 +119,7 @@ async def sm(ctx, n: typing.Optional[int]):
         reduced = max(1, int((dummy_sm - now).total_seconds() / 60))
 
         if reduced != n:
-            output += f' (Adjusting to {reduced} due to SM bug.)'
+            output += f'\n(Adjusting to {reduced} due to SM bug.)'
             n = reduced
             sm_end = now + timedelta(minutes=n)
 
