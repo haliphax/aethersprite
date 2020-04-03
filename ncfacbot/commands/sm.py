@@ -14,7 +14,8 @@ FIVE_MINS = 60 * 5
 FIFTEEN_MINS = 60 * 15
 
 
-@bot.command(help='Start a Sorcerers Might countdown for n minutes, 0 to cancel')
+@bot.command(help='Start a Sorcerers Might countdown for n minutes, '
+                  '0 to cancel')
 async def sm(ctx, n: int):
     if type(ctx.channel) is DMChannel:
         await ctx.send('Sorry, but this command must be used in a channel.')
@@ -41,7 +42,8 @@ async def sm(ctx, n: int):
     now = time()
     sm_end = now + (60 * n)
     next_tick = (now + FIFTEEN_MINS) - (now % FIFTEEN_MINS)
-    output = f'```{name} has started a Sorcerers Might countdown for {n} minutes.'
+    output = (f'```{name} has started a Sorcerers Might countdown for {n} '
+              'minutes.')
 
     # adjust for SM bug
     if sm_end > next_tick:
