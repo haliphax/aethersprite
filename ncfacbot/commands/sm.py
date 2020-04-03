@@ -2,22 +2,17 @@
 
 # stdlib
 import asyncio as aio
-from datetime import datetime as dt
 from math import ceil
 from time import time
 import typing
-# local
-from .. import bot, log
 # 3rd party
 from discord import DMChannel
+# local
+from .. import bot, log
+from ..common import FIVE_MINS, FIFTEEN_MINS, get_next_tick, normalize_username
 
-# constants
-
-FIVE_MINS = 300
-FIFTEEN_MINS = 900
 #: Maximum allowed timer length
 SM_LIMIT = 120
-
 #: Countdown callback handles
 countdowns = {}
 
@@ -26,7 +21,7 @@ countdowns = {}
 async def sm(ctx, n: typing.Optional[int]):
     """
     Start a Sorcerers Might countdown for n minutes
-    
+
     You may also use a value of 0 to cancel the countdown. If no value is provided, the remaining time of the countdown will be shown.
 
     * Takes into account the current bug in Sorcerers Might where 5 minutes are deducted erroneously with each game tick.
@@ -37,13 +32,7 @@ async def sm(ctx, n: typing.Optional[int]):
         return
 
     loop = aio.get_event_loop()
-
-    # normalize nick
-
-    name = ctx.author.name
-
-    if ctx.author.nick is not None:
-        name = ctx.author.nick
+    name = normalize_username(ctx.author)
 
     if n is None:
         # report countdown status
@@ -53,7 +42,7 @@ async def sm(ctx, n: typing.Optional[int]):
 
         # get remaining time
         remaining = round((countdowns[name][0] - time()) / 60)
-        
+
         if remaining > 1:
             remaining = ceil(remaining)
 
@@ -68,7 +57,7 @@ async def sm(ctx, n: typing.Optional[int]):
         log.info(f'{ctx.author} checking SM status: '
                  f'{"<1" if remaining < 1 else remaining} {minutes}')
         return
-            
+
     minutes = 'minutes' if n > 1 else 'minute'
 
     if n > SM_LIMIT:
@@ -105,7 +94,7 @@ async def sm(ctx, n: typing.Optional[int]):
     # adjust for SM bug
     now = time()
     sm_end = now + (60 * n)
-    next_tick = (now + FIFTEEN_MINS) - (now % FIFTEEN_MINS)
+    next_tick = get_next_tick()
 
     if sm_end > next_tick:
         dummy_sm = sm_end
