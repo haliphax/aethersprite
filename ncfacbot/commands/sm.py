@@ -54,7 +54,7 @@ async def sm(ctx, n: int):
     await ctx.send(output)
     loop = aio.get_event_loop()
 
-    def f(name):
+    def f():
         "Countdown completed callback"
 
         try:
@@ -63,4 +63,4 @@ async def sm(ctx, n: int):
         finally:
             del timers[name]
 
-    timers[name] = loop.call_later(60 * n, f, name)
+    timers[name] = loop.call_later(60 * n, f)
