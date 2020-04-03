@@ -84,7 +84,6 @@ async def sm(ctx, n: int):
             n = reduced
 
     output += '```'
-    await ctx.send(output)
     loop = aio.get_event_loop()
 
     def done():
@@ -101,4 +100,5 @@ async def sm(ctx, n: int):
 
     # set timer for countdown completed callback
     countdowns[name] = loop.call_later(60 * n, done)
+    await ctx.send(output)
     log.info(f'{ctx.author} started SM countdown for {n} minutes')
