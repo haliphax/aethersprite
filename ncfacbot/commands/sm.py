@@ -22,7 +22,12 @@ countdowns = {}
 
 @bot.command()
 async def sm(ctx, n: int):
-    "Start a Sorcerers Might countdown for <n> minutes, 0 to cancel"
+    """
+    Start a Sorcerers Might countdown for <n> minutes, 0 to cancel
+
+    Takes into account the current bug in Sorcerers Might where 5 minutes are
+    deducted erroneously with each game tick.
+    """
 
     if type(ctx.channel) is DMChannel:
         await ctx.send('This command must be used in a channel.')
