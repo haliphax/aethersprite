@@ -14,7 +14,7 @@ FIFTEEN_MINS = 60 * 15
 
 @bot.command(help='Start a Sorcerers Might timer for <n> minutes, 0 to cancel')
 async def sm(ctx, n: int):
-    if ctx.channel is DMChannel:
+    if type(ctx.channel) is DMChannel:
         await ctx.send('Sorry, but this command must be used in a channel.')
         return
 
