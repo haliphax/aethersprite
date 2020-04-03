@@ -8,7 +8,7 @@ import sys
 from discord.ext import commands
 
 assert 'DISCORD_TOKEN' in os.environ, \
-        "DISCORD_TOKEN not found in environment variables"
+        'DISCORD_TOKEN not found in environment variables'
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 log = logging.getLogger(__name__)
 log.addHandler(logging.StreamHandler(sys.stdout))
