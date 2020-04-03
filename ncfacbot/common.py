@@ -5,9 +5,8 @@ import calendar
 from datetime import datetime, timezone
 from math import floor
 
-# constants
+#: 15 minutes in seconds
 FIFTEEN_MINS = 900
-
 #: :thumbsdown: emoji
 THUMBS_DOWN = '\U0001F44E'
 
