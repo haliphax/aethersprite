@@ -20,9 +20,10 @@ SM_LIMIT = 120
 countdowns = {}
 
 
-@bot.command(help='Start a Sorcerers Might countdown for <n> minutes, '
-                  '0 to cancel')
+@bot.command()
 async def sm(ctx, n: int):
+    "Start a Sorcerers Might countdown for <n> minutes, 0 to cancel"
+
     if type(ctx.channel) is DMChannel:
         await ctx.send('This command must be used in a channel.')
         return
