@@ -9,12 +9,14 @@ from .. import bot, log
 # 3rd party
 from discord import DMChannel
 
-countdowns = {}
+# constants
 FIVE_MINS = 60 * 5
 FIFTEEN_MINS = 60 * 15
+# countdown callback handles
+countdowns = {}
 
 
-@bot.command(help='Start a Sorcerers Might countdown for n minutes, '
+@bot.command(help='Start a Sorcerers Might countdown for <n> minutes, '
                   '0 to cancel')
 async def sm(ctx, n: int):
     if type(ctx.channel) is DMChannel:
@@ -28,29 +30,36 @@ async def sm(ctx, n: int):
         name = ctx.author.nick
 
     if name in countdowns:
+        # cancel existing callback, if any
         countdowns[name].cancel()
         del countdowns[name]
         await ctx.send('Your existing countdown has been canceled.')
+        log.info(f'{ctx.author} canceled SM countdown')
 
+        # if no valid duration supplied, we're done
         if n < 1:
             return
 
     if n < 1:
         await ctx.send('You do not currently have a countdown.')
+        log.info(f'{ctx.author} failed to cancel nonexistent SM countdown')
         return
 
-    now = time()
-    sm_end = now + (60 * n)
-    next_tick = (now + FIFTEEN_MINS) - (now % FIFTEEN_MINS)
     output = (f'```{name} has started a Sorcerers Might countdown for {n} '
               'minutes.')
 
     # adjust for SM bug
+    now = time()
+    sm_end = now + (60 * n)
+    next_tick = (now + FIFTEEN_MINS) - (now % FIFTEEN_MINS)
+
     if sm_end > next_tick:
+        # walk through SM duration and subtract 5 mins for each AP tick
         while True:
             diff = sm_end - next_tick
 
             if diff <= FIVE_MINS:
+                # less than 5 minutes left; shave off the difference and break
                 sm_end -= diff
                 break
 
@@ -67,13 +76,18 @@ async def sm(ctx, n: int):
     await ctx.send(output)
     loop = aio.get_event_loop()
 
-    def sm_complete():
+    def done():
         "Countdown completed callback"
 
         try:
-            aio.gather(loop.create_task(ctx.send(
-                f'```Sorcerers Might countdown ended for {name}!```')))
+            # ctx.send is a coroutine, but we're in a plain function, so we
+            # have to wrap the call to ctx.send in a Task
+            loop.create_task(ctx.send(
+                f'```Sorcerers Might countdown ended for {name}!```'))
+            log.info(f'{ctx.author} completed SM countdown')
         finally:
             del countdowns[name]
 
-    countdowns[name] = loop.call_later(60 * n, sm_complete)
+    # set timer for countdown completed callback
+    countdowns[name] = loop.call_later(60 * n, done)
+    log.info(f'{ctx.author} started SM countdown for {n} minutes')
