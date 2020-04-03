@@ -40,17 +40,26 @@ async def sm(ctx, n: int):
     if ctx.author.nick is not None:
         name = ctx.author.nick
 
+    # minute/minutes phrasing
+    minutes = 'minutes' if n > 1 else 'minute'
+
     if n > SM_LIMIT:
         # let's not be silly, now
         await ctx.message.add_reaction('\U0001F44E')
         log.info(f'{ctx.author} made rejected SM countdown request of {n} '
-                 'minutes')
+                 f'{minutes}')
         return
 
     if name in countdowns:
         # cancel existing callback, if any
         countdowns[name].cancel()
-        del countdowns[name]
+
+        try:
+            del countdowns[name]
+        except KeyError:
+            # overlapping requests due to lag can get out of sync
+            pass
+
         await ctx.send('Your existing countdown has been canceled.')
         log.info(f'{ctx.author} canceled SM countdown')
 
@@ -63,7 +72,7 @@ async def sm(ctx, n: int):
         return
 
     output = (f'```{name} has started a Sorcerers Might countdown for {n} '
-              'minutes.')
+              f'{minutes}.')
 
     # adjust for SM bug
     now = time()
@@ -76,7 +85,7 @@ async def sm(ctx, n: int):
             diff = sm_end - next_tick
 
             if diff < FIVE_MINS:
-                # less than 5 minutes left; shave off the difference and break
+                # less than 5 minute(s) left; shave off the difference and break
                 sm_end -= diff
                 break
 
@@ -107,4 +116,4 @@ async def sm(ctx, n: int):
     # set timer for countdown completed callback
     countdowns[name] = loop.call_later(60 * n, done)
     await ctx.send(output)
-    log.info(f'{ctx.author} started SM countdown for {n} minutes')
+    log.info(f'{ctx.author} started SM countdown for {n} {minutes}')
