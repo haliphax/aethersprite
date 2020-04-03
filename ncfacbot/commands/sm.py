@@ -27,7 +27,9 @@ async def sm(ctx, n: int):
 
     # normalize nick
     name = str(ctx.author)[:-5]
-    if ctx.author.nick is not None: name = ctx.author.nick
+
+    if ctx.author.nick is not None:
+        name = ctx.author.nick
 
     if name in timers:
         timers[name].cancel()
