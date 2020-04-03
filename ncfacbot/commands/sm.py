@@ -7,7 +7,7 @@ from .. import bot, log
 # 3rd party
 from discord import DMChannel
 
-timers = set([])
+timers = {}
 FIVE_MINS = 60 * 5
 FIFTEEN_MINS = 60 * 15
 
@@ -19,7 +19,7 @@ async def sm(ctx, n: int):
             aio.gather(loop.create_task(ctx.send(
                 f'```Sorcerers Might countdown ended for {name}!```')))
         finally:
-            timers.remove(name)
+            del timers[name]
 
     if ctx.channel is DMChannel:
         await ctx.send('Sorry, but this command must be used in a channel.')
@@ -30,7 +30,8 @@ async def sm(ctx, n: int):
     if ctx.author.nick is not None: name = ctx.author.nick
 
     if name in timers:
-        timers.remove(name)
+        timers[name].cancel()
+        del timers[name]
         await ctx.send('Your existing timer has been removed.')
 
     now = time()
@@ -57,5 +58,4 @@ async def sm(ctx, n: int):
     output += '```'
     await ctx.send(output)
     loop = aio.get_event_loop()
-    timers.add(name)
-    loop.call_later(60 * n, f, name)
+    timers[name] = loop.call_later(60 * n, f, name)
