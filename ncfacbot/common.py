@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 from math import floor
 
 # constants
-FIVE_MINS = 300
 FIFTEEN_MINS = 900
 
 #: :thumbsdown: emoji
