@@ -13,7 +13,7 @@ DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 log = logging.getLogger(__name__)
 streamHandler = logging.StreamHandler(sys.stdout)
 streamHandler.setFormatter(logging.Formatter(
-    '{asctime} {levelname} {module}.{funcName}: {message}', style='{'))
+    '{asctime} {levelname} {message} <{module}.{funcName}>', style='{'))
 log.addHandler(streamHandler)
 log.setLevel(logging.INFO)
 bot = commands.Bot(command_prefix='!')

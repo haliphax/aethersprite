@@ -24,10 +24,16 @@ async def sm(ctx, n: int):
         return
 
     # normalize nick
-    name = str(ctx.author)[:-5]
+    name = ctx.author.name
 
     if ctx.author.nick is not None:
         name = ctx.author.nick
+
+    if n > 120:
+        # let's not be silly, now
+        await ctx.message.add_reaction('\U0001F44E')
+        log.info(f'{ctx.author} made rejected SM timer request of {n} minutes')
+        return
 
     if name in countdowns:
         # cancel existing callback, if any
