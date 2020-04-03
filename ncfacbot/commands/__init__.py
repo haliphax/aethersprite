@@ -1,9 +1,6 @@
 "Commands module"
 
 # local
-from . import gmt
-from . import sm
-from . import tick
-
+from . import closest, gmt, sm, tick
 
 __all__ = ('gmt', 'sm', 'tick',)

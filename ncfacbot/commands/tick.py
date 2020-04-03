@@ -17,10 +17,10 @@ DAY = HOUR * 24
 TICK_LIMIT = 1000
 
 
-@bot.command(brief='Next game tick')
+@bot.command(brief='Next game tick or time [n] ticks from now')
 async def tick(ctx, n: typing.Optional[int] = 1):
     """
-    Next game tick
+    Next game tick or time [n] ticks from now in GMT
 
     Show the next game tick in GMT. Provide a value for <n> to get the GMT timestamp of <n> ticks from now. For past ticks, use a negative number.
 

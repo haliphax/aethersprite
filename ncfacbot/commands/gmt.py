@@ -8,8 +8,9 @@ from .. import bot, log
 
 
 @bot.command(brief='Get current time or offset in GMT')
-async def gmt(ctx, days: typing.Optional[int], hours: typing.Optional[int],
-              minutes: typing.Optional[int]):
+async def gmt(ctx, days: typing.Optional[int] = 0,
+              hours: typing.Optional[int] = 0,
+              minutes: typing.Optional[int] = 0):
     """
     Get current time in GMT or offset by [days], [hours] and [minutes]
 
@@ -20,15 +21,9 @@ async def gmt(ctx, days: typing.Optional[int], hours: typing.Optional[int],
     Arguments aren't validated, so anything goes... but please be reasonable. The command will silently fail if you choose an offset the bot can't process.
     """
 
-    offset = datetime.now(timezone.utc)
-
-    if days is not None:
-        offset += timedelta(days=days)
-
-    if hours is not None:
-        offset += timedelta(hours=hours)
-
-    if minutes is not None:
-        offset += timedelta(minutes=minutes)
-
-    await ctx.send(offset.strftime('%a %Y-%m-%d %H:%M:%S %Z'))
+    offset = (datetime.now(timezone.utc)
+              + timedelta(days=days, hours=hours, minutes=minutes))
+    offset_str = offset.strftime('%a %Y-%m-%d %H:%M:%S %Z')
+    await ctx.send(offset_str)
+    log.info(f'{ctx.author} requested GMT offset of {days}d {hours}h '
+             f'{minutes}m: {offset_str}')
