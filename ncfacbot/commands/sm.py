@@ -11,8 +11,8 @@ from discord import DMChannel
 
 # constants
 
-FIVE_MINS = 60 * 5
-FIFTEEN_MINS = 60 * 15
+FIVE_MINS = 300
+FIFTEEN_MINS = 900
 #: Maximum allowed timer length
 SM_LIMIT = 120
 
