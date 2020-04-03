@@ -10,7 +10,7 @@ import typing
 from discord import DMChannel
 # local
 from .. import bot, log
-from ..common import (FIVE_MINS, FIFTEEN_MINS, THUMBS_DOWN, get_next_tick,
+from ..common import (FIFTEEN_MINS, THUMBS_DOWN, get_next_tick,
                       normalize_username,)
 
 #: Maximum allowed timer length
@@ -102,26 +102,14 @@ async def sm(ctx, n: typing.Optional[int]):
     next_tick = get_next_tick()
 
     if sm_end > next_tick:
-        dummy_sm = sm_end
-
-        # walk through SM duration and subtract 5 mins for each AP tick
-        while True:
-            diff = dummy_sm - next_tick
-
-            if diff.total_seconds() < FIVE_MINS:
-                # less than 5 minute(s) left; shave off the difference
-                dummy_sm -= diff
-                break
-
-            next_tick = next_tick + timedelta(minutes=15)
-            dummy_sm -= timedelta(minutes=5)
-
-        reduced = max(1, int((dummy_sm - now).total_seconds() / 60))
-
-        if reduced != n:
-            output += f'\n(Adjusting to {reduced} due to SM bug.)'
-            n = reduced
-            sm_end = now + timedelta(minutes=n)
+        # 5 minutes subtracted for every tick during SM
+        diff = int((sm_end - now).total_seconds() / 60)
+        reduced = n - int((sm_end - now).total_seconds() / FIFTEEN_MINS * 5)
+        # does it end on the next tick, tho?
+        reduced = min(reduced, diff)
+        output += f'\n(Adjusting to {reduced} due to SM bug.)'
+        n = reduced
+        sm_end = now + timedelta(minutes=n)
 
     output += '```'
 
