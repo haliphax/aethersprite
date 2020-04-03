@@ -57,8 +57,7 @@ async def sm(ctx, n: int):
         # if no valid duration supplied, we're done
         if n < 1:
             return
-
-    if n < 1:
+    elif n < 1:
         await ctx.send('You do not currently have a countdown.')
         log.info(f'{ctx.author} failed to cancel nonexistent SM countdown')
         return
