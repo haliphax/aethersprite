@@ -4,6 +4,7 @@
 import asyncio as aio
 from datetime import datetime, timezone, timedelta
 from math import ceil
+from time import time
 import typing
 # 3rd party
 from discord import DMChannel
@@ -36,6 +37,7 @@ async def sm(ctx, n: typing.Optional[int]):
 
     loop = aio.get_event_loop()
     name = normalize_username(ctx.author)
+    now = datetime.now(timezone.utc)
 
     if n is None:
         # report countdown status
@@ -44,7 +46,7 @@ async def sm(ctx, n: typing.Optional[int]):
             return
 
         # get remaining time
-        remaining = round((countdowns[name][0] - time()) / 60)
+        remaining = (countdowns[name][0] - now).total_seconds() / 60
 
         if remaining > 1:
             remaining = ceil(remaining)
@@ -95,7 +97,6 @@ async def sm(ctx, n: typing.Optional[int]):
               f'{minutes}.')
 
     # adjust for SM bug
-    now = datetime.now(timezone.utc)
     sm_end = datetime.now(timezone.utc)
     sm_end += timedelta(minutes=n)
     next_tick = get_next_tick()
