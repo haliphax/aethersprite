@@ -28,3 +28,5 @@ def normalize_username(author):
 
     if author.nick is not None:
         name = author.nick
+
+    return name
