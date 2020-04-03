@@ -18,7 +18,7 @@ FIFTEEN_MINS = 60 * 15
                   '0 to cancel')
 async def sm(ctx, n: int):
     if type(ctx.channel) is DMChannel:
-        await ctx.send('Sorry, but this command must be used in a channel.')
+        await ctx.send('This command must be used in a channel.')
         return
 
     # normalize nick
