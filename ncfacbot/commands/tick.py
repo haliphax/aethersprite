@@ -4,6 +4,7 @@
 import calendar
 from datetime import datetime, timezone
 from math import floor
+from random import randrange
 import typing
 # local
 from .. import bot, log
@@ -12,6 +13,16 @@ from ..common import (DATETIME_FORMAT, DAY, HOUR, MINUTE, THUMBS_DOWN,
 
 #: Future/past tick limit
 TICK_LIMIT = 1000
+#: Silly stuff to say for past ticks
+SILLY = (
+    ', when the west was still wild...',
+    ', when I was a younger bot and still had all my wits about me!',
+    '... in the before-time, the long-long-ago.',
+    ', if you can believe that!',
+    ', okay?',
+    '! You remember that?! Man, those were some good times.',
+)
+SILLY_LEN = len(SILLY)
 
 
 @bot.command(brief='Next game tick or time [n] ticks from now')
@@ -56,8 +67,10 @@ async def tick(ctx, n: typing.Optional[int] = 1):
 
     if not len(until) and n > 0:
         until = 'right now!'
-    else:
+    elif n >= 0:
         until += 'from now'
+    elif n < 0:
+        until += 'before now' + SILLY[randrange(SILLY_LEN)]
 
     tick_str += until
     await ctx.send(f':alarm_clock: {tick_str}')

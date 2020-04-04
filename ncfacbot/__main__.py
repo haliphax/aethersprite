@@ -1,3 +1,5 @@
+# stdlib
+from random import seed
 # local
 from . import DISCORD_TOKEN, bot, log
 from .commands import *
@@ -22,4 +24,6 @@ async def on_ready():
 async def on_resumed():
     log.info('Connection resumed')
 
+# for any commands or scheduled tasks, etc. that need random numbers
+seed()
 bot.run(DISCORD_TOKEN)
