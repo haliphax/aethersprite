@@ -13,9 +13,7 @@ async def gmt(ctx, *, offset: typing.Optional[str]):
     """
     Get current time in GMT or offset by days, hours, and minutes.
 
-    To get the current time, no arguments are necessary.
-
-    To get offset time (e.g. 5 hours from now), provide values for days, hours, or minutes. For offsets in the past, use negative numbers.
+    To get the current time, no arguments are necessary. To get offset time (e.g. 5 hours from now), provide values for days, hours, or minutes. For offsets in the past, use negative numbers.
 
     Example: !gmt 3d 6h 17m  <-- would request an offset of 3 days, 6 hours, 17 minutes
 
