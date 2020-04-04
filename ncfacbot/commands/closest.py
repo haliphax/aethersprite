@@ -6,8 +6,8 @@ from datetime import datetime, timedelta, timezone
 import typing
 # local
 from .. import bot, log
-from ..common import (FIFTEEN_MINS, THUMBS_DOWN, get_datetime_chunks,
-                      get_next_tick,)
+from ..common import (DATETIME_FORMAT, FIFTEEN_MINS, THUMBS_DOWN,
+                      get_datetime_chunks, get_next_tick,)
 
 
 @bot.command(brief='Get closest tick to time offset')
@@ -38,6 +38,6 @@ async def closest(ctx, *, offset: typing.Optional[str]):
         future_tick += timedelta(hours=hours,
                                  minutes=(minutes - (minutes % 15) + 15))
 
-    tick_str = future_tick.strftime('%a %Y-%m-%d %H:%M:%S %Z')
+    tick_str = future_tick.strftime(DATETIME_FORMAT)
     await ctx.send(f':dart: {tick_str}')
     log.info(f'{ctx.author} requested closest tick {delta}: {tick_str}')

@@ -7,12 +7,9 @@ from math import floor
 import typing
 # local
 from .. import bot, log
-from ..common import THUMBS_DOWN, get_next_tick, normalize_username
+from ..common import (DATETIME_FORMAT, DAY, HOUR, MINUTE, THUMBS_DOWN,
+                      get_next_tick, normalize_username,)
 
-# constants
-MINUTE = 60
-HOUR = MINUTE * 60
-DAY = HOUR * 24
 #: Future/past tick limit
 TICK_LIMIT = 1000
 
@@ -35,7 +32,7 @@ async def tick(ctx, n: typing.Optional[int] = 1):
 
     name = normalize_username(ctx.author)
     future_tick = get_next_tick(n)
-    tick_str = future_tick.strftime('%a %Y-%m-%d %H:%M:%S %Z - ')
+    tick_str = future_tick.strftime(f'{DATETIME_FORMAT} - ')
     diff = abs(calendar.timegm(future_tick.timetuple())
                - calendar.timegm(datetime.now(timezone.utc).timetuple()))
     until = ''

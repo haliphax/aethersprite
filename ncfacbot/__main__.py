@@ -1,5 +1,5 @@
 # local
-from . import bot, DISCORD_TOKEN, log
+from . import DISCORD_TOKEN, bot, log
 from .commands import *
 
 

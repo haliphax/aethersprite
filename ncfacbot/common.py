@@ -6,10 +6,16 @@ from datetime import datetime, timezone
 from math import floor
 import re
 
+# constants
+MINUTE = 60
+HOUR = MINUTE * 60
+DAY = HOUR * 24
 #: 15 minutes in seconds
 FIFTEEN_MINS = 900
 #: :thumbsdown: emoji
 THUMBS_DOWN = '\U0001F44E'
+#: Formatting string for datetime objects
+DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
 
 
 def get_datetime_chunks(string):
