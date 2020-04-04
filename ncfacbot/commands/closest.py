@@ -35,7 +35,7 @@ async def closest(ctx, *, offset: typing.Optional[str]):
 
     if days >= 1 or hours >= 1 or minutes > (diff.total_seconds() / MINUTE):
         # only bother calculating future tick if it's not the next one
-        future_tick += timedelta(hours=hours,
+        future_tick += timedelta(days=days, hours=hours,
                                  minutes=(minutes - (minutes % 15) + 15))
 
     tick_str = future_tick.strftime(DATETIME_FORMAT)
