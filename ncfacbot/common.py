@@ -36,6 +36,7 @@ def get_next_tick(n=1):
 
     now = calendar.timegm(datetime.now(timezone.utc).timetuple())
     tick_stamp = (now + (n * FIFTEEN_MINS)) - (now % FIFTEEN_MINS)
+
     return datetime.fromtimestamp(tick_stamp, tz=timezone.utc)
 
 
