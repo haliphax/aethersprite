@@ -3,6 +3,7 @@
 # stdlib
 import calendar
 from datetime import datetime, timedelta, timezone
+from math import ceil
 import typing
 # local
 from .. import bot, log
@@ -31,13 +32,15 @@ async def closest(ctx, *, offset: typing.Optional[str]):
 
     days, hours, minutes = delta
     future_tick = get_next_tick()
-    diff = future_tick - datetime.now(timezone.utc) + timedelta(seconds=1)
+    diff = future_tick - datetime.now(timezone.utc)
+    diff_minutes = ceil(diff.total_seconds() / MINUTE)
 
-    if days >= 1 or hours >= 1 or minutes > (diff.total_seconds() / MINUTE):
+    if days >= 1 or hours >= 1 or minutes > diff_minutes:
         # only bother calculating future tick if it's not the next one
-        future_tick += timedelta(days=days, hours=hours,
-                                 minutes=(minutes - (minutes % 15) + 15))
+        tick_offset = minutes - (minutes % 15) + 15
+        future_tick += timedelta(days=days, hours=hours, minutes=tick_offset)
 
     tick_str = future_tick.strftime(DATETIME_FORMAT)
+
     await ctx.send(f':dart: {tick_str}')
     log.info(f'{ctx.author} requested closest tick {delta}: {tick_str}')
