@@ -15,14 +15,14 @@ THUMBS_DOWN = '\U0001F44E'
 def get_datetime_chunks(string):
     "Search string for chunks of datetime parameters, like 5d 10h 15m, etc."
 
-    s = re.search(r'.*?(\d+)d.*', string)
+    s = re.search(r'.*?(-?\d+)d.*', string)
     days = int(s.groups()[0]) if s else 0
-    s = re.search(r'.*?(\d+)h.*', string)
+    s = re.search(r'.*?(-?\d+)h.*', string)
     hours = int(s.groups()[0]) if s else 0
-    s = re.search(r'.*?(\d+)m.*', string)
+    s = re.search(r'.*?(-?\d+)m.*', string)
     minutes = int(s.groups()[0]) if s else 0
 
-    return (days, hours, minutes)      
+    return (days, hours, minutes)
 
 
 def get_next_tick(n=1):
