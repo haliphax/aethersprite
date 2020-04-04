@@ -1,7 +1,8 @@
 # stdlib
+from os import environ
 from random import seed
 # local
-from . import DISCORD_TOKEN, bot, log
+from . import bot, log
 from .commands import *
 
 
@@ -24,6 +25,9 @@ async def on_ready():
 async def on_resumed():
     log.info('Connection resumed')
 
+
+assert 'DISCORD_TOKEN' in environ, \
+    'DISCORD_TOKEN not found in environment variables'
 # for any commands or scheduled tasks, etc. that need random numbers
 seed()
-bot.run(DISCORD_TOKEN)
+bot.run(environ['DISCORD_TOKEN'])
