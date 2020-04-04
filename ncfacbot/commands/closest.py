@@ -39,5 +39,5 @@ async def closest(ctx, *, offset: typing.Optional[str]):
                                  minutes=(minutes - (minutes % 15) + 15))
 
     tick_str = future_tick.strftime('%a %Y-%m-%d %H:%M:%S %Z')
-    await ctx.send(tick_str)
+    await ctx.send(f':dart: {tick_str}')
     log.info(f'{ctx.author} requested closest tick {delta}: {tick_str}')

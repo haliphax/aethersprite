@@ -61,5 +61,5 @@ async def tick(ctx, n: typing.Optional[int] = 1):
         until += 'from now'
 
     tick_str += until
+    await ctx.send(f':alarm_clock: {tick_str}')
     log.info(f'{ctx.author} requested next tick: {tick_str}')
-    await ctx.send(tick_str)

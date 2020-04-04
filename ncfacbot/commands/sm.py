@@ -42,7 +42,8 @@ async def sm(ctx, n: typing.Optional[int]):
     if n is None:
         # report countdown status
         if name not in countdowns:
-            await ctx.send('You do not currently have a countdown.')
+            await ctx.send(':person_shrugging: '
+                           'You do not currently have a countdown.')
             return
 
         # get remaining time
@@ -55,9 +56,9 @@ async def sm(ctx, n: typing.Optional[int]):
         minutes = 'minutes' if remaining > 1 else 'minute'
 
         if remaining < 1:
-            await ctx.send('Less than 1 minute remaining!')
+            await ctx.send(':open_mouth: Less than 1 minute remaining!')
         else:
-            await ctx.send(f'About {remaining} {minutes} to go.')
+            await ctx.send(f':stopwatch: About {remaining} {minutes} to go.')
 
         log.info(f'{ctx.author} checking SM status: '
                  f'{"<1" if remaining < 1 else remaining} {minutes}')
@@ -82,14 +83,16 @@ async def sm(ctx, n: typing.Optional[int]):
             # overlapping requests due to lag can get out of sync
             log.error(f'Failed removing countdown for {name}')
 
-        await ctx.send('Your countdown has been canceled.')
+        await ctx.send(':negative_squared_cross_mark: '
+                       'Your countdown has been canceled.')
         log.info(f'{ctx.author} canceled SM countdown')
 
         # if no valid duration supplied, we're done
         if n < 1:
             return
     elif n < 1:
-        await ctx.send('You do not currently have a countdown.')
+        await ctx.send(':person_shrugging: '
+                       'You do not currently have a countdown.')
         log.warn(f'{ctx.author} failed to cancel nonexistent SM countdown')
         return
 
