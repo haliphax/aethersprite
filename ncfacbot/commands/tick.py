@@ -2,7 +2,7 @@
 
 # stdlib
 import calendar
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from math import floor
 import typing
 # local
@@ -34,7 +34,7 @@ async def tick(ctx, n: typing.Optional[int] = 1):
         return
 
     name = normalize_username(ctx.author)
-    future_tick = get_next_tick() + timedelta(minutes=(n - 1) * 15)
+    future_tick = get_next_tick(n)
     tick_str = future_tick.strftime('%a %Y-%m-%d %H:%M:%S %Z - ')
     diff = abs(calendar.timegm(future_tick.timetuple())
                - calendar.timegm(datetime.now(timezone.utc).timetuple()))
