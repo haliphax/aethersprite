@@ -96,7 +96,7 @@ async def sm(ctx, n: typing.Optional[int]):
         log.warn(f'{ctx.author} failed to cancel nonexistent SM countdown')
         return
 
-    output = (f'```{name} has started a Sorcerers Might countdown for {n} '
+    output = (f':alarm_clock: Starting a Sorcerers Might countdown for {n} '
               f'{minutes}.')
 
     # adjust for SM bug
@@ -110,11 +110,9 @@ async def sm(ctx, n: typing.Optional[int]):
         reduced = n - int((sm_end - now).total_seconds() / FIFTEEN_MINS * 5)
         # does it end on the next tick, tho?
         reduced = min(reduced, diff)
-        output += f'\n(Adjusting to {reduced} due to SM bug.)'
+        output += f' (Adjusting to {reduced} due to SM bug.)'
         n = reduced
         sm_end = now + timedelta(minutes=n)
-
-    output += '```'
 
     def done():
         "Countdown completed callback"
