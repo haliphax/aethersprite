@@ -33,6 +33,8 @@ async def tick(ctx, n: typing.Optional[int] = 1):
     name = normalize_username(ctx.author)
     future_tick = get_next_tick(n)
     tick_str = future_tick.strftime(f'{DATETIME_FORMAT} - ')
+    # convert to unix timestamps because it's easier to do this with the
+    # modulus operator (%) than it is to do this with timespan tomfoolery
     diff = abs(calendar.timegm(future_tick.timetuple())
                - calendar.timegm(datetime.now(timezone.utc).timetuple()))
     until = ''
