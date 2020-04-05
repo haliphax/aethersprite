@@ -45,7 +45,7 @@ def normalize_username(author):
 
     name = author.name
 
-    if author.nick is not None:
+    if hasattr(author, 'nick') and author.nick is not None:
         name = author.nick
 
     return name
