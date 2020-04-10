@@ -73,5 +73,5 @@ async def tick(ctx, n: typing.Optional[int] = 1):
         until += 'before now' + SILLY[randrange(SILLY_LEN)]
 
     tick_str += until
-    await ctx.send(f':alarm_clock: {tick_str}')
+    await ctx.send(f':calendar: {tick_str}')
     log.info(f'{ctx.author} requested next tick: {tick_str}')
