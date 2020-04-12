@@ -118,10 +118,18 @@ async def sm(ctx, n: typing.Optional[int]):
         "Countdown completed callback"
 
         try:
+            msg = f'Sorcerers Might ended for {name}!'
+
+            # get the medic role, if any
+            try:
+                medic = [r for r in ctx.guild.roles if r.name == "medic"][0]
+                msg = f'{medic.mention} ' + msg
+            except IndexError:
+                pass
+
             # ctx.send is a coroutine, but we're in a plain function, so we
             # have to wrap the call to ctx.send in a Task
-            loop.create_task(ctx.send(
-                f'```Sorcerers Might countdown ended for {name}!```'))
+            loop.create_task(ctx.send(msg))
             log.info(f'{ctx.author} completed SM countdown')
         finally:
             del countdowns[name]
