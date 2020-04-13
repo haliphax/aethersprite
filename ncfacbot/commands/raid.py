@@ -45,7 +45,7 @@ class Raid(commands.Cog, name='raid'):
 
         def reminder1():
             loop.create_task(
-                    ctx.send(f':stopwatch: @everyone '
+                    ctx.send(f':stopwatch: @here '
                              f'Raid on {self._target} in 30 minutes!'))
             log.info(f'30 minute reminder for {self._target} @ '
                      f'{self._schedule}')
@@ -53,7 +53,7 @@ class Raid(commands.Cog, name='raid'):
 
         def reminder2():
             loop.create_task(
-                    ctx.send(f':stopwatch: @everyone '
+                    ctx.send(f':stopwatch: @here '
                              f'Raid on {self._taret} in 15 minutes!'))
             log.info(f'15 minute reminder for {self._target} @ '
                      f'{self._schedule}')
