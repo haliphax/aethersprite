@@ -16,6 +16,7 @@ DATETIME_FORMAT = '%Y-%m-%d %H:%M %z'
 SHOW_FORMAT = '%Y-%m-%d %H:%M %Z'
 MSG_NO_RAID = ':person_shrugging: There is no scheduled raid.'
 
+
 class Raid(commands.Cog, name='raid'):
 
     """
