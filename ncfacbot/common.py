@@ -3,7 +3,7 @@
 # stdlib
 import calendar
 from datetime import datetime, timezone
-from math import floor
+from math import ceil, floor
 import re
 
 # constants
@@ -49,3 +49,25 @@ def normalize_username(author):
         name = author.nick
 
     return name
+
+
+def seconds_to_str(ts):
+    diff = ceil(ts)
+    until = ''
+
+    if diff >= DAY:
+        until += f'{floor(diff / DAY)} day(s) '
+        diff = diff % DAY
+
+    if diff >= HOUR:
+        until += f'{floor(diff / HOUR)} hour(s) '
+        diff = diff % HOUR
+
+    if diff >= MINUTE:
+        until += f'{floor(diff / MINUTE)} minute(s) '
+        diff = diff % MINUTE
+
+    if diff > 0:
+        until += f'{diff} second(s) '
+
+    return until.strip()

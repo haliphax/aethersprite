@@ -8,8 +8,8 @@ from random import randrange
 import typing
 # local
 from .. import bot, log
-from ..common import (DATETIME_FORMAT, DAY, HOUR, MINUTE, THUMBS_DOWN,
-                      get_next_tick, normalize_username,)
+from ..common import (DATETIME_FORMAT, THUMBS_DOWN, get_next_tick,
+                      normalize_username, seconds_to_str,)
 
 #: Future/past tick limit
 TICK_LIMIT = 1000
@@ -48,29 +48,14 @@ async def tick(ctx, n: typing.Optional[int] = 1):
     # modulus operator (%) than it is to do this with timespan tomfoolery
     diff = abs(calendar.timegm(future_tick.timetuple())
                - calendar.timegm(datetime.now(timezone.utc).timetuple()))
-    until = ''
-
-    if diff >= DAY:
-        until += f'{floor(diff / DAY)} day(s) '
-        diff = diff % DAY
-
-    if diff >= HOUR:
-        until += f'{floor(diff / HOUR)} hour(s) '
-        diff = diff % HOUR
-
-    if diff >= MINUTE:
-        until += f'{floor(diff / MINUTE)} minute(s) '
-        diff = diff % MINUTE
-
-    if diff > 0:
-        until += f'{diff} second(s) '
+    until = seconds_to_str(diff)
 
     if not len(until) and n > 0:
-        until = 'right now!'
+        until = ' right now!'
     elif n >= 0:
-        until += 'from now'
+        until += ' from now'
     elif n < 0:
-        until += 'before now' + SILLY[randrange(SILLY_LEN)]
+        until += ' before now' + SILLY[randrange(SILLY_LEN)]
 
     tick_str += until
     await ctx.send(f':calendar: {tick_str}')
