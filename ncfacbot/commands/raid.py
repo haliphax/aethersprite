@@ -9,10 +9,10 @@ from discord import DMChannel
 from discord.ext import commands
 # local
 from .. import bot, log
-from ..common import normalize_username, THUMBS_DOWN, seconds_to_str
+from ..common import (DATETIME_FORMAT, normalize_username, THUMBS_DOWN,
+                      seconds_to_str,)
 
-DATETIME_FORMAT = '%Y-%m-%d %H:%M %z'
-SHOW_FORMAT = '%Y-%m-%d %H:%M %Z'
+INPUT_FORMAT = '%Y-%m-%d %H:%M %z'
 MSG_NO_RAID = ':person_shrugging: There is no scheduled raid.'
 
 
@@ -94,7 +94,7 @@ class Raid(commands.Cog, name='raid'):
             self._handle = loop.call_later(wait, announce)
 
         await ctx.send(f':white_check_mark: Raid on {self._target} scheduled '
-                       f'for {self._schedule.strftime(SHOW_FORMAT)}!')
+                       f'for {self._schedule.strftime(DATETIME_FORMAT)}!')
         log.info(f'{ctx.author} scheduled raid on {self._target} @ '
                  f'{self._schedule}')
 
@@ -128,7 +128,7 @@ class Raid(commands.Cog, name='raid'):
 
         until = seconds_to_str((self._schedule - datetime.now(timezone.utc)).total_seconds())
         await ctx.send(f':pirate_flag: Raid on {self._target} scheduled '
-                       f'for {self._schedule.strftime(SHOW_FORMAT)} by '
+                       f'for {self._schedule.strftime(DATETIME_FORMAT)} by '
                        f'{self._leader}. ({until} from now)')
 
     @commands.command(name='raid.schedule', brief='Set raid schedule')
@@ -146,15 +146,15 @@ class Raid(commands.Cog, name='raid'):
 
         try:
             if '-' in when:
-                dt = datetime.strptime(when + ' +0000', DATETIME_FORMAT)
+                dt = datetime.strptime(when + ' +0000', INPUT_FORMAT)
             else:
                 dt = datetime.strptime(f'{dt.strftime("%Y-%m-%d")} {when} '
                                        '+0000',
-                                       DATETIME_FORMAT)
+                                       INPUT_FORMAT)
 
             self._schedule = dt
             await ctx.send(f':calendar: Schedule set to '
-                           f'{dt.strftime(SHOW_FORMAT)}.')
+                           f'{dt.strftime(DATETIME_FORMAT)}.')
             log.info(f'{ctx.author} set raid schedule: {dt}')
             await self._go(ctx)
         except:
