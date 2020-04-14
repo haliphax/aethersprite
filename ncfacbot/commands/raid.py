@@ -54,7 +54,7 @@ class Raid(commands.Cog, name='raid'):
         def reminder2():
             loop.create_task(
                     ctx.send(f':stopwatch: @here '
-                             f'Raid on {self._taret} in 15 minutes!'))
+                             f'Raid on {self._target} in 15 minutes!'))
             log.info(f'15 minute reminder for {self._target} @ '
                      f'{self._schedule}')
             self._handle = loop.call_later(900, announce)
