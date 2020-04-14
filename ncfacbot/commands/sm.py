@@ -127,6 +127,7 @@ async def sm(ctx, n: typing.Optional[int]):
             except IndexError:
                 pass
 
+            msg = ':adhesive_bandage: ' + msg
             # ctx.send is a coroutine, but we're in a plain function, so we
             # have to wrap the call to ctx.send in a Task
             loop.create_task(ctx.send(msg))
