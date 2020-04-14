@@ -4,7 +4,6 @@
 import asyncio as aio
 from datetime import datetime, timezone
 from math import ceil
-from time import mktime
 # 3rd party
 from discord import DMChannel
 from discord.ext import commands
