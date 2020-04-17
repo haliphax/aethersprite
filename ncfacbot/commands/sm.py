@@ -98,21 +98,24 @@ async def sm(ctx, n: typing.Optional[int]):
 
     output = (f':alarm_clock: Starting a Sorcerers Might countdown for {n} '
               f'{minutes}.')
-
-    # adjust for SM bug
-    sm_end = datetime.now(timezone.utc)
-    sm_end += timedelta(minutes=n)
+    sm_end = now + timedelta(minutes=n+1) \
+            - timedelta(seconds=now.second, microseconds=now.microsecond)
     next_tick = get_next_tick()
 
     if sm_end > next_tick:
         # 5 minutes subtracted for every tick during SM
         diff = int((sm_end - now).total_seconds() / 60)
-        reduced = n - int((sm_end - now).total_seconds() / FIFTEEN_MINS * 5)
+        until_next = int((next_tick - now).total_seconds() / 60)
+        reduction = ceil(diff / 15) * 5
+
         # does it end on the next tick, tho?
-        reduced = min(reduced, diff)
-        output += f' (Adjusting to {reduced} due to SM bug.)'
-        n = reduced
-        sm_end = now + timedelta(minutes=n)
+        if n - until_next - reduction <= 0:
+            reduction = n - until_next - 1
+
+        if reduction > 0:
+            n -= reduction
+            output += f' (Adjusting to {n} due to SM bug.)'
+            sm_end = now + timedelta(minutes=n)
 
     def done():
         "Countdown completed callback"
@@ -136,6 +139,6 @@ async def sm(ctx, n: typing.Optional[int]):
             del countdowns[name]
 
     # set timer for countdown completed callback
-    countdowns[name] = (sm_end, loop.call_later(60 * n, done))
+    countdowns[name] = (sm_end, loop.call_later(60 * (n + 1), done))
     await ctx.send(output)
     log.info(f'{ctx.author} started SM countdown for {n} {minutes}')
