@@ -3,7 +3,7 @@
 # stdlib
 import asyncio as aio
 from datetime import datetime, timezone, timedelta
-from math import ceil
+from math import ceil, floor
 from time import time
 import typing
 # 3rd party
@@ -98,24 +98,27 @@ async def sm(ctx, n: typing.Optional[int]):
 
     output = (f':alarm_clock: Starting a Sorcerers Might countdown for {n} '
               f'{minutes}.')
-    sm_end = now + timedelta(minutes=n+1) \
+    sm_end = now + timedelta(minutes=n) \
             - timedelta(seconds=now.second, microseconds=now.microsecond)
+    counter = 1
     next_tick = get_next_tick()
 
-    if sm_end > next_tick:
-        # 5 minutes subtracted for every tick during SM
-        diff = int((sm_end - now).total_seconds() / 60)
-        until_next = int((next_tick - now).total_seconds() / 60)
-        reduction = ceil(diff / 15) * 5
+    while next_tick < sm_end: 
+        counter += 1
+        diff = floor((sm_end - next_tick).total_seconds() / 60)
 
-        # does it end on the next tick, tho?
-        if n - until_next - reduction <= 0:
-            reduction = n - until_next - 1
+        if diff > 5:
+            sm_end -= timedelta(minutes=5)
+        else:
+            sm_end = next_tick
+            break
 
-        if reduction > 0:
-            n -= reduction
-            output += f' (Adjusting to {n} due to SM bug.)'
-            sm_end = now + timedelta(minutes=n)
+        next_tick = get_next_tick(counter)
+
+    new_count = ceil((sm_end - now).total_seconds() / 60)
+
+    if new_count != n:
+        output += f' (Adjusting to {new_count} due to SM bug.)'
 
     def done():
         "Countdown completed callback"
