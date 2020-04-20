@@ -103,7 +103,7 @@ async def sm(ctx, n: typing.Optional[int]):
     counter = 1
     next_tick = get_next_tick()
 
-    while next_tick < sm_end: 
+    while next_tick < sm_end:
         counter += 1
         diff = floor((sm_end - next_tick).total_seconds() / 60)
 
@@ -142,6 +142,7 @@ async def sm(ctx, n: typing.Optional[int]):
             del countdowns[name]
 
     # set timer for countdown completed callback
-    countdowns[name] = (sm_end, loop.call_later(60 * (n + 1), done))
+    countdowns[name] = (sm_end, loop.call_later(60 * (new_count + 1), done))
     await ctx.send(output)
-    log.info(f'{ctx.author} started SM countdown for {n} {minutes}')
+    log.info(f'{ctx.author} started SM countdown for {n} ({new_count}) '
+             f'{minutes}')
