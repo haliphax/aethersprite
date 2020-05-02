@@ -71,6 +71,7 @@ class Shop(commands.Cog, name='shop'):
     Used to maintain a personal shopping list of crafting/alchemy ingredients
     """
 
+    # Persistent storage of shopping lists
     _lists = SqliteDict('shop.sqlite3', tablename='shopping_list',
                         autocommit=True)
 
