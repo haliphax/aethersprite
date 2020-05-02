@@ -21,7 +21,8 @@ class Setting(object):
     "Setting class; represents an individual setting definition"
 
     # Setting values
-    _values = SqliteDict('settings.sqlite3', autocommit=True)
+    _values = SqliteDict('settings.sqlite3', tablename='values',
+                         autocommit=True)
 
     def __init__(self, name: str, default: str, validate: callable,
                  channel: typing.Optional[bool] = False,
