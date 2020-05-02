@@ -3,12 +3,11 @@
 # stdlib
 import typing
 # 3rd party
-from discord import DMChannel
 from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
 from .. import bot, log
-from ..common import normalize_username, THUMBS_DOWN
+from ..common import channel_only, normalize_username, THUMBS_DOWN
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
 COMPONENTS = {
@@ -79,6 +78,7 @@ class Shop(commands.Cog, name='shop'):
         self.bot = bot
 
     @commands.command(name='shop.set', brief='Manipulate your shopping list')
+    @channel_only
     async def set(self, ctx, num, *, item):
         """
         Manipulate your shopping list
@@ -177,6 +177,7 @@ class Shop(commands.Cog, name='shop'):
                 self._lists[ctx.guild.id] = lists
 
     @commands.command(name='shop.list', brief='Show shopping list(s)')
+    @channel_only
     async def list(self, ctx, who: typing.Optional[str]):
         """
         Show shopping list(s)
@@ -249,6 +250,7 @@ class Shop(commands.Cog, name='shop'):
         await ctx.send(output)
 
     @commands.command(name='shop.clear')
+    @channel_only
     async def clear(self, ctx):
         "Empty your shopping list"
 

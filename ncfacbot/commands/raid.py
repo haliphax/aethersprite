@@ -5,12 +5,11 @@ import asyncio as aio
 from datetime import datetime, timezone
 from math import ceil
 # 3rd party
-from discord import DMChannel
 from discord.ext import commands
 # local
 from .. import bot, log
-from ..common import (DATETIME_FORMAT, normalize_username, THUMBS_DOWN,
-                      seconds_to_str,)
+from ..common import (channel_only, DATETIME_FORMAT, normalize_username,
+                      THUMBS_DOWN, seconds_to_str,)
 
 INPUT_FORMAT = '%Y-%m-%d %H:%M %z'
 MSG_NO_RAID = ':person_shrugging: There is no scheduled raid.'
@@ -44,24 +43,24 @@ class Raid(commands.Cog, name='raid'):
 
         def reminder1():
             loop.create_task(
-                    ctx.send(f':stopwatch: @here '
-                             f'Raid on {self._target} in 30 minutes!'))
+                ctx.send(f':stopwatch: @here '
+                         f'Raid on {self._target} in 30 minutes!'))
             log.info(f'30 minute reminder for {self._target} @ '
                      f'{self._schedule}')
             self._handle = loop.call_later(900, reminder2)
 
         def reminder2():
             loop.create_task(
-                    ctx.send(f':stopwatch: @here '
-                             f'Raid on {self._target} in 15 minutes!'))
+                ctx.send(f':stopwatch: @here '
+                         f'Raid on {self._target} in 15 minutes!'))
             log.info(f'15 minute reminder for {self._target} @ '
                      f'{self._schedule}')
             self._handle = loop.call_later(900, announce)
 
         def announce():
             loop.create_task(
-                    ctx.send(f':crossed_swords: @everyone '
-                             f'Time to raid {self._target}!'))
+                ctx.send(f':crossed_swords: @everyone '
+                         f'Time to raid {self._target}!'))
             log.info(f'Announcement for {self._target}')
             self.__init__(self.bot)
 
@@ -99,13 +98,9 @@ class Raid(commands.Cog, name='raid'):
                  f'{self._schedule}')
 
     @commands.command(name='raid.cancel')
+    @channel_only
     async def cancel(self, ctx):
         "Cancels a currently scheduled raid"
-
-        if type(ctx.channel) is DMChannel:
-            await ctx.send('This command must be used in a channel.')
-
-            return
 
         if self._target is None:
             await ctx.send(MSG_NO_RAID)
@@ -118,6 +113,7 @@ class Raid(commands.Cog, name='raid'):
         log.info(f'{ctx.author} canceled raid')
 
     @commands.command(name='raid.check')
+    @channel_only
     async def check(self, ctx):
         "Check current raid schedule"
 
@@ -126,12 +122,14 @@ class Raid(commands.Cog, name='raid'):
 
             return
 
-        until = seconds_to_str((self._schedule - datetime.now(timezone.utc)).total_seconds())
+        until = seconds_to_str(
+            (self._schedule - datetime.now(timezone.utc)).total_seconds())
         await ctx.send(f':pirate_flag: Raid on {self._target} scheduled '
                        f'for {self._schedule.strftime(DATETIME_FORMAT)} by '
                        f'{self._leader}. ({until} from now)')
 
     @commands.command(name='raid.schedule', brief='Set raid schedule')
+    @channel_only
     async def schedule(self, ctx, *, when):
         """
         Set raid schedule to [when], which must be a valid 24-hour datetime string (e.g. 2020-01-01 23:45). Date is optional; today's date will be the default value. Will be parsed as GMT.
@@ -162,6 +160,7 @@ class Raid(commands.Cog, name='raid'):
             log.warning(f'{ctx.author} provided bad args: {when}')
 
     @commands.command(name='raid.target')
+    @channel_only
     async def target(self, ctx, *, target):
         "Set raid target"
 

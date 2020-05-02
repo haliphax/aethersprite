@@ -3,8 +3,12 @@
 # stdlib
 import calendar
 from datetime import datetime, timezone
+from functools import wraps
 from math import ceil, floor
 import re
+# 3rd party
+from discord import DMChannel
+from discord.ext.commands import Context
 
 # constants
 MINUTE = 60
@@ -16,6 +20,33 @@ FIFTEEN_MINS = 900
 THUMBS_DOWN = '\U0001F44E'
 #: Formatting string for datetime objects
 DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
+
+
+def channel_only(f):
+    "Decorator for bot commands that should only operate in a channel"
+
+    async def null():
+        pass
+
+    @wraps(f)
+    async def wrap(*args, **kwargs):
+        ctx = None
+
+        for a in args:
+            if type(a) is Context:
+                ctx = a
+                break
+
+        if type(ctx.channel) is DMChannel:
+            await ctx.send('This command must be used in a channel.')
+
+            return
+
+        return await f(*args, **kwargs)
+
+    wrap.__doc__ = f.__doc__
+
+    return wrap
 
 
 def get_datetime_chunks(string):
