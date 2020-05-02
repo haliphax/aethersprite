@@ -8,7 +8,7 @@ from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
 from .. import bot, log
-from ..common import THUMBS_DOWN
+from ..common import normalize_username, THUMBS_DOWN
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
 COMPONENTS = {
@@ -51,7 +51,21 @@ COMPONENTS = {
 }
 
 
+class ShoppingList(object):
+
+    "Shopping list; stores user's information and item requests"
+
+    def __init__(self, nick, userid):
+        #: User's nickname (default's to username)
+        self.nick = nick
+        # : User's full id (username#1234)
+        self.userid = userid
+        #: List of item requests
+        self.items = {}
+
+
 class Shop(commands.Cog, name='shop'):
+
     """
     Shopping commands
 
@@ -82,6 +96,8 @@ class Shop(commands.Cog, name='shop'):
 
         int_num = 0
         name = item.lower()
+        author = str(ctx.author)
+        nick = normalize_username(ctx.author)
 
         try:
             int_num = int(num)
@@ -118,46 +134,47 @@ class Shop(commands.Cog, name='shop'):
 
         lists = self._lists[ctx.guild.id]
 
-        if not ctx.author.name in lists:
+        if not author in lists:
             # create new list for user
-            lists[ctx.author.name] = {}
+            lists[author] = ShoppingList(nick, author)
 
-        items = lists[ctx.author.name]
+        lst = lists[author]
 
-        if name not in items:
+        if name not in lst.items:
             if int_num <= 0:
                 await ctx.send(f':thumbsdown: No **{name}** in your list.')
 
                 return
 
-            items[name] = int_num
+            lst.items[name] = int_num
         else:
             # either apply an operation or set the value
             if num[0] in ('-', '+'):
-                items[name] += int_num
+                lst.items[name] += int_num
             else:
-                items[name] = int_num
+                lst.items[name] = int_num
 
-        if items[name] <= 0:
+        if lst.items[name] <= 0:
             # quantity is less than 1; remove item from list
             await ctx.send(f':red_circle: Removing **{name}** from your list.')
-            del items[name]
+            del lst.items[name]
 
             if not len(items):
                 # last item on the list; remove list from storage
-                del lists[ctx.author.name]
+                del lists[author]
 
             if not len(lists):
                 del self._lists[ctx.guild.id]
         else:
             await ctx.send(f':green_circle: Adjusted **{name}**: '
-                           f'{items[name]}.')
+                           f'{lst.items[name]}.')
 
-        if ctx.author.name in lists:
-            lists[ctx.author.name] = items
+        if author in lists:
+            lst.nick = nick
+            lists[author] = lst
 
-        if ctx.guild.id in self._lists:
-            self._lists[ctx.guild.id] = lists
+            if ctx.guild.id in self._lists:
+                self._lists[ctx.guild.id] = lists
 
     @commands.command(name='shop.list', brief='Show shopping list(s)')
     async def list(self, ctx, who: typing.Optional[str]):
@@ -167,19 +184,23 @@ class Shop(commands.Cog, name='shop'):
         Show current shopping list for [who]. If no value is provided, your own list will be shown. If "all" is used, a list of users with lists that have at least one item will be shown (but not their items). If "net" is used, a list of all items needed from all combined lists will be shown (but not who needs them).
         """
 
+        author = str(ctx.author)
+        guild = ctx.guild.id
+
         if who is None:
             log.info(f'{ctx.author} checked their shopping list')
-            who = ctx.author.name
+            who = author
         elif who.lower() == 'all':
             log.info(f'{ctx.author} checked list of names')
 
-            if ctx.guild.id not in self._lists:
+            if guild not in self._lists:
                 await ctx.send(':person_shrugging: No lists are currently '
                                'stored.')
 
                 return
 
-            liststr = '**, **'.join(self._lists[ctx.guild.id].keys())
+            liststr = '**, **'.join([l[1].nick
+                                     for l in self._lists[guild].items()])
             await ctx.send(f':paperclip: Lists: **{liststr}**')
 
             return
@@ -190,18 +211,17 @@ class Shop(commands.Cog, name='shop'):
         items = {}
 
         if who != 'net':
-            items = self._lists[ctx.guild.id][who] \
-                    if ctx.guild.id in self._lists \
-                    and who in self._lists[ctx.guild.id] \
-                    else dict()
-        elif ctx.guild.id in self._lists:
-            ours = self._lists[ctx.guild.id]
+            items = self._lists[guild][who].items \
+                if (guild in self._lists) and (who in self._lists[guild]) \
+                else dict()
+        elif guild in self._lists:
+            ours = self._lists[guild]
 
             for name in ours.keys():
                 lst = ours[name]
 
-                for k in lst.keys():
-                    val = lst[k]
+                for k in lst.items.keys():
+                    val = lst.items[k]
 
                     if k in items:
                         items[k] += val
@@ -232,18 +252,21 @@ class Shop(commands.Cog, name='shop'):
     async def clear(self, ctx):
         "Empty your shopping list"
 
-        if not ctx.guild.id in self._lists \
-                or not ctx.author.name in self._lists[ctx.guild.id]:
+        author = str(ctx.author)
+        guild = ctx.guild.id
+
+        if not guild in self._lists \
+                or not author in self._lists[guild]:
             await ctx.send(':person_shrugging: You have no list.')
 
             return
 
-        lst = self._lists[ctx.guild.id]
-        del lst[ctx.author.name]
-        self._lists[ctx.guild.id] = lst
+        lst = self._lists[guild]
+        del lst[author]
+        self._lists[guild] = lst
 
-        if not len(self._lists[ctx.guild.id]):
-            del self._lists[ctx.guild.id]
+        if not len(self._lists[guild]):
+            del self._lists[guild]
 
         await ctx.send(':negative_squared_cross_mark: Your list has been '
                        'cleared.')
