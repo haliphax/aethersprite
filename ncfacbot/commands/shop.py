@@ -10,6 +10,7 @@ from sqlitedict import SqliteDict
 from .. import bot, log
 from ..common import THUMBS_DOWN
 
+#: Hard-coded list of components keyed by lowercase item name for lookup
 COMPONENTS = {
     'common': 'Common Component',
     'unc': 'Uncommon Component',
@@ -75,7 +76,7 @@ class Shop(commands.Cog, name='shop'):
         Examples:
             !shop.set 5 onyx      (ask for 5 Chunk of Stygian Onyx)
             !shop.set -1 leather  (ask for 1 less Batch of Leather)
-            !shop.set +3 unc      (ask for 3 more Rare Component)
+            !shop.set +3 unc      (ask for 3 more Uncommon Component)
             !shop.set 0 chain     (clear request for Length of Chain)
         """
 
@@ -96,6 +97,7 @@ class Shop(commands.Cog, name='shop'):
         howmany = len(matches)
 
         if howmany == 0:
+            # no item found
             await ctx.send(':person_shrugging: Not sure what that is supposed '
                            'to be.')
 
@@ -111,11 +113,13 @@ class Shop(commands.Cog, name='shop'):
         name = COMPONENTS[matches[0]]
 
         if not ctx.guild.id in self._lists:
+            # create new store for guild
             self._lists[ctx.guild.id] = {}
 
         lists = self._lists[ctx.guild.id]
 
         if not ctx.author.name in lists:
+            # create new list for user
             lists[ctx.author.name] = {}
 
         items = lists[ctx.author.name]
@@ -166,7 +170,6 @@ class Shop(commands.Cog, name='shop'):
         if who is None:
             log.info(f'{ctx.author} checked their shopping list')
             who = ctx.author.name
-
         elif who.lower() == 'all':
             log.info(f'{ctx.author} checked list of names')
 
