@@ -2,6 +2,8 @@
 
 A [Nexus Clash] Faction [Discord] bot.
 
+<img src="https://raw.githubusercontent.com/haliphax/ncfacbot/assets/assets/ncfacbot-header.jpg" style="width: 100%; max-width: 100%;" alt="Header image" />
+
 _This bot is a work in progress. Please excuse my mess..._
 
 ## Features
