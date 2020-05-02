@@ -4,6 +4,13 @@ A [Nexus Clash] Faction [Discord] bot.
 
 _This bot is a work in progress. Please excuse my mess..._
 
+## Features
+
+- Multi-server, multi-channel capable
+- Built on [discord.py], so new commands are easy to create and integrate
+- Server- and channel-specific settings framework for command customization
+- Role-based authorization for commands
+
 ## Commands
 
 - `closest`
@@ -20,11 +27,12 @@ _This bot is a work in progress. Please excuse my mess..._
   A collection of commands for viewing and maintaining crafting/alchemy
   shopping lists
 - `sm`
-  Announce the end of Sorcerers Might, accounting for the countdown bug
+  Announce the end of Sorcerers Might, accounting for the countdown tick bug
 - `tick`
   GMT timestamp and timespan ("8 hours, 4 minutes") of the next tick (or _x_
   ticks from now)
 
 
-[Nexus Clash]: https://www.nexusclash.com
+[discord.py]: https://discordpy.readthedocs.io
 [Discord]: https://discordapp.com
+[Nexus Clash]: https://www.nexusclash.com
