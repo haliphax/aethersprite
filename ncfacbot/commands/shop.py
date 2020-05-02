@@ -1,6 +1,4 @@
-"shop commands module"
-
-# TODO add list of all known craft/enchant/alchemy items, do partial matching
+"Shopping List commands module"
 
 # stdlib
 import typing
