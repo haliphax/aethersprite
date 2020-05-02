@@ -14,6 +14,8 @@ from ..common import (channel_only, FIFTEEN_MINS, get_next_tick,
                       normalize_username, THUMBS_DOWN,)
 from ..settings import register, settings
 
+# TODO store schedules on disk and reschedule announcement callbacks on startup
+
 #: Maximum allowed timer length
 SM_LIMIT = 55
 #: Countdown callback handles

@@ -20,7 +20,6 @@ async def gmt(ctx, *, offset: typing.Optional[str]):
     Arguments aren't validated, so anything goes... but please be reasonable. The command will silently fail if you choose an offset the bot can't process.
     """
 
-
     delta = get_datetime_chunks(offset) if offset else (0, 0, 0)
     days, hours, minutes = delta
     thetime = (datetime.now(timezone.utc)
