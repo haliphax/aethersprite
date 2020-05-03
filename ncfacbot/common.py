@@ -16,7 +16,7 @@ HOUR = MINUTE * 60
 DAY = HOUR * 24
 #: 15 minutes in seconds
 FIFTEEN_MINS = 900
-#: :thumbsdown: emoji
+#: Thumbs down emoji
 THUMBS_DOWN = '\U0001F44E'
 #: Formatting string for datetime objects
 DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
@@ -24,9 +24,6 @@ DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
 
 def channel_only(f):
     "Decorator for bot commands that should only operate in a channel"
-
-    async def null():
-        pass
 
     @wraps(f)
     async def wrap(*args, **kwargs):
@@ -43,8 +40,6 @@ def channel_only(f):
             return
 
         return await f(*args, **kwargs)
-
-    wrap.__doc__ = f.__doc__
 
     return wrap
 

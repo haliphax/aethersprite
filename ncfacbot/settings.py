@@ -123,8 +123,7 @@ def require_roles(f: callable, setting: str):
     Decorator for requiring particular roles (loaded from the given setting) to
     execute a command.
 
-    :param setting: The name of the setting to pull the roles from, or ``None``
-        if the command should only be used by administrators/moderators
+    :param setting: The name of the setting to pull the roles from
     """
 
     @wraps(f)
