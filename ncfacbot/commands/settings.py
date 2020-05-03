@@ -15,9 +15,9 @@ MSG_NO_SETTING = ':person_shrugging: No such setting exists.'
 
 # settings
 register('settings.adminroles', None, lambda x: True, False,
-         'The server roles that are allowed to administer settings. Must be '
-         'exact. Separate multiple values with commas. Administrators and '
-         'moderators have de facto access to all commands.')
+         'The server roles that are allowed to administer settings. Separate '
+         'multiple values with commas. Administrators and moderators have de '
+         'facto access to all commands.')
 
 # authorization decorator
 authz = partial(require_roles, setting='settings.adminroles')

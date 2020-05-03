@@ -2,6 +2,7 @@
 
 # stdlib
 from functools import wraps
+from os import environ
 import typing
 # 3rd party
 from discord.ext.commands import Context
@@ -139,15 +140,17 @@ def require_roles(f: callable, setting: str):
         perms = ctx.author.permissions_in(ctx.channel)
         pass_ = False
 
-        if perms.administrator or perms.manage_channels or perms.manage_guild:
+        if perms.administrator or perms.manage_channels or perms.manage_guild \
+                or (environ.get('NCFACBOT_OWNER', '') == str(ctx.author)):
             # Superusers get a pass
             pass_ = True
 
         value = settings[setting].get(ctx)
-        roles = [s.strip() for s in value.split(',')] if value else tuple()
+        roles = [s.strip().lower() for s in value.split(',')] \
+                if value else tuple()
 
-        if len(roles) \
-                and len([r for r in ctx.author.roles if r.name in roles]):
+        if len(roles) and len([r for r in ctx.author.roles
+                               if r.name.lower() in roles]):
             pass_ = True
 
         if not pass_:

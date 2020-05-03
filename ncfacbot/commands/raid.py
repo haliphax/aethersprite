@@ -3,6 +3,7 @@
 # stdlib
 import asyncio as aio
 from datetime import datetime, timezone
+from functools import partial
 from math import ceil
 # 3rd party
 from discord.ext import commands
@@ -10,9 +11,30 @@ from discord.ext import commands
 from .. import bot, log
 from ..common import (channel_only, DATETIME_FORMAT, normalize_username,
                       THUMBS_DOWN, seconds_to_str,)
+from ..settings import register, require_roles, settings
 
+#: Expected format for schedule input
 INPUT_FORMAT = '%Y-%m-%d %H:%M %z'
+#: No raid message
 MSG_NO_RAID = ':person_shrugging: There is no scheduled raid.'
+
+# settings
+register('raid.channel', None, lambda x: True, False,
+         'The channel where raids will be announced. If set to the default, '
+         'they will be announced in the same channel where the last '
+         'modification to the target or schedule was made.')
+register('raid.scheduleroles', None, lambda x: True, False,
+         'The server roles that are allowed to schedule/cancel raids and set '
+         'raid targets. If set to the default, there are no restrictions. '
+         'Separate multiple entries with commas.')
+register('raid.checkroles', None, lambda x: True, False,
+         'The server roles that are allowed to check current raid schedule '
+         'and target. If set to the default, there are no restrictions. '
+         'Separate multiple entries with commas.')
+
+# authz decorators
+authz_schedule = partial(require_roles, setting='raid.scheduleroles')
+authz_check = partial(require_roles, setting='raid.checkroles')
 
 
 class Raid(commands.Cog, name='raid'):
@@ -36,32 +58,65 @@ class Raid(commands.Cog, name='raid'):
 
         self._handle = None
 
+    def _getchannel(self, ctx):
+        chan = settings['raid.channel'].get(ctx)
+
+        if chan is None:
+            return ctx
+
+        chan = chan.lower()
+
+        return [c for c in ctx.guild.channels if c.name.lower() == chan][0]
+
+    def _failraid(self, ctx, loop):
+        loop.create_task(
+            ctx.send(':o I was supposed to post a raid announcement here, '
+                     'but the raid channel setting is either invalid or I '
+                     'do not have the necessary permissions to post a '
+                     'message!'))
+        log.error(f'Unable to get channel {chan} for announcement')
+
     async def _go(self, ctx):
         "Helper method for scheduling announcement callback"
 
         loop = aio.get_event_loop()
 
         def reminder1():
-            loop.create_task(
-                ctx.send(f':stopwatch: @here '
-                         f'Raid on {self._target} in 30 minutes!'))
-            log.info(f'30 minute reminder for {self._target} @ '
-                     f'{self._schedule}')
+            try:
+                c = self._getchannel(ctx)
+                loop.create_task(
+                    c.send(f':stopwatch: @here '
+                           f'Raid on {self._target} in 30 minutes!'))
+                log.info(f'30 minute reminder for {self._target} @ '
+                         f'{self._schedule}')
+            except KeyError:
+                self._failraid(ctx)
+
             self._handle = loop.call_later(900, reminder2)
 
         def reminder2():
-            loop.create_task(
-                ctx.send(f':stopwatch: @here '
-                         f'Raid on {self._target} in 15 minutes!'))
-            log.info(f'15 minute reminder for {self._target} @ '
-                     f'{self._schedule}')
+            try:
+                c = self._getchannel(ctx)
+                loop.create_task(
+                    c.send(f':stopwatch: @here '
+                           f'Raid on {self._target} in 15 minutes!'))
+                log.info(f'15 minute reminder for {self._target} @ '
+                         f'{self._schedule}')
+            except KeyError:
+                self._failraid(ctx)
+
             self._handle = loop.call_later(900, announce)
 
         def announce():
-            loop.create_task(
-                ctx.send(f':crossed_swords: @everyone '
-                         f'Time to raid {self._target}!'))
-            log.info(f'Announcement for {self._target}')
+            try:
+                c = self._getchannel(ctx)
+                loop.create_task(
+                    c.send(f':crossed_swords: @everyone '
+                           f'Time to raid {self._target}!'))
+                log.info(f'Announcement for {self._target}')
+            except KeyError:
+                self._failraid(ctx)
+
             self.__init__(self.bot)
 
         self._leader = normalize_username(ctx.author)
@@ -98,6 +153,7 @@ class Raid(commands.Cog, name='raid'):
                  f'{self._schedule}')
 
     @commands.command(name='raid.cancel')
+    @authz_schedule
     @channel_only
     async def cancel(self, ctx):
         "Cancels a currently scheduled raid"
@@ -113,6 +169,7 @@ class Raid(commands.Cog, name='raid'):
         log.info(f'{ctx.author} canceled raid')
 
     @commands.command(name='raid.check')
+    @authz_check
     @channel_only
     async def check(self, ctx):
         "Check current raid schedule"
@@ -129,6 +186,7 @@ class Raid(commands.Cog, name='raid'):
                        f'{self._leader}. ({until} from now)')
 
     @commands.command(name='raid.schedule', brief='Set raid schedule')
+    @authz_schedule
     @channel_only
     async def schedule(self, ctx, *, when):
         """
@@ -160,6 +218,7 @@ class Raid(commands.Cog, name='raid'):
             log.warning(f'{ctx.author} provided bad args: {when}')
 
     @commands.command(name='raid.target')
+    @authz_schedule
     @channel_only
     async def target(self, ctx, *, target):
         "Set raid target"
