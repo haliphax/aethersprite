@@ -28,7 +28,7 @@ async def on_disconnect():
 
 @bot.event
 async def on_ready():
-    log.info(f'Logged in as {bot.user} - ready!')
+    log.info(f'Logged in as {bot.user}')
 
 
 @bot.event
