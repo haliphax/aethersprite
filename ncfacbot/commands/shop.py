@@ -94,7 +94,7 @@ class Shop(commands.Cog, name='shop'):
 
         Set your request for [item] to [num], where [num] can be relative. Substring matching is used for [item], so mention any part of its name. If more than one match is returned, you will have to be more specific. At any time if the number of a given item reaches (or dips below) 0, it will be removed from the list.
 
-        The following special item types have been added to the list: Common Components (common), Uncommon Components (unc), and Rare Components (rare).
+        The following special item types have been added to the list: Common Components (common), Uncommon Components (uncom), and Rare Components (rare).
 
         Examples:
             !shop.set 5 fuel      (ask for 5 Fuel Can)
