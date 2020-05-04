@@ -49,7 +49,7 @@ def channel_only(f):
 
 def get_timespan_chunks(string):
     """
-    Search string for chunks of tiimespan parameters, like 5d 10h 15m, etc.
+    Search string for chunks of timespan parameters, like 5d 10h 15m, etc.
 
     :param string: The string to search
     :returns: ``(days: int, hours: int, minutes: int)``
