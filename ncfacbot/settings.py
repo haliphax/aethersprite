@@ -168,7 +168,7 @@ def require_roles(f: callable, setting):
             pass_ = True
 
         if not pass_:
-            await ctx.message.add_reaction(THUMBS_DOWN)
+            await ctx.message.add_reaction(POLICE_OFFICER)
             log.warn(f'{ctx.author} attempted to access unauthorized '
                      f'command {f.__name__}')
 
