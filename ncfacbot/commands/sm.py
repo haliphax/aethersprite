@@ -27,11 +27,15 @@ schedule = SqliteDict('sm.sqlite3', tablename='countdowns', autocommit=True)
 register('sm.medicrole', 'medic', lambda x: True, False,
          'The Discord server role used for announcing SM countdown '
          'expirations. Will be suppressed if it doesn\'t exist.')
+register('sm.channel', None, lambda x: True, False,
+         'The channel where SM countdown expiry announcements will be posted. '
+         'If set to the default, they will be announced in the same channel '
+         'where they were last manipulated (per-user).')
 
 
 @bot.command(brief='Start a Sorcerers Might countdown', name='sm')
 @channel_only
-async def sm(ctx, n: typing.Optional[int] = None):
+async def sm(ctx, n: typing.Optional[int]=None):
     """
     Start a Sorcerers Might countdown for n minutes
 
@@ -139,7 +143,7 @@ async def sm(ctx, n: typing.Optional[int] = None):
 
         try:
             msg = f'Sorcerers Might ended for {nick}!'
-            role  = settings['sm.medicrole'].get(ctx)
+            role = settings['sm.medicrole'].get(ctx)
 
             # get the medic role, if any
             try:
@@ -149,10 +153,30 @@ async def sm(ctx, n: typing.Optional[int] = None):
                 pass
 
             msg = ':adhesive_bandage: ' + msg
-            # ctx.send is a coroutine, but we're in a plain function, so we
-            # have to wrap the call to ctx.send in a Task
-            loop.create_task(ctx.send(msg))
-            log.info(f'{ctx.author} completed SM countdown')
+            where = ctx
+            chan = settings['sm.channel'].get(ctx)
+
+            if chan is not None:
+                chan = chan.lower().strip()
+
+                try:
+                    where = [c for c in ctx.guild.channels
+                             if c.name.lower() == chan][0]
+                except IndexError:
+                    where = None
+                    loop.create_task(
+                        ctx.send(':confused: I was supposed to announce the '
+                                 f'end of Sorcerers Might for {nick}, but '
+                                 'either the channel setting is invalid or I '
+                                 'do not have the necessary permissions!'))
+                    log.error(f'Unable to announce SM countdown for {nick} '
+                              f'in {chan}')
+
+            if where is not None:
+                # ctx.send is a coroutine, but we're in a plain function, so we
+                # have to wrap the call to ctx.send in a Task
+                loop.create_task(where.send(msg))
+                log.info(f'{ctx.author} completed SM countdown')
         finally:
             del countdowns[author]
 

@@ -71,10 +71,9 @@ class Raid(commands.Cog, name='raid'):
 
     def _failraid(self, ctx, loop):
         loop.create_task(
-            ctx.send(':o I was supposed to post a raid announcement here, '
-                     'but the raid channel setting is either invalid or I '
-                     'do not have the necessary permissions to post a '
-                     'message!'))
+            ctx.send(':confused: I was supposed to post a raid announcement '
+                     'here, but the raid channel setting is either invalid or '
+                     'I do not have the necessary permissions!'))
         log.error(f'Unable to get channel {chan} for announcement')
 
     async def _go(self, ctx):
