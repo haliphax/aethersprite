@@ -80,9 +80,9 @@ class ShoppingList(object):
     "Shopping list; stores user's information and item requests"
 
     def __init__(self, nick, userid):
-        #: User's nickname (default's to username)
+        #: User's nickname (defaults to username)
         self.nick = nick
-        # : User's full id (username#1234)
+        #: User's full id (username#1234)
         self.userid = userid
         #: List of item requests
         self.items = {}
