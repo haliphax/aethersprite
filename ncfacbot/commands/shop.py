@@ -12,7 +12,7 @@ from ..common import channel_only, normalize_username, THUMBS_DOWN
 #: Hard-coded list of components keyed by lowercase item name for lookup
 COMPONENTS = {
     'common': 'Common Component',
-    'unc': 'Uncommon Component',
+    'uncom': 'Uncommon Component',
     'rare': 'Rare Component',
     'bag of industrial plastic': 'Bag of Industrial Plastic',
     'batch of leather': 'Batch of Leather',
