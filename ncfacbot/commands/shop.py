@@ -2,6 +2,7 @@
 
 # stdlib
 from collections import OrderedDict
+from functools import partial
 import typing
 # 3rd party
 from discord.ext import commands
@@ -9,6 +10,7 @@ from sqlitedict import SqliteDict
 # local
 from .. import bot, log
 from ..common import channel_only, normalize_username, THUMBS_DOWN
+from ..settings import register, require_roles
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
 COMPONENTS = {
@@ -58,6 +60,20 @@ COMPONENTS = {
     'uncom': 'Uncommon Component',
 }
 
+# settings
+register('shop.listroles', None, lambda x: True, False,
+         'The set of roles that are allowed to view shopping lists. '
+         'If set to the default, there are no restrictions. Separate multiple '
+         'entries with commas.')
+register('shop.setroles', None, lambda x: True, False,
+         'The set of roles that are allowed to maintain shopping lists. '
+         'If set to the default, there are no restrictions. Separate multiple '
+         'entries with commas.')
+# authz decorators
+authz_list = partial(require_roles, setting='shop.listroles')
+authz_set = partial(require_roles, setting='shop.setroles')
+
+
 class ShoppingList(object):
 
     "Shopping list; stores user's information and item requests"
@@ -87,6 +103,7 @@ class Shop(commands.Cog, name='shop'):
         self.bot = bot
 
     @commands.command(name='shop.set', brief='Manipulate your shopping list')
+    @authz_set
     @channel_only
     async def set(self, ctx, num, *, item):
         """
@@ -186,6 +203,7 @@ class Shop(commands.Cog, name='shop'):
                 self._lists[ctx.guild.id] = lists
 
     @commands.command(name='shop.list', brief='Show shopping list(s)')
+    @authz_list
     @channel_only
     async def list(self, ctx, who: typing.Optional[str]):
         """
@@ -260,6 +278,7 @@ class Shop(commands.Cog, name='shop'):
         await ctx.send(output)
 
     @commands.command(name='shop.clear')
+    @authz_list
     @channel_only
     async def clear(self, ctx):
         "Empty your shopping list"
