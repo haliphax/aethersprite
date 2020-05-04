@@ -26,7 +26,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - `settings`
   A collection of commands for manipulating the bot's settings framework
 - `shop`
-  A collection of commands for viewing and maintaining crafting/alchemy
+  A collection of commands for viewing and maintaining crafting/alchemy/ammo
   shopping lists
 - `sm`
   Announce the end of Sorcerers Might, accounting for the countdown tick bug
