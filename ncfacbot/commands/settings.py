@@ -109,7 +109,7 @@ class Settings(commands.Cog, name='settings'):
         if setting.description is None:
             await ctx.send(':person_shrugging: No description set.')
         else:
-            await ctx.send(f':question: `{setting.name}` '
+            await ctx.send(f':book: `{setting.name}` '
                            f'_(Channel: **{str(setting.channel)}**)_\n'
                            f'> {setting.description}')
 
