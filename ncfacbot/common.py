@@ -103,7 +103,7 @@ def normalize_username(author):
 def seconds_to_str(ts):
     """
     Convert a span of seconds into a human-readable format (e.g. "5 day(s)
-    8 hour(s) 36 second(s)").
+    8 hour(s) 12 minute(s) 36 second(s)").
 
     :param ts: The span to convert
     :type ts: int
