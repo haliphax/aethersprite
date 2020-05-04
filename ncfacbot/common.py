@@ -44,7 +44,7 @@ def channel_only(f):
     return wrap
 
 
-def get_datetime_chunks(string):
+def get_timespan_chunks(string):
     "Search string for chunks of datetime parameters, like 5d 10h 15m, etc."
 
     s = re.search(r'.*?(-?\d+)d.*', string)

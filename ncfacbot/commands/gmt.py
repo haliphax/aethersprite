@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 import typing
 # local
 from .. import bot, log
-from ..common import DATETIME_FORMAT, get_datetime_chunks
+from ..common import DATETIME_FORMAT, get_timespan_chunks
 
 
 @bot.command(brief='Get current time or offset in GMT')
@@ -20,7 +20,7 @@ async def gmt(ctx, *, offset: typing.Optional[str]):
     Arguments aren't validated, so anything goes... but please be reasonable. The command will silently fail if you choose an offset the bot can't process.
     """
 
-    delta = get_datetime_chunks(offset) if offset else (0, 0, 0)
+    delta = get_timespan_chunks(offset) if offset else (0, 0, 0)
     days, hours, minutes = delta
     thetime = (datetime.now(timezone.utc)
                + timedelta(days=days, hours=hours, minutes=minutes))

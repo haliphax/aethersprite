@@ -8,7 +8,7 @@ import typing
 # local
 from .. import bot, log
 from ..common import (DATETIME_FORMAT, FIFTEEN_MINS, MINUTE, THUMBS_DOWN,
-                      get_datetime_chunks, get_next_tick,)
+                      get_timespan_chunks, get_next_tick,)
 
 
 @bot.command(brief='Get closest tick to time offset')
@@ -21,7 +21,7 @@ async def closest(ctx, *, offset: typing.Optional[str]):
     Example: !closest 2h 15m  <-- shows the closest tick 2 hours and 15 minutes from now
     """
 
-    delta = get_datetime_chunks(offset) if offset else (0, 0, 0)
+    delta = get_timespan_chunks(offset) if offset else (0, 0, 0)
 
     for val in delta:
         if val < 0:
