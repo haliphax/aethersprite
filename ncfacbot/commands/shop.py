@@ -1,6 +1,7 @@
 "Shopping List commands module"
 
 # stdlib
+from collections import OrderedDict
 import typing
 # 3rd party
 from discord.ext import commands
@@ -242,6 +243,7 @@ class Shop(commands.Cog, name='shop'):
 
             return
 
+        items = OrderedDict(sorted(items.items()))
         longest = max([len(k) for k in items.keys()])
         first = True
         output = '```'
