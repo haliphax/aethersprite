@@ -2,6 +2,7 @@
 
 # stdlib
 import calendar
+from collections import namedtuple
 from datetime import datetime, timezone
 from functools import wraps
 from math import ceil, floor
@@ -25,6 +26,10 @@ THUMBS_DOWN = '\U0001F44E'
 POLICE_OFFICER = '\U0001F46E'
 #: Formatting string for datetime objects
 DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
+
+# structs
+#: Fake a context for use in certain functions that expect one
+FakeContext = namedtuple('FakeContext', ('guild',))
 
 
 def channel_only(f):

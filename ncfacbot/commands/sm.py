@@ -2,7 +2,6 @@
 
 # stdlib
 import asyncio as aio
-from collections import namedtuple
 from datetime import datetime, timezone, timedelta
 from math import ceil, floor
 from time import time
@@ -11,7 +10,7 @@ import typing
 from sqlitedict import SqliteDict
 # local
 from .. import bot, log
-from ..common import (channel_only, FIFTEEN_MINS, get_next_tick,
+from ..common import (channel_only, FIFTEEN_MINS, get_next_tick, FakeContext,
                       normalize_username, THUMBS_DOWN,)
 from ..settings import register, settings
 
@@ -51,7 +50,6 @@ def _done(guild, channel, user, nick):
     "Countdown completed callback"
 
     loop = aio.get_event_loop()
-    FakeContext = namedtuple('FakeContext', ('guild',))
     guild = int(guild)
 
     try:
