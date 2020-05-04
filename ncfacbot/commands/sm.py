@@ -53,9 +53,10 @@ def _done(guild, channel, user, nick):
     loop = aio.get_event_loop()
     FakeContext = namedtuple('FakeContext', ('guild',))
     guild = int(guild)
-    fake_ctx = FakeContext(guild=[g for g in bot.guilds if g.id == guild][0])
 
     try:
+        fake_ctx = FakeContext(guild=[g for g in bot.guilds
+                                      if g.id == guild][0])
         role = settings['sm.medicrole'].get(fake_ctx)
         chan = settings['sm.channel'].get(fake_ctx)
 
