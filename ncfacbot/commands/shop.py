@@ -70,7 +70,8 @@ register('shop.setroles', None, lambda x: True, False,
          'If set to the default, there are no restrictions. Separate multiple '
          'entries with commas.')
 # authz decorators
-authz_list = partial(require_roles, setting='shop.listroles')
+authz_list = partial(require_roles,
+                     setting=('shop.setroles', 'shop.listroles'))
 authz_set = partial(require_roles, setting='shop.setroles')
 
 

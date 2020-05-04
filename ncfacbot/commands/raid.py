@@ -34,7 +34,8 @@ register('raid.checkroles', None, lambda x: True, False,
 
 # authz decorators
 authz_schedule = partial(require_roles, setting='raid.scheduleroles')
-authz_check = partial(require_roles, setting='raid.checkroles')
+authz_check = partial(require_roles,
+                      setting=('raid.scheduleroles,', 'raid.checkroles'))
 
 
 class Raid(commands.Cog, name='raid'):
