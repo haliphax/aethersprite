@@ -11,12 +11,10 @@ from ..common import channel_only, normalize_username, THUMBS_DOWN
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
 COMPONENTS = {
-    'common': 'Common Component',
-    'uncom': 'Uncommon Component',
-    'rare': 'Rare Component',
     'bag of industrial plastic': 'Bag of Industrial Plastic',
     'batch of leather': 'Batch of Leather',
     'batch of mushrooms': 'Batch of Mushrooms',
+    'battery': 'Battery',
     'blood ice': 'Blood Ice',
     'bottle of holy water': 'Bottle of Holy Water',
     'bottle of paradise water': 'Bottle of Paradise Water',
@@ -29,7 +27,9 @@ COMPONENTS = {
     'chunk of onyx': 'Chunk of Onyx',
     'chunk of steel': 'Chunk of Steel',
     'chunk of stygian iron': 'Chunk of Stygian Iron',
+    'common': 'Common Component',
     'femur': 'Femur',
+    'fuel can': 'Fuel Can',
     'gold ingot': 'Gold Ingot',
     'handful of grave dirt': 'Handful of Grave Dirt',
     'humerus': 'Humerus',
@@ -40,15 +40,22 @@ COMPONENTS = {
     'patch of moss': 'Patch of Moss',
     'piece of stygian coal': 'Piece of Stygian Coal',
     'piece of wood': 'Piece of Wood',
+    'pistol clip': 'Pistol Clip',
+    'quiver of arrows': 'Quiver of Arrows',
+    'rare': 'Rare Component',
+    'rifle magazine': 'Rifle Magazine',
+    'rock': 'Rock',
     'rose': 'Rose',
+    'shotgun shell': 'Shotgun Shell',
     'silver ingot': 'Silver Ingot',
     'skull': 'Skull',
     'small bottle of gunpowder': 'Small Bottle of Gunpowder',
+    'smg magazine': 'SMG Magazine',
     'soul ice': 'Soul Ice',
     'spool of copper wire': 'Spool of Copper Wire',
     'sprig of nightshade': 'Sprig of Nightshade',
+    'uncom': 'Uncommon Component',
 }
-
 
 class ShoppingList(object):
 
@@ -68,7 +75,7 @@ class Shop(commands.Cog, name='shop'):
     """
     Shopping commands
 
-    Used to maintain a personal shopping list of crafting/alchemy ingredients
+    Used to maintain a personal shopping list of crafting/alchemy/ammo ingredients
     """
 
     # Persistent storage of shopping lists
@@ -89,9 +96,9 @@ class Shop(commands.Cog, name='shop'):
         The following special item types have been added to the list: Common Components (common), Uncommon Components (unc), and Rare Components (rare).
 
         Examples:
-            !shop.set 5 onyx      (ask for 5 Chunk of Stygian Onyx)
+            !shop.set 5 fuel      (ask for 5 Fuel Can)
             !shop.set -1 leather  (ask for 1 less Batch of Leather)
-            !shop.set +3 unc      (ask for 3 more Uncommon Component)
+            !shop.set +3 uncom    (ask for 3 more Uncommon Component)
             !shop.set 0 chain     (clear request for Length of Chain)
         """
 
