@@ -278,7 +278,7 @@ class Shop(commands.Cog, name='shop'):
         await ctx.send(output)
 
     @commands.command(name='shop.clear')
-    @authz_list
+    @authz_set
     @channel_only
     async def clear(self, ctx):
         "Empty your shopping list"
