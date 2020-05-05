@@ -36,7 +36,11 @@ startup_handlers = []
 
 
 def command(*args, **kwargs):
-    "Decorator to add default checks to new commands."
+    """
+    Decorator to add default checks to new commands. This is just a thin
+    wrapper around :func:`discord.ext.commands.command`, and will accept the
+    same arguments.
+    """
 
     def wrap(f):
         return check(check_lobotomy)(command_(*args, **kwargs)(f))
