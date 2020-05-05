@@ -49,6 +49,8 @@ class SMSchedule(object):
 def _done(guild, channel, user, nick):
     "Countdown completed callback"
 
+    global countdowns
+
     loop = aio.get_event_loop()
     gid = int(guild)
 
