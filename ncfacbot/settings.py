@@ -1,4 +1,10 @@
-"Setting module"
+"""
+Settings module; interfaced with via :mod:`ncfacbot.extensions.settings`
+
+This provides a method by which extension authors can register and use settings
+in their code, and end users can manipulate those settings via bot commands
+(in the aforementioned `settings` extension).
+"""
 
 # stdlib
 import typing
