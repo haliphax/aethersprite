@@ -18,3 +18,4 @@ async def nick(ctx, *, nick):
 
     await ctx.guild.me.edit(nick=nick)
     await ctx.send(':thumbsup:')
+    log.info(f'{ctx.author} set bot nickname to {nick}')
