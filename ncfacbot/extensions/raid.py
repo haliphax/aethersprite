@@ -265,9 +265,6 @@ class Raid(commands.Cog, name='raid'):
 
 
 def setup(bot):
-    global _bot
-
-    _bot = bot
     # settings
     register('raid.channel', None, lambda x: True, False,
              'The channel where raids will be announced. If set to the '
