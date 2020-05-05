@@ -106,6 +106,8 @@ def register(name: str, default: str, validator: callable,
     :param channel: If this is a channel (and not a guild) setting
     """
 
+    global settings
+
     if name in settings:
         raise Exception(f'Setting already exists: {name}')
 
