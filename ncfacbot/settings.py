@@ -118,6 +118,28 @@ def register(name: str, default: str, validator: callable,
     settings[name] = Setting(name, default, validator, channel, description)
 
 
+def require_admin(f: callable):
+    "Decorator for requiring admin/mod privileges to execute a command."
+
+    @wraps(f)
+    async def wrap(*args, **kwargs):
+        ctx = None
+
+        for a in args:
+            if type(a) is Context:
+                ctx = a
+
+                break
+
+        perms = ctx.author.permissions_in(ctx.channel)
+
+        if perms.administrator or perms.manage_channels or perms.manage_guild \
+                or (environ.get('NCFACBOT_OWNER', '') == str(ctx.author)):
+            return await f(*args, **kwargs)
+
+    return wrap
+
+
 def require_roles(f: callable, setting):
     """
     Decorator for requiring particular roles (loaded from the given setting) to

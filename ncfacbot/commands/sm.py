@@ -10,8 +10,8 @@ import typing
 from sqlitedict import SqliteDict
 # local
 from .. import bot, log
-from ..common import (channel_only, FIFTEEN_MINS, get_next_tick, FakeContext,
-                      normalize_username, startup, THUMBS_DOWN,)
+from ..common import (bot_command, channel_only, FIFTEEN_MINS, get_next_tick,
+                      FakeContext, normalize_username, startup, THUMBS_DOWN,)
 from ..settings import register, settings
 
 #: Maximum allowed timer length
@@ -131,7 +131,7 @@ async def on_ready():
                 countdowns[gid] = cd
 
 
-@bot.command(brief='Start a Sorcerers Might countdown', name='sm')
+@bot_command(brief='Start a Sorcerers Might countdown', name='sm')
 @channel_only
 async def sm(ctx, n: typing.Optional[int]=None):
     """
@@ -263,8 +263,8 @@ async def sm(ctx, n: typing.Optional[int]=None):
 
     cd = countdowns[guild]
     cd[author] = (sm_end, loop.call_later(60 * (new_count + 1), _done,
-                  guild, ctx.channel.name, author, nick))
-    countdowns[guild]= cd
+                                          guild, ctx.channel.name, author, nick))
+    countdowns[guild] = cd
     await ctx.send(output)
     log.info(f'{ctx.author} started SM countdown for {n} ({new_count}) '
              f'{minutes}')

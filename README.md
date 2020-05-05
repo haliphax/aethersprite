@@ -22,6 +22,9 @@ _This bot is a work in progress. Please excuse my mess..._
   Information about the project and a link to this repository
 - `gmt`
   Get the current time (or an offset from now) in GMT
+- `lobotomy` _(hidden)_
+  A collection of commands for enabling/disabling other commands per-server
+  and per-channel
 - `raid`
   A collection of commands for scheduling and announcing raids
 - `settings`
@@ -38,7 +41,6 @@ _This bot is a work in progress. Please excuse my mess..._
 ## Plans
 
 - Set command prefix per-server and per-channel
-- Lobotomize (disable) commands per-server and per-channel
 - Common functions to pull/validate roles and channels from settings
 - Split bot framework into separate project, leave NC commands here
 - Command to change bot's nickname on current server

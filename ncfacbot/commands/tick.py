@@ -7,8 +7,8 @@ from math import floor
 from random import randrange
 import typing
 # local
-from .. import bot, log
-from ..common import (DATETIME_FORMAT, THUMBS_DOWN, get_next_tick,
+from .. import log
+from ..common import (bot_command, DATETIME_FORMAT, THUMBS_DOWN, get_next_tick,
                       normalize_username, seconds_to_str,)
 
 #: Future/past tick limit
@@ -25,7 +25,7 @@ SILLY = (
 SILLY_LEN = len(SILLY)
 
 
-@bot.command(brief='Next game tick or time [n] ticks from now')
+@bot_command(brief='Next game tick or time [n] ticks from now')
 async def tick(ctx, n: typing.Optional[int] = 1):
     """
     Next game tick or time [n] ticks from now in GMT

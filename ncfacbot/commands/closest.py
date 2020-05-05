@@ -7,11 +7,11 @@ from math import ceil
 import typing
 # local
 from .. import bot, log
-from ..common import (DATETIME_FORMAT, FIFTEEN_MINS, MINUTE, THUMBS_DOWN,
-                      get_timespan_chunks, get_next_tick,)
+from ..common import (bot_command, DATETIME_FORMAT, FIFTEEN_MINS, MINUTE,
+                      THUMBS_DOWN, get_timespan_chunks, get_next_tick,)
 
 
-@bot.command(brief='Get closest tick to time offset')
+@bot_command(brief='Get closest tick to time offset')
 async def closest(ctx, *, offset: typing.Optional[str]):
     """
     Get closest tick to time offset

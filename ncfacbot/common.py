@@ -9,7 +9,10 @@ from math import ceil, floor
 import re
 # 3rd party
 from discord import DMChannel
-from discord.ext.commands import Context
+from discord.ext.commands import check, command, Context
+# local
+from . import bot
+from .lobotomy import check_lobotomy
 
 # constants
 #: One minute in seconds
@@ -33,6 +36,24 @@ FakeContext = namedtuple('FakeContext', ('guild',))
 
 # List of functions to run on startup during on_ready
 startup_handlers = []
+
+
+def bot_command(*args, **kwargs):
+    "Decorator to add default checks to bot commands."
+
+    def wrap(f):
+        return check(check_lobotomy)(bot.command(*args, **kwargs)(f))
+
+    return wrap
+
+
+def cog_command(*args, **kwargs):
+    "Decorator to add default checks to Cog commands."
+
+    def wrap(f):
+        return check(check_lobotomy)(command(*args, **kwargs)(f))
+
+    return wrap
 
 
 def channel_only(f):

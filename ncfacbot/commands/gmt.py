@@ -4,11 +4,11 @@
 from datetime import datetime, timedelta, timezone
 import typing
 # local
-from .. import bot, log
-from ..common import DATETIME_FORMAT, get_timespan_chunks
+from .. import log
+from ..common import bot_command, DATETIME_FORMAT, get_timespan_chunks
 
 
-@bot.command(brief='Get current time or offset in GMT')
+@bot_command(brief='Get current time or offset in GMT')
 async def gmt(ctx, *, offset: typing.Optional[str]):
     """
     Get current time in GMT or offset by days, hours, and minutes.

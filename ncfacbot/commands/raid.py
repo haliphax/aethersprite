@@ -10,7 +10,7 @@ from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
 from .. import bot, log
-from ..common import (channel_only, DATETIME_FORMAT, FakeContext,
+from ..common import (cog_command, channel_only, DATETIME_FORMAT, FakeContext,
                       normalize_username, seconds_to_str, startup, THUMBS_DOWN)
 from ..settings import register, require_roles, settings
 
@@ -196,7 +196,7 @@ class Raid(commands.Cog, name='raid'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='raid.cancel')
+    @cog_command(name='raid.cancel')
     @authz_schedule
     @channel_only
     async def cancel(self, ctx):
@@ -213,7 +213,7 @@ class Raid(commands.Cog, name='raid'):
         await ctx.send(':negative_squared_cross_mark: Raid canceled.')
         log.info(f'{ctx.author} canceled raid')
 
-    @commands.command(name='raid.check')
+    @cog_command(name='raid.check')
     @authz_check
     @channel_only
     async def check(self, ctx):
@@ -231,7 +231,7 @@ class Raid(commands.Cog, name='raid'):
                        f'for {raid.schedule.strftime(DATETIME_FORMAT)} by '
                        f'{raid.leader}. ({until} from now)')
 
-    @commands.command(name='raid.schedule', brief='Set raid schedule')
+    @cog_command(name='raid.schedule', brief='Set raid schedule')
     @authz_schedule
     @channel_only
     async def schedule(self, ctx, *, when):
@@ -271,7 +271,7 @@ class Raid(commands.Cog, name='raid'):
         log.info(f'{ctx.author} set raid schedule: {dt}')
         await _go(raid, ctx)
 
-    @commands.command(name='raid.target')
+    @cog_command(name='raid.target')
     @authz_schedule
     @channel_only
     async def target(self, ctx, *, target):

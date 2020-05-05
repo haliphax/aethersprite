@@ -9,7 +9,7 @@ from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
 from .. import bot, log
-from ..common import channel_only, normalize_username, THUMBS_DOWN
+from ..common import channel_only, cog_command, normalize_username, THUMBS_DOWN
 from ..settings import register, require_roles
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
@@ -103,7 +103,7 @@ class Shop(commands.Cog, name='shop'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='shop.set', brief='Manipulate your shopping list')
+    @cog_command(name='shop.set', brief='Manipulate your shopping list')
     @authz_set
     @channel_only
     async def set(self, ctx, num, *, item):
@@ -203,7 +203,7 @@ class Shop(commands.Cog, name='shop'):
             if ctx.guild.id in self._lists:
                 self._lists[ctx.guild.id] = lists
 
-    @commands.command(name='shop.list', brief='Show shopping list(s)')
+    @cog_command(name='shop.list', brief='Show shopping list(s)')
     @authz_list
     @channel_only
     async def list(self, ctx, who: typing.Optional[str]):
@@ -278,7 +278,7 @@ class Shop(commands.Cog, name='shop'):
         output += '```'
         await ctx.send(output)
 
-    @commands.command(name='shop.clear')
+    @cog_command(name='shop.clear')
     @authz_set
     @channel_only
     async def clear(self, ctx):

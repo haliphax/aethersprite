@@ -1,10 +1,11 @@
 "GitHub URL command"
 
 # local
-from .. import bot, log
+from .. import log
+from ..common import bot_command
 
 
-@bot.command(brief='GitHub URL for bot source code, feature requests')
+@bot_command(brief='GitHub URL for bot source code, feature requests')
 async def github(ctx):
     """
     This bot is running on ncfacbot, an open source Nexus Clash faction bot software built with discord.py. My source code is available for free. Contributions in the form of code, bug reports, and feature requests are all welcome.  

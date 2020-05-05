@@ -7,7 +7,7 @@ from discord.ext import commands
 from functools import partial
 # local
 from .. import bot, log
-from ..common import channel_only, THUMBS_DOWN
+from ..common import channel_only, cog_command, THUMBS_DOWN
 from ..settings import settings, register, require_roles
 
 # messages
@@ -34,7 +34,7 @@ class Settings(commands.Cog, name='settings'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='set')
+    @cog_command(name='set')
     @authz
     @channel_only
     async def set(self, ctx, name: typing.Optional[str] = None,
@@ -74,7 +74,7 @@ class Settings(commands.Cog, name='settings'):
             await ctx.send(f':thumbsdown: Error updating value.')
             log.warn(f'{ctx.author} failed to update setting {name}: {value}')
 
-    @commands.command(name='clear')
+    @cog_command(name='clear')
     @authz
     @channel_only
     async def clear(self, ctx, name):
@@ -91,7 +91,7 @@ class Settings(commands.Cog, name='settings'):
         await ctx.send(':negative_squared_cross_mark: Setting cleared.')
         log.info(f'{ctx.author} cleared setting {name}')
 
-    @commands.command(name='desc')
+    @cog_command(name='desc')
     @authz
     @channel_only
     async def desc(self, ctx, name):
