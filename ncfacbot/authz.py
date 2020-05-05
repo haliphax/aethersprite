@@ -39,10 +39,11 @@ async def require_roles(ctx, setting):
 
         from functools import partial
         from discord.ext import commands
-        from ncfacbot.common import bot_command, require_roles
+        from ncfacbot.authz import require_roles
+        from ncfacbot.common import command
         authz = partial(require_roles, setting='setting.name')
 
-        @bot_command()
+        @command()
         @commands.check(authz)
         async def my_command(ctx):
             await ctx.send('You are authorized. Congratulations!')
