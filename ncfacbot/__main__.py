@@ -3,6 +3,8 @@ import logging
 from os import environ
 from random import seed
 from sys import stdout
+# 3rd party
+from discord.ext.commands import CheckFailure
 # local
 from . import bot, log
 
@@ -24,6 +26,14 @@ async def on_connect():
 @bot.event
 async def on_disconnect():
     log.info('Disconnected')
+
+
+@bot.event
+async def on_command_error(_, error):
+    if type(error) is CheckFailure:
+        return
+
+    raise error
 
 
 @bot.event

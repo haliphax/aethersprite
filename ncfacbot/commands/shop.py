@@ -104,8 +104,8 @@ class Shop(commands.Cog, name='shop'):
         self.bot = bot
 
     @cog_command(name='shop.set', brief='Manipulate your shopping list')
-    @authz_set
-    @channel_only
+    @commands.check(authz_set)
+    @commands.check(channel_only)
     async def set(self, ctx, num, *, item):
         """
         Manipulate your shopping list
@@ -204,8 +204,8 @@ class Shop(commands.Cog, name='shop'):
                 self._lists[ctx.guild.id] = lists
 
     @cog_command(name='shop.list', brief='Show shopping list(s)')
-    @authz_list
-    @channel_only
+    @commands.check(authz_list)
+    @commands.check(channel_only)
     async def list(self, ctx, who: typing.Optional[str]):
         """
         Show shopping list(s)
@@ -279,8 +279,8 @@ class Shop(commands.Cog, name='shop'):
         await ctx.send(output)
 
     @cog_command(name='shop.clear')
-    @authz_set
-    @channel_only
+    @commands.check(authz_set)
+    @commands.check(channel_only)
     async def clear(self, ctx):
         "Empty your shopping list"
 

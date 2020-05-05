@@ -197,8 +197,8 @@ class Raid(commands.Cog, name='raid'):
         self.bot = bot
 
     @cog_command(name='raid.cancel')
-    @authz_schedule
-    @channel_only
+    @commands.check(authz_schedule)
+    @commands.check(channel_only)
     async def cancel(self, ctx):
         "Cancels a currently scheduled raid"
 
@@ -214,8 +214,8 @@ class Raid(commands.Cog, name='raid'):
         log.info(f'{ctx.author} canceled raid')
 
     @cog_command(name='raid.check')
-    @authz_check
-    @channel_only
+    @commands.check(authz_check)
+    @commands.check(channel_only)
     async def check(self, ctx):
         "Check current raid schedule"
 
@@ -232,8 +232,8 @@ class Raid(commands.Cog, name='raid'):
                        f'{raid.leader}. ({until} from now)')
 
     @cog_command(name='raid.schedule', brief='Set raid schedule')
-    @authz_schedule
-    @channel_only
+    @commands.check(authz_schedule)
+    @commands.check(channel_only)
     async def schedule(self, ctx, *, when):
         """
         Set raid schedule to <when>, which must be a valid 24-hour datetime string (e.g. 2020-01-01 23:45). Date is optional; today's date will be the default value. Will be parsed as GMT.
@@ -272,8 +272,8 @@ class Raid(commands.Cog, name='raid'):
         await _go(raid, ctx)
 
     @cog_command(name='raid.target')
-    @authz_schedule
-    @channel_only
+    @commands.check(authz_schedule)
+    @commands.check(channel_only)
     async def target(self, ctx, *, target):
         "Set raid target"
 

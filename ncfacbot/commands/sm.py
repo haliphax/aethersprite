@@ -7,6 +7,7 @@ from math import ceil, floor
 from time import time
 import typing
 # 3rd party
+from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
 from .. import bot, log
@@ -132,7 +133,7 @@ async def on_ready():
 
 
 @bot_command(brief='Start a Sorcerers Might countdown', name='sm')
-@channel_only
+@commands.check(channel_only)
 async def sm(ctx, n: typing.Optional[int]=None):
     """
     Start a Sorcerers Might countdown for n minutes

@@ -35,8 +35,8 @@ class Settings(commands.Cog, name='settings'):
         self.bot = bot
 
     @cog_command(name='set')
-    @authz
-    @channel_only
+    @commands.check(authz)
+    @commands.check(channel_only)
     async def set(self, ctx, name: typing.Optional[str] = None,
                   value: typing.Optional[str] = None):
         """
@@ -75,8 +75,8 @@ class Settings(commands.Cog, name='settings'):
             log.warn(f'{ctx.author} failed to update setting {name}: {value}')
 
     @cog_command(name='clear')
-    @authz
-    @channel_only
+    @commands.check(authz)
+    @commands.check(channel_only)
     async def clear(self, ctx, name):
         "Reset setting <name> to its default value"
 
@@ -92,8 +92,8 @@ class Settings(commands.Cog, name='settings'):
         log.info(f'{ctx.author} cleared setting {name}')
 
     @cog_command(name='desc')
-    @authz
-    @channel_only
+    @commands.check(authz)
+    @commands.check(channel_only)
     async def desc(self, ctx, name):
         "View description of setting <name>"
 

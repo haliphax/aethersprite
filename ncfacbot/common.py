@@ -1,6 +1,7 @@
 "Common functions module"
 
 # stdlib
+from asyncio import get_event_loop
 import calendar
 from collections import namedtuple
 from datetime import datetime, timezone
@@ -56,26 +57,15 @@ def cog_command(*args, **kwargs):
     return wrap
 
 
-def channel_only(f):
-    "Decorator for bot commands that should only operate in a channel"
+async def channel_only(ctx):
+    "Check for bot commands that should only operate in a channel"
 
-    @wraps(f)
-    async def wrap(*args, **kwargs):
-        ctx = None
+    if type(ctx.channel) is DMChannel:
+        await ctx.send('This command must be used in a channel.')
 
-        for a in args:
-            if type(a) is Context:
-                ctx = a
-                break
+        return False
 
-        if type(ctx.channel) is DMChannel:
-            await ctx.send('This command must be used in a channel.')
-
-            return
-
-        return await f(*args, **kwargs)
-
-    return wrap
+    return True
 
 
 def get_timespan_chunks(string):

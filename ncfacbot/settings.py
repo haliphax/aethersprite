@@ -1,6 +1,7 @@
 "Setting module"
 
 # stdlib
+from asyncio import get_event_loop
 from functools import wraps
 from os import environ
 import typing
@@ -118,29 +119,19 @@ def register(name: str, default: str, validator: callable,
     settings[name] = Setting(name, default, validator, channel, description)
 
 
-def require_admin(f: callable):
+async def require_admin(ctx):
     "Decorator for requiring admin/mod privileges to execute a command."
 
-    @wraps(f)
-    async def wrap(*args, **kwargs):
-        ctx = None
+    perms = ctx.author.permissions_in(ctx.channel)
 
-        for a in args:
-            if type(a) is Context:
-                ctx = a
+    if perms.administrator or perms.manage_channels or perms.manage_guild \
+            or (environ.get('NCFACBOT_OWNER', '') == str(ctx.author)):
+        return True
 
-                break
-
-        perms = ctx.author.permissions_in(ctx.channel)
-
-        if perms.administrator or perms.manage_channels or perms.manage_guild \
-                or (environ.get('NCFACBOT_OWNER', '') == str(ctx.author)):
-            return await f(*args, **kwargs)
-
-    return wrap
+    return False
 
 
-def require_roles(f: callable, setting):
+async def require_roles(ctx, setting):
     """
     Decorator for requiring particular roles (loaded from the given setting) to
     execute a command. For more than one setting (if ``setting`` is a
@@ -151,59 +142,47 @@ def require_roles(f: callable, setting):
     :type setting: str or list or tuple
     """
 
-    @wraps(f)
-    async def wrap(*args, **kwargs):
-        ctx = None
+    perms = ctx.author.permissions_in(ctx.channel)
+    pass_ = False
 
-        for a in args:
-            if type(a) is Context:
-                ctx = a
+    if perms.administrator or perms.manage_channels or perms.manage_guild \
+            or (environ.get('NCFACBOT_OWNER', '') == str(ctx.author)):
+        # Superusers get a pass
+        pass_ = True
 
-                break
+    values = None
+    kind = type(setting)
 
-        perms = ctx.author.permissions_in(ctx.channel)
-        pass_ = False
+    if kind == str:
+        values = settings[setting].get(ctx)
+    elif kind in (list, tuple):
+        names = []
 
-        if perms.administrator or perms.manage_channels or perms.manage_guild \
-                or (environ.get('NCFACBOT_OWNER', '') == str(ctx.author)):
-            # Superusers get a pass
-            pass_ = True
+        for s in setting:
+            val = settings[s].get(ctx)
 
-        values = None
-        kind = type(setting)
+            if val is not None:
+                names.append(val)
 
-        if kind == str:
-            values = settings[setting].get(ctx)
-        elif kind in (list, tuple):
-            names = []
+        values = ','.join(names)
+    else:
+        raise ValueError('setting must be str, list, or tuple')
 
-            for s in setting:
-                val = settings[s].get(ctx)
+    if values is None:
+        values = []
 
-                if val is not None:
-                    names.append(val)
+    roles = [s.strip().lower() for s in values.split(',')] \
+            if len(values) else tuple()
 
-            values = ','.join(names)
-        else:
-            raise ValueError('setting must be str, list, or tuple')
+    if len(roles) and len([r for r in ctx.author.roles
+                           if r.name.lower() in roles]):
+        pass_ = True
 
-        if values is None:
-            values = []
+    if not pass_:
+        await ctx.message.add_reaction(POLICE_OFFICER)
+        log.warn(f'{ctx.author} attempted to access unauthorized '
+                 f'command {f.__name__}')
 
-        roles = [s.strip().lower() for s in values.split(',')] \
-                if len(values) else tuple()
+        return False
 
-        if len(roles) and len([r for r in ctx.author.roles
-                               if r.name.lower() in roles]):
-            pass_ = True
-
-        if not pass_:
-            await ctx.message.add_reaction(POLICE_OFFICER)
-            log.warn(f'{ctx.author} attempted to access unauthorized '
-                     f'command {f.__name__}')
-
-            return
-
-        return await f(*args, **kwargs)
-
-    return wrap
+    return True
