@@ -8,9 +8,8 @@ from discord.ext import commands
 from functools import partial
 # local
 from .. import log
-from ..common import command
+from ..common import command, require_admin
 from ..lobotomy import lobotomies
-from ..settings import require_admin
 
 
 class Lobotomy(commands.Cog, name='lobotomy'):
