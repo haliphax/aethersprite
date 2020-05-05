@@ -4,7 +4,7 @@ from os import environ
 from random import seed
 from sys import stdout
 # 3rd party
-from discord.ext.commands import CheckFailure
+from discord.ext.commands import CheckFailure, CommandNotFound
 # local
 from . import bot, log
 
@@ -30,7 +30,7 @@ async def on_disconnect():
 
 @bot.event
 async def on_command_error(_, error):
-    if type(error) is CheckFailure:
+    if type(error) in (CheckFailure, CommandNotFound,):
         return
 
     raise error

@@ -25,6 +25,8 @@ _This bot is a work in progress. Please excuse my mess..._
 - `lobotomy` _(hidden)_
   A collection of commands for enabling/disabling other commands per-server
   and per-channel
+- `nick`
+  Change the bot's nickname per-server
 - `raid`
   A collection of commands for scheduling and announcing raids
 - `settings`
