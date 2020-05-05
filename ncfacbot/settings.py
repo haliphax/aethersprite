@@ -1,16 +1,9 @@
 "Setting module"
 
 # stdlib
-from asyncio import get_event_loop
-from functools import wraps
-from os import environ
 import typing
 # 3rd party
-from discord.ext.commands import Context
 from sqlitedict import SqliteDict
-# local
-from . import log
-from .common import THUMBS_DOWN
 
 # TODO cleanup settings for missing servers/channels on startup
 
