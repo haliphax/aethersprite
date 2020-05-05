@@ -166,6 +166,12 @@ async def _go(raid, ctx, silent=False):
 async def on_ready():
     "Schedule raid announcements from database on startup"
 
+    global _handles
+
+    if len(_handles):
+        # only have to do this once during initial startup
+        return
+
     for gid, raid in _schedules.items():
         try:
             gid = int(gid)

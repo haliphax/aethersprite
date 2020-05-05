@@ -105,6 +105,10 @@ async def on_ready():
 
     global countdowns
 
+    if len(countdowns):
+        # only have to do this once during initial connect
+        return
+
     now = datetime.now(timezone.utc)
     loop = aio.get_event_loop()
 
