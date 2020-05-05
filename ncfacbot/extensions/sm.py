@@ -48,7 +48,6 @@ def _done(guild, channel, user, nick):
     global countdowns
 
     loop = aio.get_event_loop()
-    FakeContext = namedtuple('FakeContext', ('guild',))
     int_guild = int(guild)
     fake_ctx = None
 
