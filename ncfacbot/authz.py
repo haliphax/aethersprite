@@ -1,6 +1,12 @@
 "Authorization module"
 
+# stdlib
+from os import environ
+# 3rd party
 from discord import DMChannel
+# local
+from . import log
+from .common import POLICE_OFFICER
 
 
 async def channel_only(ctx):
@@ -20,7 +26,7 @@ async def require_admin(ctx):
     perms = ctx.author.permissions_in(ctx.channel)
 
     if perms.administrator or perms.manage_channels or perms.manage_guild \
-            or ctx.bot.owner_id == ctx.author.id:
+            or environ.get('NCFACBOT_OWNER', '') == str(ctx.author):
         return True
 
     return False
@@ -62,7 +68,7 @@ async def require_roles(ctx, setting):
     pass_ = False
 
     if perms.administrator or perms.manage_channels or perms.manage_guild \
-            or ctx.bot.owner_id == ctx.author.id:
+            or environ.get('NCFACBOT_OWNER', '') == str(ctx.author):
         # Superusers get a pass
         pass_ = True
 
@@ -85,7 +91,8 @@ async def require_roles(ctx, setting):
         raise ValueError('setting must be str, list, or tuple')
 
     if values is None:
-        values = []
+        # no roles set; allow anyone
+        return True
 
     roles = [s.strip().lower() for s in values.split(',')] \
             if len(values) else tuple()
@@ -97,7 +104,7 @@ async def require_roles(ctx, setting):
     if not pass_:
         await ctx.message.add_reaction(POLICE_OFFICER)
         log.warn(f'{ctx.author} attempted to access unauthorized '
-                 f'command {f.__name__}')
+                 f'command {ctx.command}')
 
         return False
 
