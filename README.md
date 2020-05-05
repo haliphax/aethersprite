@@ -44,6 +44,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - Common functions to pull/validate roles and channels from settings
 - Split bot framework into separate project, leave NC commands here
 - Command to change bot's nickname on current server
+- [TOML] configuration file(s) for immutable settings
 
 ## Pipe dreams
 
@@ -54,3 +55,4 @@ _This bot is a work in progress. Please excuse my mess..._
 [discord.py]: https://discordpy.readthedocs.io
 [Discord]: https://discordapp.com
 [Nexus Clash]: https://www.nexusclash.com
+[TOML]: https://github.com/toml-lang/toml
