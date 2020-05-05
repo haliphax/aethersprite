@@ -25,7 +25,7 @@ Examples for registering a setting and getting/changing/resetting its value:
 
     @command()
     async def reset(ctx):
-        settings['my.setting'].set(ctx, None)
+        settings['my.setting'].clear(ctx)
 """
 
 # stdlib
