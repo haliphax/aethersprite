@@ -5,7 +5,7 @@ from discord import DMChannel
 from discord.ext.commands import DisabledCommand
 from sqlitedict import SqliteDict
 # local
-from . import bot, log
+from . import log
 
 #: Lobotomies database
 lobotomies = SqliteDict('lobotomy.sqlite3', tablename='lobotomies',

@@ -10,7 +10,7 @@ import typing
 from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
-from .. import bot, log
+from .. import log
 from ..common import (command, channel_only, FIFTEEN_MINS, get_next_tick,
                       FakeContext, normalize_username, startup, THUMBS_DOWN,)
 from ..settings import register, settings

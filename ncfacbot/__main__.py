@@ -5,9 +5,10 @@ from random import seed
 from sys import stdout
 # 3rd party
 from discord import Game
-from discord.ext.commands import CheckFailure, CommandNotFound
+from discord.ext.commands import (Bot, CheckFailure, CommandNotFound,
+                                  when_mentioned_or,)
 # local
-from . import bot, log
+from . import log
 
 # logging stuff
 streamHandler = logging.StreamHandler(stdout)
@@ -15,11 +16,12 @@ streamHandler.setFormatter(logging.Formatter(
     '{asctime} {levelname:<7} {message} <{module}.{funcName}>', style='{'))
 log.addHandler(streamHandler)
 log.setLevel(logging.INFO)
-# for any commands or scheduled tasks, etc. that need random numbers
-seed()
 
 #: Activity on login
 activity = Game(name='!help for commands')
+
+#: The bot itself
+bot = Bot(command_prefix=when_mentioned_or('!'))
 
 
 @bot.event
@@ -68,6 +70,8 @@ def entrypoint():
     # need credentials
     assert 'DISCORD_TOKEN' in environ, \
         'DISCORD_TOKEN not found in environment variables'
+    # for any commands or scheduled tasks, etc. that need random numbers
+    seed()
     # load extensions
     bot.load_extension('ncfacbot.extensions._all')
     # here we go!

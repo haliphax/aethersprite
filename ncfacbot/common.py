@@ -12,7 +12,6 @@ import re
 from discord import DMChannel
 from discord.ext.commands import check, command as command_, Context
 # local
-from . import bot
 from .lobotomy import check_lobotomy
 
 # constants
