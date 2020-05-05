@@ -50,22 +50,11 @@ def _done(guild, channel, user, nick):
     "Countdown completed callback"
 
     loop = aio.get_event_loop()
-    FakeContext = namedtuple('FakeContext', ('guild',))
-    int_guild = int(guild)
-    fake_ctx = None
+    gid = int(guild)
 
     try:
         fake_ctx = FakeContext(guild=[g for g in bot.guilds
-                                      if g.id == int_guild][0])
-    except IndexError:
-        # guild isn't registered with this bot; remove it
-        log.warn(f'Removing missing guild {guild}')
-        del schedule[guild]
-        del countdowns[user]
-
-        return
-
-    try:
+                                      if g.id == gid][0])
         role = settings['sm.medicrole'].get(fake_ctx)
         chan = settings['sm.channel'].get(fake_ctx)
 
