@@ -151,10 +151,10 @@ def startup(f):
                 # to avoid exceptions
                 pass
 
-                @startup
-                def on_ready(bot):
-                    # since we're not a Cog, we need the bot reference to do stuff
-                    pass
+        @startup
+        def on_ready(bot):
+            # since we're not a Cog, we need the bot reference to do stuff
+            pass
     """
 
     global startup_handlers
