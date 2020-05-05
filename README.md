@@ -12,6 +12,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - Built on [discord.py], so new commands are easy to create and integrate
 - Server- and channel-specific settings framework for command customization
 - Role-based authorization for commands
+- Persistence of data and scheduled events during downtime
 
 ## Commands
 
