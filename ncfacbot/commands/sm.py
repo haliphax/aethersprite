@@ -50,11 +50,11 @@ def _done(guild, channel, user, nick):
     "Countdown completed callback"
 
     loop = aio.get_event_loop()
-    guild = int(guild)
+    gid = int(guild)
 
     try:
         fake_ctx = FakeContext(guild=[g for g in bot.guilds
-                                      if g.id == guild][0])
+                                      if g.id == gid][0])
         role = settings['sm.medicrole'].get(fake_ctx)
         chan = settings['sm.channel'].get(fake_ctx)
 
@@ -85,18 +85,27 @@ def _done(guild, channel, user, nick):
 
             return
     finally:
-        del countdowns[user]
-        sched = schedule[guild]
-        del sched[user]
-        schedule[guild] = sched
+        if guild in countdowns:
+            if user in countdowns[guild]:
+                g = countdowns[guild]
+                del g[user]
+                countdowns[guild] = g
+
+            if user in schedule[guild]:
+                s = schedule[guild]
+                del s[user]
+                schedule[guild] = s
 
 
 @bot.event
 async def on_ready():
+    "Schedule countdowns from database; immediately announce those missed"
+
+    global countdowns
+
     now = datetime.now(timezone.utc)
     loop = aio.get_event_loop()
 
-    # schedule countdowns from database; immediately announce those missed
     for gid, guild in schedule.items():
         for _, sched in guild.items():
             if sched.schedule <= now:
@@ -107,7 +116,13 @@ async def on_ready():
                 diff = (sched.schedule - now).total_seconds()
                 h = loop.call_later(diff, _done, gid, sched.channel,
                                     sched.user, sched.nick)
-                countdowns[sched.user] = (sched.schedule, h)
+
+                if gid not in countdowns:
+                    countdowns[gid] = {}
+
+                cd = countdowns[gid]
+                cd[sched.user] = (sched.schedule, h)
+                countdowns[gid] = cd
 
 
 @bot.command(brief='Start a Sorcerers Might countdown', name='sm')
@@ -123,21 +138,27 @@ async def sm(ctx, n: typing.Optional[int]=None):
     * Takes into account the current bug in Sorcerers Might where 5 minutes are deducted erroneously with each game tick.
     """
 
+    global countdowns
+
     author = str(ctx.author)
+    guild = str(ctx.guild.id)
     loop = aio.get_event_loop()
     nick = normalize_username(ctx.author)
     now = datetime.now(timezone.utc)
 
     if n is None:
         # report countdown status
-        if author not in countdowns:
+        if guild not in countdowns \
+                or author not in countdowns[guild]:
             await ctx.send(':person_shrugging: '
                            'You do not currently have a countdown.')
 
             return
 
+        cd = countdowns[guild][author]
+
         # get remaining time
-        remaining = (countdowns[author][0] - now).total_seconds() / 60
+        remaining = (cd[0] - now).total_seconds() / 60
 
         if remaining > 1:
             remaining = ceil(remaining)
@@ -165,25 +186,30 @@ async def sm(ctx, n: typing.Optional[int]=None):
 
         return
 
-    if author in countdowns:
-        # cancel callback, if any
-        countdowns[author][1].cancel()
+    # cancel callback, if any
+    if guild in countdowns and author in countdowns[guild]:
+        countdowns[guild][author][1].cancel()
 
-        try:
-            del countdowns[author]
-        except KeyError:
-            # overlapping requests due to lag can get out of sync
-            log.error(f'Failed removing countdown for {author}')
+    if guild in countdowns:
+        if author in countdowns[guild]:
+            g = countdowns[guild]
+            del g[author]
+            countdowns[guild] = g
 
-        await ctx.send(':negative_squared_cross_mark: '
-                       'Your countdown has been canceled.')
-        log.info(f'{ctx.author} canceled SM countdown')
+        if author in schedule[guild]:
+            s = schedule[guild]
+            del s[author]
+            schedule[guild] = s
 
-        # if no valid duration supplied, we're done
-        if n < 1:
-            return
+            await ctx.send(':negative_squared_cross_mark: '
+                           'Your countdown has been canceled.')
+            log.info(f'{ctx.author} canceled SM countdown')
 
-    elif n < 1:
+            # if no valid duration supplied, we're done
+            if n < 1:
+                return
+
+    if n < 1:
         await ctx.send(':person_shrugging: '
                        'You do not currently have a countdown.')
         log.warn(f'{ctx.author} failed to cancel nonexistent SM countdown')
@@ -216,18 +242,22 @@ async def sm(ctx, n: typing.Optional[int]=None):
         output += f' (Adjusting to {new_count} due to SM bug.)'
 
     # store countdown reference in database
-    if not ctx.guild.id in schedule:
+    if not guild in schedule:
         # first time; make a space for this server
-        schedule[ctx.guild.id] = {}
+        schedule[guild] = {}
 
-    sched = schedule[ctx.guild.id]
+    sched = schedule[guild]
     sched[author] = SMSchedule(author, nick, ctx.channel.name,
                                sm_end + timedelta(minutes=1))
-    schedule[ctx.guild.id] = sched
+    schedule[guild] = sched
     # set timer for countdown completed callback
-    countdowns[author] = (sm_end, loop.call_later(60 * (new_count + 1), _done,
-                          ctx.guild.id, ctx.channel.name, author, nick))
+    if not guild in countdowns:
+        countdowns[guild] = {}
 
+    cd = countdowns[guild]
+    cd[author] = (sm_end, loop.call_later(60 * (new_count + 1), _done,
+                  guild, ctx.channel.name, author, nick))
+    countdowns[guild]= cd
     await ctx.send(output)
     log.info(f'{ctx.author} started SM countdown for {n} ({new_count}) '
              f'{minutes}')
