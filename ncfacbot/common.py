@@ -31,7 +31,7 @@ DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
 #: Fake a context for use in certain functions that expect one
 FakeContext = namedtuple('FakeContext', ('guild',))
 
-# List of functions to run on startup durin on_ready
+# List of functions to run on startup during on_ready
 startup_handlers = []
 
 
