@@ -34,6 +34,8 @@ async def on_disconnect():
 
 @bot.event
 async def on_command_error(_, error):
+    "Suppress command check failures and invalid commands."
+
     if type(error) in (CheckFailure, CommandNotFound,):
         return
 
@@ -42,6 +44,8 @@ async def on_command_error(_, error):
 
 @bot.event
 async def on_ready():
+    "Update presence and fire up registered startup handlers."
+
     from .common import startup_handlers
 
     log.info(f'Logged in as {bot.user}')
@@ -55,16 +59,17 @@ async def on_ready():
 async def on_resumed():
     log.info('Connection resumed')
 
-# load our commands semi-dynamically after everything's set up
-from .commands import *
-
 
 # redundant, but one last check in case someone wants to get real shifty and
 # do something that requires them to import __main__ from another entry point
 def entrypoint():
+    "ncfacbot main entry point."
+
     # need credentials
     assert 'DISCORD_TOKEN' in environ, \
         'DISCORD_TOKEN not found in environment variables'
+    # load extensions
+    bot.load_extension('ncfacbot.extensions._all')
     # here we go!
     bot.run(environ['DISCORD_TOKEN'])
 

@@ -7,8 +7,8 @@ import typing
 from discord.ext import commands
 from functools import partial
 # local
-from .. import bot, log
-from ..common import cog_command
+from .. import log
+from ..common import command
 from ..lobotomy import lobotomies
 from ..settings import require_admin
 
@@ -20,7 +20,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_command(name='lobotomy.add')
+    @command(name='lobotomy.add')
     @commands.check(require_admin)
     async def add(self, ctx, command, server: typing.Optional[bool] = False):
         """
@@ -53,7 +53,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         lobotomies[guild] = lobs
         await ctx.send(f':brain: Done.')
 
-    @cog_command(name='lobotomy.clear')
+    @command(name='lobotomy.clear')
     @commands.check(require_admin)
     async def clear(self, ctx, command, server: typing.Optional[bool] = False):
         """
@@ -82,7 +82,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         lobotomies[guild] = lobs
         await ctx.send(':wastebasket: Cleared.')
 
-    @cog_command(name='lobotomy.list')
+    @command(name='lobotomy.list')
     @commands.check(require_admin)
     async def list(self, ctx, server: typing.Optional[bool] = False):
         """
@@ -104,4 +104,5 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         await ctx.send(f':medical_symbol: **{output}**')
 
 
-bot.add_cog(Lobotomy(bot))
+def setup(bot):
+    bot.add_cog(Lobotomy(bot))

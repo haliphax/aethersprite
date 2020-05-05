@@ -6,18 +6,12 @@ import typing
 from discord.ext import commands
 from functools import partial
 # local
-from .. import bot, log
-from ..common import channel_only, cog_command, THUMBS_DOWN
+from .. import log
+from ..common import channel_only, command, THUMBS_DOWN
 from ..settings import settings, register, require_roles
 
 # messages
 MSG_NO_SETTING = ':person_shrugging: No such setting exists.'
-
-# settings
-register('settings.adminroles', None, lambda x: True, False,
-         'The server roles that are allowed to administer settings. Separate '
-         'multiple values with commas. Administrators and moderators have de '
-         'facto access to all commands.')
 
 # authorization decorator
 authz = partial(require_roles, setting='settings.adminroles')
@@ -34,7 +28,7 @@ class Settings(commands.Cog, name='settings'):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_command(name='set')
+    @command(name='set')
     @commands.check(authz)
     @commands.check(channel_only)
     async def set(self, ctx, name: typing.Optional[str] = None,
@@ -74,7 +68,7 @@ class Settings(commands.Cog, name='settings'):
             await ctx.send(f':thumbsdown: Error updating value.')
             log.warn(f'{ctx.author} failed to update setting {name}: {value}')
 
-    @cog_command(name='clear')
+    @command(name='clear')
     @commands.check(authz)
     @commands.check(channel_only)
     async def clear(self, ctx, name):
@@ -91,7 +85,7 @@ class Settings(commands.Cog, name='settings'):
         await ctx.send(':negative_squared_cross_mark: Setting cleared.')
         log.info(f'{ctx.author} cleared setting {name}')
 
-    @cog_command(name='desc')
+    @command(name='desc')
     @commands.check(authz)
     @commands.check(channel_only)
     async def desc(self, ctx, name):
@@ -115,4 +109,11 @@ class Settings(commands.Cog, name='settings'):
 
         log.info(f'{ctx.author} viewed description of setting {name}')
 
-bot.add_cog(Settings(bot))
+
+def setup(bot):
+    # settings
+    register('settings.adminroles', None, lambda x: True, False,
+             'The server roles that are allowed to administer settings. '
+             'Separate multiple values with commas. Administrators and '
+             'moderators have de facto access to all commands.')
+    bot.add_cog(Settings(bot))

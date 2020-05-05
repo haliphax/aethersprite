@@ -10,7 +10,7 @@ from math import ceil, floor
 import re
 # 3rd party
 from discord import DMChannel
-from discord.ext.commands import check, command, Context
+from discord.ext.commands import check, command as command_, Context
 # local
 from . import bot
 from .lobotomy import check_lobotomy
@@ -39,20 +39,11 @@ FakeContext = namedtuple('FakeContext', ('guild',))
 startup_handlers = []
 
 
-def bot_command(*args, **kwargs):
-    "Decorator to add default checks to bot commands."
+def command(*args, **kwargs):
+    "Decorator to add default checks to new commands."
 
     def wrap(f):
-        return check(check_lobotomy)(bot.command(*args, **kwargs)(f))
-
-    return wrap
-
-
-def cog_command(*args, **kwargs):
-    "Decorator to add default checks to Cog commands."
-
-    def wrap(f):
-        return check(check_lobotomy)(command(*args, **kwargs)(f))
+        return check(check_lobotomy)(command_(*args, **kwargs)(f))
 
     return wrap
 

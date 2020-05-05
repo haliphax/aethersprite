@@ -8,8 +8,8 @@ import typing
 from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
-from .. import bot, log
-from ..common import channel_only, cog_command, normalize_username, THUMBS_DOWN
+from .. import log
+from ..common import channel_only, command, normalize_username, THUMBS_DOWN
 from ..settings import register, require_roles
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
@@ -60,15 +60,6 @@ COMPONENTS = {
     'uncom': 'Uncommon Component',
 }
 
-# settings
-register('shop.listroles', None, lambda x: True, False,
-         'The set of roles that are allowed to view shopping lists. '
-         'If set to the default, there are no restrictions. Separate multiple '
-         'entries with commas.')
-register('shop.setroles', None, lambda x: True, False,
-         'The set of roles that are allowed to maintain shopping lists. '
-         'If set to the default, there are no restrictions. Separate multiple '
-         'entries with commas.')
 # authz decorators
 authz_list = partial(require_roles,
                      setting=('shop.setroles', 'shop.listroles'))
@@ -103,7 +94,7 @@ class Shop(commands.Cog, name='shop'):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_command(name='shop.set', brief='Manipulate your shopping list')
+    @command(name='shop.set', brief='Manipulate your shopping list')
     @commands.check(authz_set)
     @commands.check(channel_only)
     async def set(self, ctx, num, *, item):
@@ -203,7 +194,7 @@ class Shop(commands.Cog, name='shop'):
             if ctx.guild.id in self._lists:
                 self._lists[ctx.guild.id] = lists
 
-    @cog_command(name='shop.list', brief='Show shopping list(s)')
+    @command(name='shop.list', brief='Show shopping list(s)')
     @commands.check(authz_list)
     @commands.check(channel_only)
     async def list(self, ctx, who: typing.Optional[str]):
@@ -278,7 +269,7 @@ class Shop(commands.Cog, name='shop'):
         output += '```'
         await ctx.send(output)
 
-    @cog_command(name='shop.clear')
+    @command(name='shop.clear')
     @commands.check(authz_set)
     @commands.check(channel_only)
     async def clear(self, ctx):
@@ -303,4 +294,15 @@ class Shop(commands.Cog, name='shop'):
         await ctx.send(':negative_squared_cross_mark: Your list has been '
                        'cleared.')
 
-bot.add_cog(Shop(bot))
+
+def setup(bot):
+    # settings
+    register('shop.listroles', None, lambda x: True, False,
+             'The set of roles that are allowed to view shopping lists. '
+             'If set to the default, there are no restrictions. Separate '
+             'multiple entries with commas.')
+    register('shop.setroles', None, lambda x: True, False,
+             'The set of roles that are allowed to maintain shopping lists. '
+             'If set to the default, there are no restrictions. Separate '
+             'multiple entries with commas.')
+    bot.add_cog(Shop(bot))
