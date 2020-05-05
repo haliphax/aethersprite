@@ -153,7 +153,7 @@ class Raid(commands.Cog, name='raid'):
         log.info(f'{raid.leader} scheduled raid on {raid.target} @ '
                  f'{raid.schedule}')
 
-    async def on_ready(self):
+    async def on_ready(self, _):
         "Schedule raid announcements from database on startup"
 
         if len(self._handles):

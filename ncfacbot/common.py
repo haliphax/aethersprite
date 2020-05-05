@@ -130,7 +130,32 @@ def seconds_to_str(ts):
 
 
 def startup(f):
-    "Decorator to add function to list of handlers to run for on_ready"
+    """
+    Decorator to add function to list of handlers to run for the ``on_ready``
+    event. The first argument of the function (not counting ``self`` if the
+    function is a method) will be provided with a reference to the bot. To
+    decorate a method, assign the handler during ``__init__``.
+
+    .. code:: python
+
+        from discord.ext.commands import Cog
+        from ncfacbot.common import startup
+
+        class SomeClass(Cog):
+            def __init__(self, bot):
+                self.bot = bot
+                self.on_ready = startup(self.on_ready)
+
+            def on_ready(self, _):
+                # don't care about the bot parameter here, but still have to
+                # include it to avoid exceptions
+                pass
+
+        @startup
+        def on_ready(bot):
+            # since we're not a Cog, we need the bot reference to do stuff
+            pass
+    """
 
     global startup_handlers
 

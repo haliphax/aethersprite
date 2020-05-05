@@ -54,7 +54,7 @@ async def on_ready():
     await bot.change_presence(activity=activity)
 
     for f in startup_handlers:
-        await f()
+        await f(bot)
 
 
 @bot.event
