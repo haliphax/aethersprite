@@ -80,7 +80,7 @@ def _reset(guild):
         del _schedules[guild]
 
 
-async def _go(raid, ctx):
+async def _go(raid, ctx, silent=False):
     "Helper method for scheduling announcement callback"
 
     global _handles
@@ -152,6 +152,10 @@ async def _go(raid, ctx):
         log.info(f'Scheduled announcement for {raid.target}')
 
     _handles[ctx.guild.id] = handle
+
+    if silent:
+        return
+
     await c.send(f':white_check_mark: Raid on {raid.target} scheduled '
                  f'for {raid.schedule.strftime(DATETIME_FORMAT)}!')
     log.info(f'{raid.leader} scheduled raid on {raid.target} @ '
@@ -168,7 +172,7 @@ async def on_ready():
             ctx = FakeContext([g for g in bot.guilds
                                if g.id == gid][0])
             log.info(raid)
-            await _go(raid, ctx)
+            await _go(raid, ctx, True)
         except IndexError:
             # unknown guild; delete record
             log.error(f'Unknown guild {gid}')
