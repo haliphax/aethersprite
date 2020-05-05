@@ -250,6 +250,7 @@ async def sm(ctx, n: typing.Optional[int]=None):
     sched[author] = SMSchedule(author, nick, ctx.channel.name,
                                sm_end + timedelta(minutes=1))
     schedule[guild] = sched
+
     # set timer for countdown completed callback
     if not guild in countdowns:
         countdowns[guild] = {}
