@@ -8,7 +8,8 @@ from discord.ext import commands
 from functools import partial
 # local
 from .. import log
-from ..common import command, require_admin
+from ..authz import require_admin
+from ..common import command
 from ..lobotomy import lobotomies
 
 

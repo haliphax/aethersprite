@@ -7,7 +7,8 @@ from discord.ext import commands
 from functools import partial
 # local
 from .. import log
-from ..common import channel_only, command, require_roles, THUMBS_DOWN
+from ..authz import channel_only, require_roles
+from ..common import command, THUMBS_DOWN
 from ..settings import register, settings
 
 # messages

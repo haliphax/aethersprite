@@ -6,7 +6,8 @@ from functools import partial
 from discord.ext import commands
 # local
 from .. import log
-from ..common import command, channel_only, require_admin
+from ..authz import channel_only, require_admin
+from ..common import command
 
 
 @command()

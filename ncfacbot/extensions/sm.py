@@ -11,8 +11,9 @@ from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
 from .. import log
-from ..common import (command, channel_only, FIFTEEN_MINS, get_next_tick,
-                      FakeContext, normalize_username, startup, THUMBS_DOWN,)
+from ..authz import channel_only, require_roles
+from ..common import (command, FIFTEEN_MINS, get_next_tick, FakeContext,
+                      normalize_username, startup, THUMBS_DOWN,)
 from ..settings import register, settings
 
 #: Maximum allowed timer length

@@ -10,9 +10,9 @@ from discord.ext import commands
 from sqlitedict import SqliteDict
 # local
 from .. import log
-from ..common import (command, channel_only, DATETIME_FORMAT, FakeContext,
-                      normalize_username, require_roles, seconds_to_str,
-                      startup, THUMBS_DOWN)
+from ..authz import channel_only, require_roles
+from ..common import (command, DATETIME_FORMAT, FakeContext,
+                      normalize_username, seconds_to_str, startup, THUMBS_DOWN)
 from ..settings import register, settings
 
 #: Expected format for schedule input
