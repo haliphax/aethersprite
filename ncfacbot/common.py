@@ -38,15 +38,6 @@ FakeContext = namedtuple('FakeContext', ('guild',))
 startup_handlers = []
 
 
-def command(*args, **kwargs):
-    "Decorator to add default checks to new commands."
-
-    def wrap(f):
-        return check(check_lobotomy)(command_(*args, **kwargs)(f))
-
-    return wrap
-
-
 async def channel_only(ctx):
     "Check for bot commands that should only operate in a channel"
 
@@ -56,6 +47,15 @@ async def channel_only(ctx):
         return False
 
     return True
+
+
+def command(*args, **kwargs):
+    "Decorator to add default checks to new commands."
+
+    def wrap(f):
+        return check(check_lobotomy)(command_(*args, **kwargs)(f))
+
+    return wrap
 
 
 def get_timespan_chunks(string):
