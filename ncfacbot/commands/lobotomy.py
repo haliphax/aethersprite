@@ -20,7 +20,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
     def __init__(self, bot):
         self.bot = bot
 
-    @cog_command(name='lobotomy.add', hidden=True)
+    @cog_command(name='lobotomy.add')
     @commands.check(require_admin)
     async def add(self, ctx, command, server: typing.Optional[bool] = False):
         """
@@ -53,7 +53,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         lobotomies[guild] = lobs
         await ctx.send(f':brain: Done.')
 
-    @cog_command(name='lobotomy.clear', hidden=True)
+    @cog_command(name='lobotomy.clear')
     @commands.check(require_admin)
     async def clear(self, ctx, command, server: typing.Optional[bool] = False):
         """
@@ -82,7 +82,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         lobotomies[guild] = lobs
         await ctx.send(':wastebasket: Cleared.')
 
-    @cog_command(name='lobotomy.list', hidden=True)
+    @cog_command(name='lobotomy.list')
     @commands.check(require_admin)
     async def list(self, ctx, server: typing.Optional[bool] = False):
         """
