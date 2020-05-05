@@ -120,7 +120,7 @@ def register(name: str, default: str, validator: callable,
 
 
 async def require_admin(ctx):
-    "Decorator for requiring admin/mod privileges to execute a command."
+    "Check for requiring admin/mod privileges to execute a command."
 
     perms = ctx.author.permissions_in(ctx.channel)
 
@@ -133,10 +133,24 @@ async def require_admin(ctx):
 
 async def require_roles(ctx, setting):
     """
-    Decorator for requiring particular roles (loaded from the given setting) to
+    Check for requiring particular roles (loaded from the given setting) to
     execute a command. For more than one setting (if ``setting`` is a
     list/tuple), the aggregate list will be used. Membership in at least one of
     the roles pulled from the settings is required to pass the filter.
+
+    Example, if your setting with role(s) is ``setting.name``:
+
+    .. code-block:: python
+
+        from functools import partial
+        from discord.ext import commands
+        from ncfacbot.common import bot_command, require_roles
+        authz = partial(require_roles setting='setting.name')
+
+        @bot_command()
+        @commands.check(authz)
+        async def my_command(ctx):
+            await ctx.send('You are authorized. Congratulations!')
 
     :param setting: The name of the setting to pull the roles from
     :type setting: str or list or tuple
