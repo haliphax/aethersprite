@@ -4,6 +4,7 @@ from os import environ
 from random import seed
 from sys import stdout
 # 3rd party
+from discord import Game
 from discord.ext.commands import CheckFailure, CommandNotFound
 # local
 from . import bot, log
@@ -16,6 +17,9 @@ log.addHandler(streamHandler)
 log.setLevel(logging.INFO)
 # for any commands or scheduled tasks, etc. that need random numbers
 seed()
+
+#: Activity on login
+activity = Game(name='!help for commands')
 
 
 @bot.event
@@ -41,6 +45,7 @@ async def on_ready():
     from .common import startup_handlers
 
     log.info(f'Logged in as {bot.user}')
+    await bot.change_presence(activity=activity)
 
     for f in startup_handlers:
         await f()
