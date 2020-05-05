@@ -11,7 +11,7 @@ from sqlitedict import SqliteDict
 # local
 from .. import bot, log
 from ..common import (channel_only, FIFTEEN_MINS, get_next_tick, FakeContext,
-                      normalize_username, THUMBS_DOWN,)
+                      normalize_username, startup, THUMBS_DOWN,)
 from ..settings import register, settings
 
 #: Maximum allowed timer length
@@ -97,7 +97,7 @@ def _done(guild, channel, user, nick):
                 schedule[guild] = s
 
 
-@bot.event
+@startup
 async def on_ready():
     "Schedule countdowns from database; immediately announce those missed"
 

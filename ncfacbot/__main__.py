@@ -28,7 +28,12 @@ async def on_disconnect():
 
 @bot.event
 async def on_ready():
+    from .common import startup_handlers
+
     log.info(f'Logged in as {bot.user}')
+
+    for f in startup_handlers:
+        await f()
 
 
 @bot.event

@@ -31,6 +31,9 @@ DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
 #: Fake a context for use in certain functions that expect one
 FakeContext = namedtuple('FakeContext', ('guild',))
 
+# List of functions to run on startup durin on_ready
+startup_handlers = []
+
 
 def channel_only(f):
     "Decorator for bot commands that should only operate in a channel"
@@ -137,3 +140,13 @@ def seconds_to_str(ts):
         until += f'{diff} second(s) '
 
     return until.strip()
+
+
+def startup(f):
+    "Decorator to add function to list of handlers to run for on_ready"
+
+    global startup_handlers
+
+    startup_handlers.append(f)
+
+    return f
