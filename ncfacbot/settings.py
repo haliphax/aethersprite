@@ -145,7 +145,7 @@ async def require_roles(ctx, setting):
         from functools import partial
         from discord.ext import commands
         from ncfacbot.common import bot_command, require_roles
-        authz = partial(require_roles setting='setting.name')
+        authz = partial(require_roles, setting='setting.name')
 
         @bot_command()
         @commands.check(authz)
