@@ -1,9 +1,31 @@
 """
 Settings module; interfaced with via :mod:`ncfacbot.extensions.settings`
 
-This provides a method by which extension authors can register and use settings
+This provides methods by which extension authors can register and use settings
 in their code, and end users can manipulate those settings via bot commands
 (in the aforementioned `settings` extension).
+
+Examples for registering a setting and getting/changing/resetting its value:
+
+.. code:: python
+
+    from ncfacbot.common import command
+    from ncfacbot.settings import register, settings
+
+    register('my.setting', 'default value', False, lambda x: True,
+             'There are many settings like it, but this one is mine.')
+
+    @command()
+    async def check(ctx):
+        await ctx.send(settings['my.setting'].get(ctx))
+
+    @command()
+    async def change(ctx):
+        settings['my.setting'].set(ctx, 'new value')
+
+    @command()
+    async def reset(ctx):
+        settings['my.setting'].set(ctx, None)
 """
 
 # stdlib

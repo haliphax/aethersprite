@@ -17,7 +17,10 @@ lobotomies = SqliteDict('lobotomy.sqlite3', tablename='lobotomies',
 
 
 async def check_lobotomy(ctx):
-    "Check that command has not been lobotomized before allowing execution."
+    """
+    Check that command has not been lobotomized before allowing execution. This
+    check is wired up automatically by :func:`ncfacbot.common.command`.
+    """
 
     if type(ctx.channel) is DMChannel:
         # can't lobotomize commands via DM, since we need a guild to check
