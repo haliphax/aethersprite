@@ -289,3 +289,10 @@ def setup(bot):
              'same channel where they were last manipulated (per-user).')
     _bot = bot
     bot.add_command(sm)
+
+
+def teardown(bot):
+    from ..settings import settings
+
+    for k in ('sm.medicrole', 'sm.channel'):
+        del settings[k]

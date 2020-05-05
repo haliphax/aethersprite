@@ -306,3 +306,12 @@ def setup(bot):
              'If set to the default, there are no restrictions. Separate '
              'multiple entries with commas.')
     bot.add_cog(Shop(bot))
+
+
+def teardown(bot):
+    from ..settings import settings
+
+    global settings
+
+    for k in ('shop.setroles', 'shop.listroles'):
+        del settings[k]
