@@ -24,7 +24,7 @@ async def check_lobotomy(ctx):
 
     if guild not in lobotomies:
         # none set for this guild; bail
-        return
+        return True
 
     keys = (ctx.command.name, f'{ctx.command.name}#{ctx.channel.id}')
 
