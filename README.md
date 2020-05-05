@@ -35,6 +35,18 @@ _This bot is a work in progress. Please excuse my mess..._
   GMT timestamp and timespan (e.g. _"8 hour(s), 4 minute(s)"_) of the next tick
   (or _x_ ticks from now)
 
+## Plans
+
+- Set command prefix per-server and per-channel
+- Lobotomize (disable) bot re: channel, command, and command-per-channel
+- Common functions to pull/validate roles and channels from settings
+- Split bot framework into separate project, leave NC commands here
+
+## Pipe dreams
+
+- Tie-in with TamperMonkey UserScript for aggregating search odds data
+- ...
+
 
 [discord.py]: https://discordpy.readthedocs.io
 [Discord]: https://discordapp.com
