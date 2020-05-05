@@ -282,8 +282,6 @@ def setup(bot):
 
 
 def teardown(bot):
-    from ..settings import settings
-
     global settings
 
     for k in ('raid.channel', 'raid.scheduleroles', 'raid.checkroles'):

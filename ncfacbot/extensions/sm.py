@@ -292,7 +292,7 @@ def setup(bot):
 
 
 def teardown(bot):
-    from ..settings import settings
+    global settings
 
     for k in ('sm.medicrole', 'sm.channel'):
         del settings[k]

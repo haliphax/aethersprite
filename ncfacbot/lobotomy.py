@@ -32,7 +32,7 @@ async def check_lobotomy(ctx):
         if k in lobotomies[guild]:
             log.warn(f'Suppressing lobotomized command from '
                      f'{ctx.author}: {ctx.command.name} in '
-                     f'#{ctx.channel.name}')
+                     f'#{ctx.channel.name} ({ctx.guild.name})')
 
             return False
 
