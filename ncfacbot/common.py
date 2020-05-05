@@ -163,6 +163,7 @@ def startup(f):
 
     global startup_handlers
 
-    startup_handlers.append(f)
+    if f not in startup_handlers:
+        startup_handlers.append(f)
 
     return f

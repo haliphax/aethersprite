@@ -19,13 +19,44 @@ from ..settings import register, settings
 #: Maximum allowed timer length
 SM_LIMIT = 55
 
+#: Countdown schedule persisted to database file
+schedule = SqliteDict('sm.sqlite3', tablename='announce', autocommit=True)
+
+
+class Countdowns(object):
+    "Convenience class for managing a singleton dict of callback handlers"
+
+    cd = {}
+
+    @staticmethod
+    def update(gid, key, value):
+        if gid not in Countdowns.cd:
+            Countdowns.cd[gid] = {}
+
+        cd = Countdowns.cd[gid]
+        cd.update({key: value})
+        Countdowns.cd[gid] = cd
+
+    @staticmethod
+    def delete(gid, key):
+        cd = Countdowns.cd[gid]
+        del cd[key]
+        Countdowns.cd[gid] = cd
+
+    @staticmethod
+    def get(gid, key):
+        return Countdowns.cd[gid][key]
+
+    @staticmethod
+    def any():
+        return len(Countdowns.cd) > 0
+
+    @staticmethod
+    def has(gid):
+        return gid in Countdowns.cd
+
 
 class SMSchedule(object):
-
-    #: Countdown callback handles
-    countdowns = {}
-    #: Countdown schedule persisted to database file
-    schedule = SqliteDict('sm.sqlite3', tablename='announce', autocommit=True)
 
     "Sorcerer's Might expiry announcement schedule"
 
@@ -38,6 +69,10 @@ class SMSchedule(object):
         self.channel = channel
         #: The time to announce
         self.schedule = schedule
+
+    def __repr__(self):
+        return (f"<SMSchedule user='{self.user}' nick='{self.nick}' "
+                f"channel={self.channel} schedule={self.schedule}>")
 
 
 def _done(bot, guild, channel, user, nick):
@@ -53,8 +88,8 @@ def _done(bot, guild, channel, user, nick):
     except IndexError:
         # guild isn't registered with this bot; remove it
         log.warn(f'Removing missing guild {guild}')
-        del SMSchedule.schedule[guild]
-        del SMSchedule.countdowns[user]
+        del schedule[guild]
+        Countdowns.delete(guild, user)
 
         return
 
@@ -89,33 +124,28 @@ def _done(bot, guild, channel, user, nick):
 
             return
     finally:
-        if guild in SMSchedule.schedule \
-                and user in SMSchedule.schedule[guild]:
-            s = SMSchedule.schedule[guild]
+        if guild in schedule \
+                and user in schedule[guild]:
+            s = schedule[guild]
             del s[user]
-            SMSchedule.schedule[guild] = s
-
-        if guild in SMSchedule.countdowns \
-                and user in SMSchedule.countdowns[guild]:
-            g = SMSchedule.countdowns[guild]
-            g[user].cancel()
-            del g[user]
-            SMSchedule.countdowns[guild] = g
-
+            schedule[guild] = s
 
 
 @startup
 async def on_ready(bot):
-    "Schedule countdowns from database; immediately announce those missed"
+    "Schedule SMSchedule from database; immediately announce those missed"
 
-    if len(SMSchedule.countdowns):
+    if Countdowns.any():
         # only have to do this once during initial connect
         return
 
     now = datetime.now(timezone.utc)
     loop = aio.get_event_loop()
 
-    for gid, guild in SMSchedule.schedule.items():
+    for gid, guild in schedule.items():
+        if Countdowns.has(gid):
+            continue
+
         for _, sched in guild.items():
             if sched.schedule <= now:
                 log.info(f'Immediately calling SM expiry for {sched.user}')
@@ -126,12 +156,10 @@ async def on_ready(bot):
                 h = loop.call_later(diff, _done, bot, gid, sched.channel,
                                     sched.user, sched.nick)
 
-                if gid not in SMSchedule.countdowns:
-                    SMSchedule.countdowns[gid] = {}
+                if not gid in Countdowns.cd:
+                    Countdowns.cd[gid] = {}
 
-                cd = SMSchedule.countdowns[gid]
-                cd[sched.user] = (sched.schedule, h)
-                SMSchedule.countdowns[gid] = cd
+                Countdowns.update(gid, sched.user, (sched.schedule, h))
 
 
 @command(brief='Start a Sorcerers Might countdown', name='sm')
@@ -155,14 +183,14 @@ async def sm(ctx, n: typing.Optional[int]=None):
 
     if n is None:
         # report countdown status
-        if guild not in SMSchedule.countdowns \
-                or author not in SMSchedule.countdowns[guild]:
+        if guild not in Countdowns.cd \
+                or author not in Countdowns.cd[guild]:
             await ctx.send(':person_shrugging: '
                            'You do not currently have a countdown.')
 
             return
 
-        cd = SMSchedule.countdowns[guild][author]
+        cd = SMData.countdowns.get(guild, author)
 
         # get remaining time
         remaining = (cd[0] - now).total_seconds() / 60
@@ -194,20 +222,20 @@ async def sm(ctx, n: typing.Optional[int]=None):
         return
 
     # cancel callback, if any
-    if guild in SMSchedule.countdowns \
-            and author in SMSchedule.countdowns[guild]:
-        SMSchedule.countdowns[guild][author][1].cancel()
+    if guild in Countdowns.cd \
+            and author in Countdowns.cd[guild]:
+        SMData.get(guild, author)[1].cancel()
 
-    if guild in SMSchedule.countdowns:
-        if author in SMSchedule.countdowns[guild]:
-            g = SMSchedule.countdowns[guild]
+    if guild in Countdowns.cd:
+        if author in Countdowns.cd[guild]:
+            g = SMData.countdowns[guild]
             del g[author]
-            SMSchedule.countdowns[guild] = g
+            SMData.countdowns[guild] = g
 
-        if author in SMSchedule.schedule[guild]:
-            s = SMSchedule.schedule[guild]
+        if author in schedule[guild]:
+            s = schedule[guild]
             del s[author]
-            SMSchedule.schedule[guild] = s
+            schedule[guild] = s
 
             await ctx.send(':negative_squared_cross_mark: '
                            'Your countdown has been canceled.')
@@ -250,23 +278,22 @@ async def sm(ctx, n: typing.Optional[int]=None):
         output += f' (Adjusting to {new_count} due to SM bug.)'
 
     # store countdown reference in database
-    if not guild in SMSchedule.schedule:
+    if not guild in schedule:
         # first time; make a space for this server
-        SMSchedule.schedule[guild] = {}
+        schedule[guild] = {}
 
-    sched = SMSchedule.schedule[guild]
+    sched = schedule[guild]
     sched[author] = SMSchedule(author, nick, ctx.channel.name,
                                sm_end + timedelta(minutes=1))
-    SMSchedule.schedule[guild] = sched
+    schedule[guild] = sched
 
     # set timer for countdown completed callback
-    if not guild in SMSchedule.countdowns:
-        SMSchedule.countdowns[guild] = {}
+    if not guild in Countdowns.cd:
+        Countdowns.cd[guild] = {}
 
-    cd = SMSchedule.countdowns[guild]
-    cd[author] = (sm_end, loop.call_later(60 * (new_count + 1), _done, ctx.bot,
-                                          guild, ctx.channel.name, author, nick))
-    SMSchedule.countdowns[guild] = cd
+    Countdowns.update(guild, author,
+                      (sm_end, loop.call_later(60 * (new_count + 1), _done,
+                       ctx.bot, guild, ctx.channel.name, author, nick)))
     await ctx.send(output)
     log.info(f'{ctx.author} started SM countdown for {n} ({new_count}) '
              f'{minutes}')
