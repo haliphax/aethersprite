@@ -49,6 +49,8 @@ async def require_roles(ctx, setting):
         async def my_command(ctx):
             await ctx.send('You are authorized. Congratulations!')
 
+        # to set via bot command: !set setting.name SomeRoleName, SomeOtherRole
+
     :param setting: The name of the setting to pull the roles from
     :type setting: str or list or tuple
     """
