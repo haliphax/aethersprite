@@ -153,7 +153,15 @@ def require_roles(f: callable, setting):
         if kind == str:
             values = settings[setting].get(ctx)
         elif kind in (list, tuple):
-            values = ','.join([settings[s].get(ctx) for s in setting])
+            names = []
+
+            for s in setting:
+                val = settings[s].get(ctx)
+
+                if val is not None:
+                    names.append(val)
+
+            values = ','.join(names)
         else:
             raise ValueError('setting must be str, list, or tuple')
 
