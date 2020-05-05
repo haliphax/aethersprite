@@ -22,7 +22,7 @@ _This bot is a work in progress. Please excuse my mess..._
   Information about the project and a link to this repository
 - `gmt`
   Get the current time (or an offset from now) in GMT
-- `lobotomy` _(hidden)_
+- `lobotomy`
   A collection of commands for enabling/disabling other commands per-server
   and per-channel
 - `nick`
