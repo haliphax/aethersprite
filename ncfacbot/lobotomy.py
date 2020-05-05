@@ -1,4 +1,9 @@
-"Lobotomy module"
+"""
+Lobotomy module; interfaced with via :mod:`ncfacbot.extensions.lobotomy`
+
+This feature allows for particular commands to be disabled on a per-server
+or per-channel basis by administrators and moderators.
+"""
 
 # 3rd party
 from discord import DMChannel
