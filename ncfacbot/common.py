@@ -147,14 +147,14 @@ def startup(f):
                 self.on_ready = startup(self.on_ready)
 
             def on_ready(self, _):
-                # don't care about the bot parameter here, but still have to
-                # include it to avoid exceptions
+                # don't care about the bot parameter here, but still have to include it
+                # to avoid exceptions
                 pass
 
-        @startup
-        def on_ready(bot):
-            # since we're not a Cog, we need the bot reference to do stuff
-            pass
+                @startup
+                def on_ready(bot):
+                    # since we're not a Cog, we need the bot reference to do stuff
+                    pass
     """
 
     global startup_handlers
