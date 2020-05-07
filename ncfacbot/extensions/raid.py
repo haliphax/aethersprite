@@ -156,9 +156,11 @@ class Raid(commands.Cog, name='raid'):
     async def on_ready(self, _):
         "Schedule raid announcements from database on startup"
 
-        if len(self._handles):
+        if hasattr(self.bot, '__raid_ready__'):
             # only have to do this once during initial startup
             return
+
+        setattr(self.bot, '__raid_ready__', None)
 
         for gid, raid in self._schedules.items():
             try:

@@ -45,7 +45,10 @@ class Countdowns(object):
 
     @staticmethod
     def get(gid, key):
-        return Countdowns.cd[gid][key]
+        try:
+            return Countdowns.cd[gid][key]
+        except KeyError:
+            return None
 
     @staticmethod
     def any():
@@ -132,8 +135,13 @@ def _done(bot, guild, channel, user, nick):
 
 
 @startup
-async def on_ready(bot):
+async def ready(bot):
     "Schedule SMSchedule from database; immediately announce those missed"
+
+    if hasattr(bot, '__sm_ready__'):
+        return
+
+    setattr(bot, '__sm_ready__', None)
 
     if Countdowns.any():
         # only have to do this once during initial connect
@@ -221,21 +229,20 @@ async def sm(ctx, n: typing.Optional[int]=None):
 
         return
 
-    # cancel callback, if any
-    if guild in Countdowns.cd \
-            and author in Countdowns.cd[guild]:
-        SMData.get(guild, author)[1].cancel()
+    if Countdowns.has(guild):
+        cd = Countdowns.get(guild, author)
 
-    if guild in Countdowns.cd:
-        if author in Countdowns.cd[guild]:
-            g = SMData.countdowns[guild]
-            del g[author]
-            SMData.countdowns[guild] = g
+        if cd is not None:
+            # cancel callback and remove schedule
+            cd[1].cancel()
+            Countdowns.delete(guild, author)
 
-        if author in schedule[guild]:
-            s = schedule[guild]
-            del s[author]
-            schedule[guild] = s
+            try:
+                s = schedule[guild]
+                del s[author]
+                schedule[guild] = s
+            except KeyError:
+                pass
 
             await ctx.send(':negative_squared_cross_mark: '
                            'Your countdown has been canceled.')
