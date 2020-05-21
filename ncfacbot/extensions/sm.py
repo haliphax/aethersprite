@@ -133,6 +133,8 @@ def _done(bot, guild, channel, user, nick):
             del s[user]
             schedule[guild] = s
 
+        Countdowns.delete(guild, user)
+
 
 @startup
 async def ready(bot):
