@@ -178,7 +178,7 @@ class Shop(commands.Cog, name='shop'):
             await ctx.send(f':red_circle: Removing **{name}** from your list.')
             del lst.items[name]
 
-            if not len(items):
+            if not len(lst.items):
                 # last item on the list; remove list from storage
                 del lists[author]
 
