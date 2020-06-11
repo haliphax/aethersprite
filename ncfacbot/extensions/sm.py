@@ -100,7 +100,7 @@ def _done(bot, guild, channel, user, nick):
         role = settings['sm.medicrole'].get(fake_ctx)
         chan = settings['sm.channel'].get(fake_ctx)
 
-        msg = f':adhesive_bandage: Sorcerers Might ended for {nick}!'
+        msg = ':adhesive_bandage: '
 
         # determine the announcement channel
         if chan is None:
@@ -109,10 +109,11 @@ def _done(bot, guild, channel, user, nick):
         # get the medic role, if any
         try:
             medic = [r for r in fake_ctx.guild.roles if r.name == role][0]
-            msg = f'{medic.mention} ' + msg
+            msg += f'{medic.mention} '
         except IndexError:
             pass
 
+        msg += f'Sorcerers Might ended for {nick}!'
         chan = chan.lower().strip()
 
         try:
