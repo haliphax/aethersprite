@@ -17,7 +17,7 @@ from ..common import (command, FIFTEEN_MINS, get_next_tick, FakeContext,
 from ..settings import register, settings
 
 #: Maximum allowed timer length
-SM_LIMIT = 55
+SM_LIMIT = 100
 
 #: Countdown schedule persisted to database file
 schedule = SqliteDict('sm.sqlite3', tablename='announce', autocommit=True)
