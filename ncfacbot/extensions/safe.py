@@ -108,7 +108,9 @@ def setup(bot):
 def http_safe():
     "Post safe contents from UserScript"
 
-    db = SqliteDict('safe.sqlite3', tablename='contents', autocommit=True)
+    from flask import current_app
+
+    db = current_app.ext_safe_db
     data = request.get_json(force=True)
 
     for k in ('guild', 'items', 'key'):
@@ -138,4 +140,6 @@ def setup_webapp(app):
     "Web application setup"
 
     _settings()
+    db = SqliteDict('safe.sqlite3', tablename='contents', autocommit=True)
+    setattr(app, 'ext_safe_db', db)
     app.register_blueprint(blueprint)
