@@ -133,6 +133,19 @@ def http_safe():
     if key != data['key']:
         return abort(403)
 
+    # ignore spell/potion blind item reports
+    for category in ('Potion', 'Spell',):
+        items = data['items'][category]
+
+        if len(items) == 0:
+            continue
+
+        if items[0] == '0':
+            try:
+                data['items'][category] = db[guild][category]
+            except KeyError:
+                data['items'][category] = []
+
     db[guild] = {
         'Potions': data['items']['Potion'],
         'Spells': data['items']['Spell'],
