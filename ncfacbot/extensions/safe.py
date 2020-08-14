@@ -19,11 +19,17 @@ authz_safe = partial(require_roles, setting='safe.roles')
 blueprint = Blueprint('safe', __name__, url_prefix='/safe')
 
 
+def _get_database():
+    "Helper function to get a database reference"
+
+    return SqliteDict('safe.sqlite3', tablename='contents', autocommit=True)
+
+
 class Safe(commands.Cog, name='safe'):
 
     "Safe contents commands"
 
-    _safe = SqliteDict('safe.sqlite3', tablename='contents', autocommit=True)
+    _safe = _get_database()
     #: Emoji to use when displaying lists
     _icons = {
         'Components': 'tools',
@@ -140,6 +146,6 @@ def setup_webapp(app):
     "Web application setup"
 
     _settings()
-    db = SqliteDict('safe.sqlite3', tablename='contents', autocommit=True)
+    db = _get_database()
     setattr(app, 'ext_safe_db', db)
     app.register_blueprint(blueprint)
