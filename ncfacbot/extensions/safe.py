@@ -2,6 +2,7 @@
 
 # stdlib
 from functools import partial
+import re
 # 3rd party
 from discord.ext import commands
 from flask import abort, Blueprint, request
@@ -14,6 +15,8 @@ from ..settings import register, settings
 
 #: Maximum number of items listed per Discord message to avoid rejection
 MAX_ITEMS_PER_MESSAGE = 20
+#: Regex for splitting apart spell gem text
+SPELLS_PATTERN = r'([- a-zA-Z0-9]+) - Small \w+ Gem, (\d+) shots \((\d+)\)'
 
 authz_safe = partial(require_roles, setting='safe.roles')
 blueprint = Blueprint('safe', __name__, url_prefix='/safe')
@@ -116,6 +119,15 @@ def http_safe():
 
     from flask import current_app
 
+    def get_spell_text(spell, counts):
+        "Helper function to get spell output"
+
+        total = sum(counts)
+        shots_txt = ', '.join([str(c) for c in counts])
+
+        return f'{spell} **({total})** ||[{shots_txt}]||'
+
+
     db = current_app.ext_safe_db
     data = request.get_json(force=True)
 
@@ -133,18 +145,51 @@ def http_safe():
     if key != data['key']:
         return abort(403)
 
-    # ignore spell/potion blind item reports
+    # massage/validate data
     for category in ('Potion', 'Spell',):
         items = data['items'][category]
 
         if len(items) == 0:
             continue
 
+        # ignore spell/potion blind item reports
         if items[0] == '0':
             try:
                 data['items'][category] = db[guild][category]
             except KeyError:
                 data['items'][category] = []
+
+        # clean up spell listings
+        elif category == 'Spell':
+            cleaned = []
+            counts = [0, 0, 0, 0, 0, 0]
+            last_gem = None
+            items_len = len(items)
+
+            for idx in range(items_len):
+                eol = (idx == items_len - 1)
+                item = items[idx]
+                m = re.search(SPELLS_PATTERN, item)
+                groups = m.groups()
+                spell = groups[0]
+                shots = int(groups[1])
+                count = int(groups[2])
+
+                if last_gem != spell and last_gem is not None:
+                    cleaned.append(get_spell_text(last_gem, counts))
+                    counts = [0, 0, 0, 0, 0, 0]
+                    counts[shots] = count
+                else:
+                    counts[shots] += count
+
+                if eol:
+                    cleaned.append(get_spell_text(spell, counts))
+
+                last_gem = spell
+
+            d = data['items']
+            d['Spell'] = cleaned
+            data['items'] = d
 
     db[guild] = {
         'Potions': data['items']['Potion'],
