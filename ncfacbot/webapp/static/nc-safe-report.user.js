@@ -5,14 +5,21 @@
 // @description	Sends the components, potions, and spell gems in the safe for consumption by https://github.com/haliphax/ncfacbot
 // @author		haliphax
 // @match		https://www.nexusclash.com/modules.php?name=Game*
-// @grant		GM_setValue
 // @grant		GM_getValue
+// @grant		GM_setValue
 // @grant		GM_xmlhttpRequest
 // @require		https://raw.githubusercontent.com/blueimp/JavaScript-MD5/master/js/md5.min.js
 // ==/UserScript==
 
 (function() {
 	'use strict';
+
+	// GreaseMonkey fix
+	if (window.hasOwnProperty('GM')) {
+		window.GM_getValue = GM.getValue;
+		window.GM_setValue = GM.setValue;
+		window.GM_xmlhttpRequest = GM.xmlHttpRequest;
+	}
 
 	var safe_forms = document.querySelectorAll('form[name="footlockergrab"]');
 
