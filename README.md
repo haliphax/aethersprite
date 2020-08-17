@@ -13,6 +13,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - Server- and channel-specific settings framework for command customization
 - Role-based authorization for commands
 - Persistence of data and scheduled events during downtime
+- [Flask]-based web application for web hooks, pages, file storage, etc.
 
 ## Commands
 
@@ -59,5 +60,6 @@ _This bot is a work in progress. Please excuse my mess..._
 [discord.py]: https://discordpy.readthedocs.io
 [Discord]: https://discordapp.com
 [Discord Bot Safe README]: ./ncfacbot/extensions/safe.md
+[Flask]: https://flask.palletsprojects.com
 [Nexus Clash]: https://www.nexusclash.com
 [TOML]: https://github.com/toml-lang/toml
