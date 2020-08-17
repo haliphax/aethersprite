@@ -47,7 +47,6 @@ _This bot is a work in progress. Please excuse my mess..._
 ## Plans
 
 - Set command prefix per-server and per-channel
-- Common functions to pull/validate roles and channels from settings
 - Split bot framework into separate project, leave NC commands here
 - [TOML] configuration file(s) for immutable settings
 
