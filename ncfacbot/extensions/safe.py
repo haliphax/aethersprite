@@ -2,6 +2,7 @@
 
 # stdlib
 from functools import partial
+from os import environ
 import re
 # 3rd party
 from discord.ext import commands
@@ -17,6 +18,16 @@ from ..settings import register, settings
 MAX_ITEMS_PER_MESSAGE = 20
 #: Regex for splitting apart spell gem text
 SPELLS_PATTERN = r'([- a-zA-Z0-9]+) - Small \w+ Gem, (\d+) shots \((\d+)\)'
+#: URL for UserScript, if any
+USERSCRIPT_URL = environ.get(
+        'SAFE_CONTENTS_USERSCRIPT',
+        'https://github.com/haliphax/ncfacbot/raw/master/ncfacbot/webapp'
+        '/static/nc-safe-report.user.js')
+#: URL for README, if any
+README_URL = environ.get(
+        'SAFE_CONTENTS_README',
+        'https://github.com/haliphax/ncfacbot/blob/master/ncfacbot/extensions/'
+        'safe.md')
 
 authz_safe = partial(require_roles, setting='safe.roles')
 blueprint = Blueprint('safe', __name__, url_prefix='/safe')
@@ -71,6 +82,14 @@ class Safe(commands.Cog, name='safe'):
         if len(msg):
             await ctx.send('>>> ' + '\n'.join(msg))
 
+    @command(name='safe.help')
+    @commands.check(authz_safe)
+    @commands.check(channel_only)
+    async def help(self, ctx):
+        "View README for information about safe contents UserScript"
+
+        await ctx.send(f':information_source: <{README_URL}>')
+
     @command()
     @commands.check(authz_safe)
     @commands.check(channel_only)
@@ -78,6 +97,14 @@ class Safe(commands.Cog, name='safe'):
         "Lists potions in the faction safe"
 
         await self._get(ctx, 'Potions')
+
+    @command(name='safe.script')
+    @commands.check(authz_safe)
+    @commands.check(channel_only)
+    async def script(self, ctx):
+        "Get URL for the UserScript to report safe contents"
+
+        await ctx.send(f':space_invader: <{USERSCRIPT_URL}>')
 
     @command()
     @commands.check(authz_safe)

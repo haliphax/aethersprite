@@ -29,6 +29,9 @@ _This bot is a work in progress. Please excuse my mess..._
   Change the bot's nickname per-server
 - `raid`
   A collection of commands for scheduling and announcing raids
+- `safe`
+  A collection of commands for viewing faction safe contents -
+  [Discord Bot Safe README]
 - `settings`
   A collection of commands for manipulating the bot's settings framework
 - `shop`
@@ -55,5 +58,6 @@ _This bot is a work in progress. Please excuse my mess..._
 
 [discord.py]: https://discordpy.readthedocs.io
 [Discord]: https://discordapp.com
+[Discord Bot Safe README]: ./ncfacbot/extensions/safe.md
 [Nexus Clash]: https://www.nexusclash.com
 [TOML]: https://github.com/toml-lang/toml
