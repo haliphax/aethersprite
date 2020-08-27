@@ -39,7 +39,7 @@ _This bot is a work in progress. Please excuse my mess..._
   A collection of commands for viewing and maintaining crafting/alchemy/ammo
   shopping lists
 - `sm`
-  Announce the end of Sorcerers Might, accounting for the countdown tick bug
+  Announce the end of Sorcerers Might
 - `tick`
   GMT timestamp and timespan (e.g. _"8 hour(s), 4 minute(s)"_) of the next tick
   (or _x_ ticks from now)
