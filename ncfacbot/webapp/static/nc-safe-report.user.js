@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Nexus Clash Discord Bot Safe Contents (B4)
 // @namespace	https://roadha.us
-// @version		0.8
+// @version		0.9
 // @description	Sends the components, potions, and spell gems in the safe for consumption by https://github.com/haliphax/ncfacbot
 // @author		haliphax
 // @match		https://www.nexusclash.com/modules.php?name=Game*
@@ -20,6 +20,9 @@
 		window.GM_setValue = GM.setValue;
 		window.GM_xmlhttpRequest = GM.xmlHttpRequest;
 	}
+
+	// constants
+	var SETTINGS_ICON = 'https://raw.githubusercontent.com/tailwindlabs/heroicons/master/optimized/outline/chat.svg';
 
 	var safe_forms = document.querySelectorAll('form[name="footlockergrab"]');
 
@@ -40,9 +43,9 @@
 
 	cfg_link.title = 'Discord API settings';
 	cfg_link.href = 'javascript:;';
-	cfg_link.innerHTML = `<img src="https://raw.githubusercontent.com/tailwindlabs/heroicons/master/outline/chat.svg"
-		style="height: 1em; width: 1em; vertical-align: middle; margin-left: .25em; text-decoration: none;"
-		alt="" />`;
+	cfg_link.innerHTML = '<img src="' + SETTINGS_ICON + '" '
+		+ 'style="height: 1em; width: 1em; vertical-align: middle; margin-left: .25em; text-decoration: none;" '
+		+ 'alt="" />';
 	cfg_link.addEventListener('click', () => {
 		let guild = prompt('Discord guild ID', (my_char ? my_char.guild : ''));
 
