@@ -32,8 +32,7 @@ class Settings(commands.Cog, name='settings'):
     @command(name='set')
     @commands.check(authz)
     @commands.check(channel_only)
-    async def set(self, ctx, name: typing.Optional[str] = None,
-                  value: typing.Optional[str] = None):
+    async def set(self, ctx, name: typing.Optional[str] = None, *value):
         """
         Change/view a setting's value
 
@@ -55,19 +54,20 @@ class Settings(commands.Cog, name='settings'):
             return
 
         key = ctx.guild.id
+        val = ' '.join(value)
 
-        if value is None:
-            value = settings[name].get(ctx)
+        if not len(val):
+            val = settings[name].get(ctx)
             default = settings[name].default
-            await ctx.send(f':gear: `{name} => {repr(value)}` '
+            await ctx.send(f':gear: `{name} => {repr(val)}` '
                            f'_(Default: {repr(default)})_')
             log.info(f'{ctx.author} viewed setting {name}')
-        elif settings[name].set(ctx, value):
+        elif settings[name].set(ctx, val):
             await ctx.send(f':thumbsup: Value updated.')
-            log.info(f'{ctx.author} updated setting {name}: {value}')
+            log.info(f'{ctx.author} updated setting {name}: {val}')
         else:
             await ctx.send(f':thumbsdown: Error updating value.')
-            log.warn(f'{ctx.author} failed to update setting {name}: {value}')
+            log.warn(f'{ctx.author} failed to update setting {name}: {val}')
 
     @command(name='clear')
     @commands.check(authz)
