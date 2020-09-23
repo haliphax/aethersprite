@@ -174,6 +174,26 @@ class Raid(commands.Cog, name='raid'):
                 log.error(f'Unknown guild {gid}')
                 del self._schedules[gid]
 
+    @command(name='raid')
+    @commands.check(authz_check)
+    @commands.check(channel_only)
+    async def alarm(self, ctx):
+        "Raise the raid alarm"
+
+        channel = settings['raid.channel'].get(ctx)
+        bumper = ':rotating_light:' * 3
+        message = ' '.join((bumper, '@everyone We are being raided!', bumper))
+        c = ctx
+
+        try:
+            c = [c for c in ctx.guild.channels
+                       if c.name == channel][0]
+        except IndexError:
+            # No raid channel configured, send to same channel as command
+            pass
+
+        await c.send(message)
+
     @command(name='raid.cancel')
     @commands.check(authz_schedule)
     @commands.check(channel_only)
