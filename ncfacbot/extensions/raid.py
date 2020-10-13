@@ -148,8 +148,11 @@ class Raid(commands.Cog, name='raid'):
         if silent:
             return
 
+        until = seconds_to_str(
+            (raid.schedule - datetime.now(timezone.utc)).total_seconds())
         await c.send(f':white_check_mark: Raid on {raid.target} scheduled '
-                     f'for {raid.schedule.strftime(DATETIME_FORMAT)}!')
+                     f'for {raid.schedule.strftime(DATETIME_FORMAT)}! '
+                     f'({until} from now)')
         log.info(f'{raid.leader} scheduled raid on {raid.target} @ '
                  f'{raid.schedule}')
 
@@ -192,7 +195,7 @@ class Raid(commands.Cog, name='raid'):
             # No raid channel configured, send to same channel as command
             pass
 
-        await c.send(message)
+        await c.send(f'**{message}**')
 
     @command(name='raid.cancel')
     @commands.check(authz_schedule)
