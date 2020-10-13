@@ -59,8 +59,9 @@ class Settings(commands.Cog, name='settings'):
         if not len(val):
             val = settings[name].get(ctx)
             default = settings[name].default
-            await ctx.send(f':gear: `{name} => {repr(val)}` '
-                           f'_(Default: {repr(default)})_')
+            await ctx.send(f':gear: `{name}`\n'
+                           f'>>> Value: `{repr(val)}`\n'
+                           f'Default: `{repr(default)}`')
             log.info(f'{ctx.author} viewed setting {name}')
         elif settings[name].set(ctx, val):
             await ctx.send(f':thumbsup: Value updated.')
