@@ -6,8 +6,11 @@
 // @author		haliphax
 // @match		https://www.nexusclash.com/modules.php?name=Game*
 // @grant		GM_getValue
+// @grant		GM.getValue
 // @grant		GM_setValue
+// @grant		GM.setValue
 // @grant		GM_xmlhttpRequest
+// @grant		GM.xmlHttpRequest
 // @require		https://raw.githubusercontent.com/blueimp/JavaScript-MD5/master/js/md5.min.js
 // ==/UserScript==
 
@@ -160,6 +163,8 @@
 			key: my_char.key,
 			items: category_items,
 		}),
-		onerror() { console.error('Error posting to destination URL'); },
+		onerror() {
+			console.error('Error posting to destination URL');
+		},
 	});
 })();
