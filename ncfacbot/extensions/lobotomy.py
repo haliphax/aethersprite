@@ -9,7 +9,7 @@ from sqlitedict import SqliteDict
 # local
 from .. import log
 from ..authz import require_admin
-from ..common import command
+from ..common import command, global_check
 
 #: Lobotomies database
 lobotomies = SqliteDict('lobotomy.sqlite3', tablename='lobotomies',
@@ -113,11 +113,9 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         await ctx.send(f':medical_symbol: **{output}**')
 
 
+@global_check
 async def check_lobotomy(ctx):
-    """
-    Check that command has not been lobotomized before allowing execution. This
-    check is wired up automatically by :func:`ncfacbot.common.command`.
-    """
+    "Check that command has not been lobotomized before allowing execution."
 
     if type(ctx.channel) is DMChannel:
         # can't lobotomize commands via DM, since we need a guild to check
@@ -144,7 +142,4 @@ async def check_lobotomy(ctx):
 
 
 def setup(bot):
-    from ..common import global_checks
-
-    global_checks.append(check_lobotomy)
     bot.add_cog(Lobotomy(bot))

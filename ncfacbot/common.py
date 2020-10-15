@@ -96,6 +96,17 @@ def get_next_tick(n=1):
     return datetime.fromtimestamp(tick_stamp, tz=timezone.utc)
 
 
+def global_check(f):
+    "Decorator to add function to list of checks to run for each command."
+
+    global global_checks
+
+    if f not in global_checks:
+        global_checks.append(f)
+
+    return f
+
+
 def normalize_username(author):
     """
     Normalize username for use in messages. If the user has a nick set, that
