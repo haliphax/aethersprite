@@ -151,8 +151,8 @@ class Raid(commands.Cog, name='raid'):
         until = seconds_to_str(
             (raid.schedule - datetime.now(timezone.utc)).total_seconds())
         await c.send(f':white_check_mark: Raid on {raid.target} scheduled '
-                     f'for {raid.schedule.strftime(DATETIME_FORMAT)}! '
-                     f'({until} from now)')
+                     f'for {raid.schedule.strftime(DATETIME_FORMAT)}!'
+                     f'\n_({until} from now)_')
         log.info(f'{raid.leader} scheduled raid on {raid.target} @ '
                  f'{raid.schedule}')
 
@@ -230,7 +230,7 @@ class Raid(commands.Cog, name='raid'):
             (raid.schedule - datetime.now(timezone.utc)).total_seconds())
         await ctx.send(f':pirate_flag: Raid on {raid.target} scheduled '
                        f'for {raid.schedule.strftime(DATETIME_FORMAT)} by '
-                       f'{raid.leader}. ({until} from now)')
+                       f'{raid.leader}.\n_({until} from now)_')
 
     @command(name='raid.schedule', brief='Set raid schedule')
     @commands.check(authz_schedule)

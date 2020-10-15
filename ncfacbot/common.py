@@ -112,25 +112,28 @@ def seconds_to_str(ts):
     :rtype: str
     """
 
-    diff = ceil(ts)
-    until = ''
+    seconds = ceil(ts)
+    until = []
 
-    if diff >= DAY:
-        until += f'{floor(diff / DAY)} day(s) '
-        diff = diff % DAY
+    if seconds >= DAY:
+        days = floor(seconds / DAY)
+        until.append(f'{days} day{"s" if days > 1 else ""}')
+        seconds = seconds % DAY
 
-    if diff >= HOUR:
-        until += f'{floor(diff / HOUR)} hour(s) '
-        diff = diff % HOUR
+    if seconds >= HOUR:
+        hours = floor(seconds / HOUR)
+        until.append(f'{hours} hour{"s" if hours > 1 else ""}')
+        seconds = seconds % HOUR
 
-    if diff >= MINUTE:
-        until += f'{floor(diff / MINUTE)} minute(s) '
-        diff = diff % MINUTE
+    if seconds >= MINUTE:
+        minutes = floor(seconds / MINUTE)
+        until.append(f'{minutes} minute{"s" if minutes > 1 else ""}')
+        seconds = seconds % MINUTE
 
-    if diff > 0:
-        until += f'{diff} second(s) '
+    if seconds > 0:
+        until.append(f'{seconds} second{"s" if seconds > 1 else ""}')
 
-    return until.strip()
+    return ', '.join(until)
 
 
 def startup(f):
