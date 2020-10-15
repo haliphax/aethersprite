@@ -1,11 +1,8 @@
 "Lobotomy cog"
 
-# stdlib
-from os import environ
 import typing
 # 3rd party
 from discord.ext import commands
-from functools import partial
 # local
 from .. import log
 from ..authz import require_admin
@@ -44,6 +41,8 @@ class Lobotomy(commands.Cog, name='lobotomy'):
 
             return
 
+        # if it's already in the opposite category (channel vs. server),
+        # then clear it out
         if key in lobs and server:
             lobs.remove(key)
         elif server_key in lobs and not server:
@@ -51,6 +50,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
 
         lobs.add(server_key if server else key)
         lobotomies[guild] = lobs
+        log.info(f'{ctx.author} lobotomized {server_key if server else key}')
         await ctx.send(f':brain: Done.')
 
     @command(name='lobotomy.clear')
@@ -80,6 +80,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
 
         lobs.remove(server_key if server else key)
         lobotomies[guild] = lobs
+        log.info(f'{ctx.author} cleared {server_key if server else key}')
         await ctx.send(':wastebasket: Cleared.')
 
     @command(name='lobotomy.list')
@@ -101,6 +102,8 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         if not len(output):
             output = 'None'
 
+        log.info(f'{ctx.author} viewed {"server" if server else""} lobotomy '
+                 'list')
         await ctx.send(f':medical_symbol: **{output}**')
 
 
