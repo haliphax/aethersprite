@@ -4,7 +4,7 @@ from os import environ
 from random import seed
 from sys import stdout
 # 3rd party
-from discord import Game
+from discord import Activity, ActivityType
 from discord.ext.commands import (Bot, CheckFailure, CommandNotFound,
                                   when_mentioned_or,)
 # local
@@ -18,7 +18,7 @@ log.addHandler(streamHandler)
 log.setLevel(logging.INFO)
 
 #: Activity on login
-activity = Game(name='!help for commands')
+activity = Activity(name='!help for commands', type=ActivityType.listening)
 
 #: The bot itself
 bot = Bot(command_prefix=when_mentioned_or('!'))
