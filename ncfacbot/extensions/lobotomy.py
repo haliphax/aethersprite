@@ -1,5 +1,6 @@
 "Lobotomy cog"
 
+# stdlib
 import typing
 # 3rd party
 from discord.ext import commands
