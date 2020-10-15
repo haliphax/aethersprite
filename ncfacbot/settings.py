@@ -73,10 +73,10 @@ class Setting(object):
         :rtype: str
         """
 
-        key = ctx.guild['id'] if type(ctx.guild) is dict else ctx.guild.id
+        key = str(ctx.guild['id'] if type(ctx.guild) is dict else ctx.guild.id)
 
         if self.channel:
-            key += '#' + ctx.channel.id
+            key += f'#{ctx.channel.id}'
 
         return key
 

@@ -12,7 +12,7 @@ from .common import POLICE_OFFICER
 async def channel_only(ctx):
     "Check for bot commands that should only operate in a channel"
 
-    if type(ctx.channel) is DMChannel:
+    if isinstance(ctx.channel, DMChannel):
         await ctx.send('This command must be used in a channel.')
 
         return False

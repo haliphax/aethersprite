@@ -41,8 +41,8 @@ _This bot is a work in progress. Please excuse my mess..._
 - `sm`
   Announce the end of Sorcerers Might
 - `tick`
-  GMT timestamp and timespan (e.g. _"1 day, 8 hours, 4 minutes"_) of the next tick
-  (or _x_ ticks from now)
+  GMT timestamp and timespan (e.g. _"1 day, 8 hours, 4 minutes"_) of the next
+  tick (or _x_ ticks from now)
 
 ## Plans
 

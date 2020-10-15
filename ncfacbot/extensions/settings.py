@@ -53,7 +53,6 @@ class Settings(commands.Cog, name='settings'):
 
             return
 
-        key = ctx.guild.id
         val = ' '.join(value)
 
         if not len(val):
