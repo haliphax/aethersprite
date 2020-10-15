@@ -99,6 +99,10 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         """
 
         guild = str(ctx.guild.id)
+
+        if guild not in lobotomies:
+            lobotomies[guild] = []
+
         suffix = f'#{ctx.channel.id}'
         suffixlen = len(suffix)
         output = '**, **'.join([(l if server else l[:-suffixlen])
