@@ -8,8 +8,6 @@ from math import ceil, floor
 import re
 # 3rd party
 from discord.ext.commands import check, command as command_
-# local
-from .lobotomy import check_lobotomy
 
 # constants
 #: One minute in seconds
@@ -33,17 +31,32 @@ FakeContext = namedtuple('FakeContext', ('guild',))
 
 # List of functions to run on startup during on_ready
 startup_handlers = []
+# List of checks to run against all commands
+global_checks = []
 
 
 def command(*args, **kwargs):
     """
-    Decorator to add default checks to new commands. This is just a thin
+    Decorator to add global checks to new commands. This is just a thin
     wrapper around :func:`discord.ext.commands.command`, and will accept the
     same arguments.
     """
 
     def wrap(f):
-        return check(check_lobotomy)(command_(*args, **kwargs)(f))
+        global global_checks
+
+        first = True
+        check_stack = []
+
+        for c in global_checks:
+            if first:
+                check_stack.append(
+                    check(c)(command_(*args, **kwargs)(f)))
+                first = False
+            else:
+                check_stack.append(check(c)(check_stack[-1]))
+
+        return check_stack[-1]
 
     return wrap
 

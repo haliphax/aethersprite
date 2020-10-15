@@ -3,12 +3,17 @@
 # stdlib
 import typing
 # 3rd party
+from discord import DMChannel
 from discord.ext import commands
+from sqlitedict import SqliteDict
 # local
 from .. import log
 from ..authz import require_admin
 from ..common import command
-from ..lobotomy import lobotomies
+
+#: Lobotomies database
+lobotomies = SqliteDict('lobotomy.sqlite3', tablename='lobotomies',
+                        autocommit=True)
 
 
 class Lobotomy(commands.Cog, name='lobotomy'):
@@ -108,5 +113,38 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         await ctx.send(f':medical_symbol: **{output}**')
 
 
+async def check_lobotomy(ctx):
+    """
+    Check that command has not been lobotomized before allowing execution. This
+    check is wired up automatically by :func:`ncfacbot.common.command`.
+    """
+
+    if type(ctx.channel) is DMChannel:
+        # can't lobotomize commands via DM, since we need a guild to check
+        # settings values
+        return
+
+    guild = str(ctx.guild.id)
+
+    if guild not in lobotomies:
+        # none set for this guild; bail
+        return True
+
+    keys = (ctx.command.name, f'{ctx.command.name}#{ctx.channel.id}')
+
+    for k in keys:
+        if k in lobotomies[guild]:
+            log.warn(f'Suppressing lobotomized command from '
+                     f'{ctx.author}: {ctx.command.name} in '
+                     f'#{ctx.channel.name} ({ctx.guild.name})')
+
+            return False
+
+    return True
+
+
 def setup(bot):
+    from ..common import global_checks
+
+    global_checks.append(check_lobotomy)
     bot.add_cog(Lobotomy(bot))
