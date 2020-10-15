@@ -56,7 +56,7 @@ def command(*args, **kwargs):
             else:
                 check_stack.append(check(c)(check_stack[-1]))
 
-        return check_stack[-1]
+        return check_stack[-1] if len(check_stack) > 0 else f
 
     return wrap
 
