@@ -46,6 +46,7 @@ _This bot is a work in progress. Please excuse my mess..._
 
 ## Plans
 
+- Ability to set guild for using guild-locked commands via DM
 - Set command prefix per-server and per-channel
 - Split bot framework into separate project, leave NC commands here
 - [TOML] configuration file(s) for immutable settings
