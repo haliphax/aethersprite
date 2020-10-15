@@ -84,7 +84,7 @@
 		const category = categories[c];
 
 		category_items[category] = [];
-		last_counts[category] = GM_getValue('last_count.' + category, 0);
+		last_counts[category] = GM_getValue(`last_count.${category}`, 0);
 	}
 
 	for (let f = 0; f < safe_forms.length; f++) {
