@@ -3,13 +3,14 @@
 # stdlib
 import calendar
 from datetime import datetime, timezone
-from math import floor
 from random import randrange
 import typing
+# 3rd party
+from discord.ext.commands import command
 # local
 from .. import log
-from ..common import (command, DATETIME_FORMAT, THUMBS_DOWN, get_next_tick,
-                      normalize_username, seconds_to_str,)
+from ..common import (DATETIME_FORMAT, THUMBS_DOWN, get_next_tick,
+                      seconds_to_str,)
 
 #: Future/past tick limit
 TICK_LIMIT = 1000
@@ -41,17 +42,13 @@ async def tick(ctx, n: typing.Optional[int] = 1):
         log.warn(f'{ctx.author} made rejected next tick request of {n}')
         return
 
-    name = normalize_username(ctx.author)
     future_tick = get_next_tick(n)
     tick_str = future_tick.strftime(f'{DATETIME_FORMAT} - ')
-    # convert to unix timestamps because it's easier to do this with the
-    # modulus operator (%) than it is to do this with timespan tomfoolery
-    diff = abs(calendar.timegm(future_tick.timetuple())
-               - calendar.timegm(datetime.now(timezone.utc).timetuple()))
-    until = seconds_to_str(diff)
+    until = seconds_to_str(
+            (future_tick - datetime.now(timezone.utc)).total_seconds)
 
     if not len(until) and n > 0:
-        until = ' right now!'
+        until = ' - right now!'
     elif n >= 0:
         until += ' from now'
     elif n < 0:

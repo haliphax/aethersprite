@@ -5,10 +5,12 @@ import calendar
 from datetime import datetime, timedelta, timezone
 from math import ceil
 import typing
+# 3rd party
+from discord.ext.commands import command
 # local
 from .. import log
-from ..common import (command, DATETIME_FORMAT, FIFTEEN_MINS,
-                      get_timespan_chunks, get_next_tick, MINUTE, THUMBS_DOWN,)
+from ..common import (DATETIME_FORMAT, get_timespan_chunks, get_next_tick,
+                      MINUTE, THUMBS_DOWN,)
 
 
 @command(brief='Get closest tick to time offset')

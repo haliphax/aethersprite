@@ -6,13 +6,13 @@ from datetime import datetime, timezone
 from functools import partial
 from math import ceil
 # 3rd party
-from discord.ext import commands
+from discord.ext.commands import check, Cog, command
 from sqlitedict import SqliteDict
 # local
 from .. import log
 from ..authz import channel_only, require_roles
-from ..common import (command, DATETIME_FORMAT, FakeContext,
-                      normalize_username, seconds_to_str, startup, THUMBS_DOWN)
+from ..common import (DATETIME_FORMAT, FakeContext, normalize_username,
+                      seconds_to_str, startup, THUMBS_DOWN)
 from ..settings import register, settings
 
 #: Expected format for schedule input
@@ -48,7 +48,7 @@ class RaidSchedule(object):
                 f'schedule={self.schedule}>')
 
 
-class Raid(commands.Cog, name='raid'):
+class Raid(Cog, name='raid'):
 
     """
     Raid commands
@@ -156,7 +156,7 @@ class Raid(commands.Cog, name='raid'):
         log.info(f'{raid.leader} scheduled raid on {raid.target} @ '
                  f'{raid.schedule}')
 
-    async def on_ready(self, _):
+    async def on_ready(self, _):  # pylint: disable=method-hidden
         "Schedule raid announcements from database on startup"
 
         if hasattr(self.bot, '__raid_ready__'):
@@ -178,8 +178,8 @@ class Raid(commands.Cog, name='raid'):
                 del self._schedules[gid]
 
     @command(name='raid')
-    @commands.check(authz_check)
-    @commands.check(channel_only)
+    @check(authz_check)
+    @check(channel_only)
     async def alarm(self, ctx):
         "Raise the raid alarm"
 
@@ -198,8 +198,8 @@ class Raid(commands.Cog, name='raid'):
         await c.send(f'**{message}**')
 
     @command(name='raid.cancel')
-    @commands.check(authz_schedule)
-    @commands.check(channel_only)
+    @check(authz_schedule)
+    @check(channel_only)
     async def cancel(self, ctx):
         "Cancels a currently scheduled raid"
 
@@ -215,9 +215,9 @@ class Raid(commands.Cog, name='raid'):
         log.info(f'{ctx.author} canceled raid')
 
     @command(name='raid.check')
-    @commands.check(authz_check)
-    @commands.check(channel_only)
-    async def check(self, ctx):
+    @check(authz_check)
+    @check(channel_only)
+    async def check_(self, ctx):
         "Check current raid schedule"
 
         if ctx.guild.id not in self._schedules:
@@ -233,8 +233,8 @@ class Raid(commands.Cog, name='raid'):
                        f'{raid.leader}.\n_({until} from now)_')
 
     @command(name='raid.schedule', brief='Set raid schedule')
-    @commands.check(authz_schedule)
-    @commands.check(channel_only)
+    @check(authz_schedule)
+    @check(channel_only)
     async def schedule(self, ctx, *, when):
         """
         Set raid schedule to <when>, which must be a valid 24-hour datetime string (e.g. 2020-01-01 23:45). Date is optional; today's date will be the default value. Will be parsed as GMT.
@@ -273,8 +273,8 @@ class Raid(commands.Cog, name='raid'):
         await self._go(raid, ctx)
 
     @command(name='raid.target')
-    @commands.check(authz_schedule)
-    @commands.check(channel_only)
+    @check(authz_schedule)
+    @check(channel_only)
     async def target(self, ctx, *, target):
         "Set raid target"
 

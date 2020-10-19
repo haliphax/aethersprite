@@ -3,12 +3,12 @@
 # stdlib
 import typing
 # 3rd party
-from discord.ext import commands
+from discord.ext.commands import check, Cog, command
 from functools import partial
 # local
 from .. import log
 from ..authz import channel_only, require_roles
-from ..common import command, THUMBS_DOWN
+from ..common import THUMBS_DOWN
 from ..settings import register, settings
 
 # messages
@@ -18,7 +18,7 @@ MSG_NO_SETTING = ':person_shrugging: No such setting exists.'
 authz = partial(require_roles, setting='settings.adminroles')
 
 
-class Settings(commands.Cog, name='settings'):
+class Settings(Cog, name='settings'):
 
     """
     Settings commands
@@ -30,8 +30,8 @@ class Settings(commands.Cog, name='settings'):
         self.bot = bot
 
     @command(name='set')
-    @commands.check(authz)
-    @commands.check(channel_only)
+    @check(authz)
+    @check(channel_only)
     async def set(self, ctx, name: typing.Optional[str] = None, *value):
         """
         Change/view a setting's value
@@ -70,8 +70,8 @@ class Settings(commands.Cog, name='settings'):
             log.warn(f'{ctx.author} failed to update setting {name}: {val}')
 
     @command(name='clear')
-    @commands.check(authz)
-    @commands.check(channel_only)
+    @check(authz)
+    @check(channel_only)
     async def clear(self, ctx, name):
         "Reset setting <name> to its default value"
 
@@ -87,8 +87,8 @@ class Settings(commands.Cog, name='settings'):
         log.info(f'{ctx.author} cleared setting {name}')
 
     @command(name='desc')
-    @commands.check(authz)
-    @commands.check(channel_only)
+    @check(authz)
+    @check(channel_only)
     async def desc(self, ctx, name):
         "View description of setting <name>"
 

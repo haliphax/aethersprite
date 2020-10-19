@@ -4,19 +4,18 @@
 import typing
 # 3rd party
 from discord import DMChannel
-from discord.ext import commands
+from discord.ext.commands import check, Cog, command
 from sqlitedict import SqliteDict
 # local
 from .. import log
 from ..authz import require_admin
-from ..common import command, global_check
 
 #: Lobotomies database
 lobotomies = SqliteDict('lobotomy.sqlite3', tablename='lobotomies',
                         autocommit=True)
 
 
-class Lobotomy(commands.Cog, name='lobotomy'):
+class Lobotomy(Cog, name='lobotomy'):
 
     "Lobotomy commands; enable and disable commands per-server and per-channel"
 
@@ -24,7 +23,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         self.bot = bot
 
     @command(name='lobotomy.add')
-    @commands.check(require_admin)
+    @check(require_admin)
     async def add(self, ctx, command, server: typing.Optional[bool] = False):
         """
         Disable the given command
@@ -60,7 +59,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         await ctx.send(f':brain: Done.')
 
     @command(name='lobotomy.clear')
-    @commands.check(require_admin)
+    @check(require_admin)
     async def clear(self, ctx, command, server: typing.Optional[bool] = False):
         """
         Enable the given command
@@ -90,7 +89,7 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         await ctx.send(':wastebasket: Cleared.')
 
     @command(name='lobotomy.list')
-    @commands.check(require_admin)
+    @check(require_admin)
     async def list(self, ctx, server: typing.Optional[bool] = False):
         """
         List all current channel's lobotomized commands
@@ -117,7 +116,6 @@ class Lobotomy(commands.Cog, name='lobotomy'):
         await ctx.send(f':medical_symbol: **{output}**')
 
 
-@global_check
 async def check_lobotomy(ctx):
     "Check that command has not been lobotomized before allowing execution."
 
@@ -146,4 +144,5 @@ async def check_lobotomy(ctx):
 
 
 def setup(bot):
+    bot.add_check(check_lobotomy)
     bot.add_cog(Lobotomy(bot))

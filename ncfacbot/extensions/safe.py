@@ -5,13 +5,13 @@ from functools import partial
 from os import environ
 import re
 # 3rd party
-from discord.ext import commands
+from discord.ext.commands import check, Cog, command
 from flask import abort, Blueprint, request
 from sqlitedict import SqliteDict
 # local
 from .. import log
-from ..authz import channel_only, require_admin, require_roles
-from ..common import command, FakeContext
+from ..authz import channel_only, require_roles
+from ..common import FakeContext
 from ..settings import register, settings
 
 #: Maximum number of items listed per Discord message to avoid rejection
@@ -39,7 +39,7 @@ def _get_database():
     return SqliteDict('safe.sqlite3', tablename='contents', autocommit=True)
 
 
-class Safe(commands.Cog, name='safe'):
+class Safe(Cog, name='safe'):
 
     "Safe contents commands"
 
@@ -56,6 +56,7 @@ class Safe(commands.Cog, name='safe'):
 
         if settings['safe.key'].get(ctx) is None:
             await ctx.send(':thumbsdown: No UserScript key has been set.')
+            log.warn('No UserScript key is set for this guild')
 
             return
 
@@ -83,44 +84,49 @@ class Safe(commands.Cog, name='safe'):
             await ctx.send('>>> ' + '\n'.join(msg))
 
     @command(name='safe.help')
-    @commands.check(authz_safe)
-    @commands.check(channel_only)
+    @check(authz_safe)
+    @check(channel_only)
     async def help(self, ctx):
         "View README for information about safe contents UserScript"
 
         await ctx.send(f':information_source: <{README_URL}>')
+        log.info(f'{ctx.author} viewed safe README info')
 
     @command()
-    @commands.check(authz_safe)
-    @commands.check(channel_only)
+    @check(authz_safe)
+    @check(channel_only)
     async def potions(self, ctx):
         "Lists potions in the faction safe"
 
         await self._get(ctx, 'Potions')
+        log.info(f'{ctx.author} viewed list of potions')
 
     @command(name='safe.script')
-    @commands.check(authz_safe)
-    @commands.check(channel_only)
+    @check(authz_safe)
+    @check(channel_only)
     async def script(self, ctx):
         "Get URL for the UserScript to report safe contents"
 
         await ctx.send(f':space_invader: <{USERSCRIPT_URL}>')
+        log.info(f'{ctx.author} viewed URL for UserScript')
 
     @command()
-    @commands.check(authz_safe)
-    @commands.check(channel_only)
+    @check(authz_safe)
+    @check(channel_only)
     async def spells(self, ctx):
         "Lists spell gems in the faction safe"
 
         await self._get(ctx, 'Spells')
+        log.info(f'{ctx.author} viewed list of spells')
 
     @command()
-    @commands.check(authz_safe)
-    @commands.check(channel_only)
+    @check(authz_safe)
+    @check(channel_only)
     async def components(self, ctx):
         "Lists components in the faction safe"
 
         await self._get(ctx, 'Components')
+        log.info(f'{ctx.author} viewed list of components')
 
 
 def _settings():
@@ -132,6 +138,7 @@ def _settings():
              'The server roles that are allowed to view safe contents. If set '
              'there are no restrictions. Separate multiple entries with '
              'commas.')
+
 
 def setup(bot):
     "Discord bot setup"

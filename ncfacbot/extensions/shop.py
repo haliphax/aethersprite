@@ -5,12 +5,12 @@ from collections import OrderedDict
 from functools import partial
 import typing
 # 3rd party
-from discord.ext import commands
+from discord.ext.commands import check, Cog, command
 from sqlitedict import SqliteDict
 # local
 from .. import log
 from ..authz import channel_only, require_roles
-from ..common import command, normalize_username, THUMBS_DOWN
+from ..common import normalize_username, THUMBS_DOWN
 from ..settings import register, settings
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
@@ -80,7 +80,7 @@ class ShoppingList(object):
         self.items = {}
 
 
-class Shop(commands.Cog, name='shop'):
+class Shop(Cog, name='shop'):
 
     """
     Shopping commands
@@ -96,8 +96,8 @@ class Shop(commands.Cog, name='shop'):
         self.bot = bot
 
     @command(name='shop.set', brief='Manipulate your shopping list')
-    @commands.check(authz_set)
-    @commands.check(channel_only)
+    @check(authz_set)
+    @check(channel_only)
     async def set(self, ctx, num, *, item):
         """
         Manipulate your shopping list
@@ -196,8 +196,8 @@ class Shop(commands.Cog, name='shop'):
                 self._lists[ctx.guild.id] = lists
 
     @command(name='shop.list', brief='Show shopping list(s)')
-    @commands.check(authz_list)
-    @commands.check(channel_only)
+    @check(authz_list)
+    @check(channel_only)
     async def list(self, ctx, who: typing.Optional[str]):
         """
         Show shopping list(s)
@@ -271,8 +271,8 @@ class Shop(commands.Cog, name='shop'):
         await ctx.send(output)
 
     @command(name='shop.clear')
-    @commands.check(authz_set)
-    @commands.check(channel_only)
+    @check(authz_set)
+    @check(channel_only)
     async def clear(self, ctx):
         "Empty your shopping list"
 

@@ -8,11 +8,9 @@ from discord import DMChannel
 from discord.ext.commands import Context
 # local
 from .. import log
-from ..common import global_check
 from ..settings import register, settings
 
 
-@global_check
 async def check_name_only(ctx: Context):
     "If the bot wasn't mentioned, refuse the command."
 
@@ -31,6 +29,7 @@ async def check_name_only(ctx: Context):
 
 
 def setup(bot):
+    bot.add_check(check_name_only)
     # settings
     register('nameonly', None, lambda x: True, False,
              'If set, the bot will only respond when directly addressed.')

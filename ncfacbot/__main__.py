@@ -48,10 +48,12 @@ async def on_command_error(_, error):
 async def on_ready():
     "Update presence and fire up registered startup handlers."
 
+    from .common import StartupHandlers
+
     log.info(f'Logged in as {bot.user}')
     await bot.change_presence(activity=activity)
 
-    for f in startup_handlers:
+    for f in StartupHandlers.list:
         await f(bot)
 
 
@@ -74,8 +76,6 @@ def entrypoint():
     bot.load_extension('ncfacbot.extensions._all')
     # here we go!
     bot.run(environ['DISCORD_TOKEN'])
-
-from .common import startup_handlers
 
 if __name__ == '__main__':
     entrypoint()

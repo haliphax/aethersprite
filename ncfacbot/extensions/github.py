@@ -1,8 +1,9 @@
 "GitHub URL command"
 
+# 3rd party
+from discord.ext.commands import command
 # local
 from .. import log
-from ..common import command
 
 
 @command(brief='GitHub URL for bot source code, feature requests')

@@ -3,17 +3,15 @@
 # stdlib
 import asyncio as aio
 from datetime import datetime, timezone, timedelta
-from math import ceil, floor
-from time import time
+from math import ceil
 import typing
 # 3rd party
-from discord.ext import commands
+from discord.ext.commands import check, command
 from sqlitedict import SqliteDict
 # local
 from .. import log
-from ..authz import channel_only, require_roles
-from ..common import (command, FIFTEEN_MINS, get_next_tick, FakeContext,
-                      normalize_username, startup, THUMBS_DOWN,)
+from ..authz import channel_only
+from ..common import FakeContext, normalize_username, startup, THUMBS_DOWN
 from ..settings import register, settings
 
 #: Maximum allowed timer length
@@ -136,7 +134,7 @@ async def ready(bot):
 
 
 @command(brief='Start a Sorcerers Might countdown', name='sm')
-@commands.check(channel_only)
+@check(channel_only)
 async def sm(ctx, n: typing.Optional[int]=None):
     """
     Start a Sorcerers Might countdown for n minutes

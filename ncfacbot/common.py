@@ -6,8 +6,6 @@ from collections import namedtuple
 from datetime import datetime, timezone
 from math import ceil, floor
 import re
-# 3rd party
-from discord.ext.commands import check, command as command_
 
 # constants
 #: One minute in seconds
@@ -29,36 +27,15 @@ DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
 #: Fake a context for use in certain functions that expect one
 FakeContext = namedtuple('FakeContext', ('guild',))
 
-# List of functions to run on startup during on_ready
-startup_handlers = []
-# List of checks to run against all commands
-global_checks = []
 
+class StartupHandlers:
 
-def command(*args, **kwargs):
-    """
-    Decorator to add global checks to new commands. This is just a thin
-    wrapper around :func:`discord.ext.commands.command`, and will accept the
-    same arguments.
-    """
+    "Startup handlers"
 
-    def wrap(f):
-        global global_checks
+    list = []
 
-        first = True
-        check_stack = []
-
-        for c in global_checks:
-            if first:
-                check_stack.append(
-                    check(c)(command_(*args, **kwargs)(f)))
-                first = False
-            else:
-                check_stack.append(check(c)(check_stack[-1]))
-
-        return check_stack[-1] if len(check_stack) > 0 else f
-
-    return wrap
+    def __init__(self):
+        raise RuntimeError('Singleton collection; use .list member instead')
 
 
 def get_timespan_chunks(string):
@@ -94,17 +71,6 @@ def get_next_tick(n=1):
     tick_stamp = (now + (n * FIFTEEN_MINS)) - (now % FIFTEEN_MINS)
 
     return datetime.fromtimestamp(tick_stamp, tz=timezone.utc)
-
-
-def global_check(f):
-    "Decorator to add function to list of checks to run for each command."
-
-    global global_checks
-
-    if f not in global_checks:
-        global_checks.append(f)
-
-    return f
 
 
 def normalize_username(author):
@@ -188,9 +154,7 @@ def startup(f):
             pass
     """
 
-    global startup_handlers
-
-    if f not in startup_handlers:
-        startup_handlers.append(f)
+    if f not in StartupHandlers.list:
+        StartupHandlers.list.append(f)
 
     return f
