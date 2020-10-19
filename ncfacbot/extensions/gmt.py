@@ -10,7 +10,7 @@ from .. import log
 from ..common import DATETIME_FORMAT, get_timespan_chunks
 
 
-@command(brief='Get current time or offset in GMT', aliases=('utc',))
+@command(brief='Get current time or offset in GMT', aliases=['utc',])
 async def gmt(ctx, *, offset: typing.Optional[str]):
     """
     Get current time in GMT or offset by days, hours, and minutes.
