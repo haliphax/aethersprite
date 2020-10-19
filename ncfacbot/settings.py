@@ -9,7 +9,7 @@ Examples for registering a setting and getting/changing/resetting its value:
 
 .. code:: python
 
-    from ncfacbot.common import command
+    from discord.ext.commands import command
     from ncfacbot.settings import register, settings
 
     register('my.setting', 'default value', False, lambda x: True,
