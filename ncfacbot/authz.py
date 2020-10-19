@@ -44,14 +44,13 @@ async def require_roles(ctx, setting):
     .. code-block:: python
 
         from functools import partial
-        from discord.ext import commands
+        from discord.ext.commands import check, command
         from ncfacbot.authz import require_roles
-        from ncfacbot.common import command
 
         authz = partial(require_roles, setting='setting.name')
 
         @command()
-        @commands.check(authz)
+        @check(authz)
         async def my_command(ctx):
             await ctx.send('You are authorized. Congratulations!')
 
@@ -65,19 +64,17 @@ async def require_roles(ctx, setting):
     from .settings import settings
 
     perms = ctx.author.permissions_in(ctx.channel)
-    pass_ = False
 
     if perms.administrator or perms.manage_channels or perms.manage_guild \
             or environ.get('NCFACBOT_OWNER', '') == str(ctx.author):
         # Superusers get a pass
-        pass_ = True
+        return True
 
     values = None
-    kind = type(setting)
 
-    if kind == str:
+    if isinstance(setting, str):
         values = settings[setting].get(ctx)
-    elif kind in (list, tuple):
+    elif isinstance(setting, (list, tuple)):
         names = []
 
         for s in setting:
@@ -97,15 +94,12 @@ async def require_roles(ctx, setting):
     roles = [s.strip().lower() for s in values.split(',')] \
             if len(values) else tuple()
 
-    if len(roles) and len([r for r in ctx.author.roles
-                           if r.name.lower() in roles]):
-        pass_ = True
+    if len(roles) > 0 and len([r for r in ctx.author.roles
+                               if r.name.lower() in roles]) > 0:
+        return True
 
-    if not pass_:
-        await ctx.message.add_reaction(POLICE_OFFICER)
-        log.warn(f'{ctx.author} attempted to access unauthorized '
-                 f'command {ctx.command}')
+    await ctx.message.add_reaction(POLICE_OFFICER)
+    log.warn(f'{ctx.author} attempted to access unauthorized command '
+             f'{ctx.command}')
 
-        return False
-
-    return True
+    return False

@@ -38,7 +38,7 @@ async def on_disconnect():
 async def on_command_error(_, error):
     "Suppress command check failures and invalid commands."
 
-    if type(error) in (CheckFailure, CommandNotFound,):
+    if isinstance(error, (CheckFailure, CommandNotFound)):
         return
 
     raise error

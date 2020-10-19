@@ -116,7 +116,7 @@ class Lobotomy(Cog, name='lobotomy'):
 async def check_lobotomy(ctx):
     "Check that command has not been lobotomized before allowing execution."
 
-    if type(ctx.channel) is DMChannel:
+    if isinstance(ctx.channel, DMChannel):
         # can't lobotomize commands via DM, since we need a guild to check
         # settings values
         return True
