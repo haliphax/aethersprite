@@ -119,7 +119,7 @@ async def check_lobotomy(ctx):
     if type(ctx.channel) is DMChannel:
         # can't lobotomize commands via DM, since we need a guild to check
         # settings values
-        return
+        return True
 
     guild = str(ctx.guild.id)
 
