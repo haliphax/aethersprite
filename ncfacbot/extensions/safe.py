@@ -5,7 +5,7 @@ from functools import partial
 from os import environ
 import re
 # 3rd party
-from discord.ext.commands import check, Cog, command
+from discord.ext.commands import Cog, command
 from flask import abort, Blueprint, request
 from sqlitedict import SqliteDict
 # local
@@ -84,8 +84,6 @@ class Safe(Cog, name='safe'):
             await ctx.send('>>> ' + '\n'.join(msg))
 
     @command(name='safe.help')
-    @check(authz_safe)
-    @check(channel_only)
     async def help(self, ctx):
         "View README for information about safe contents UserScript"
 
@@ -93,8 +91,6 @@ class Safe(Cog, name='safe'):
         log.info(f'{ctx.author} viewed safe README info')
 
     @command()
-    @check(authz_safe)
-    @check(channel_only)
     async def potions(self, ctx):
         "Lists potions in the faction safe"
 
@@ -102,8 +98,6 @@ class Safe(Cog, name='safe'):
         log.info(f'{ctx.author} viewed list of potions')
 
     @command(name='safe.script')
-    @check(authz_safe)
-    @check(channel_only)
     async def script(self, ctx):
         "Get URL for the UserScript to report safe contents"
 
@@ -111,8 +105,6 @@ class Safe(Cog, name='safe'):
         log.info(f'{ctx.author} viewed URL for UserScript')
 
     @command()
-    @check(authz_safe)
-    @check(channel_only)
     async def spells(self, ctx):
         "Lists spell gems in the faction safe"
 
@@ -120,8 +112,6 @@ class Safe(Cog, name='safe'):
         log.info(f'{ctx.author} viewed list of spells')
 
     @command()
-    @check(authz_safe)
-    @check(channel_only)
     async def components(self, ctx):
         "Lists components in the faction safe"
 
@@ -144,7 +134,13 @@ def setup(bot):
     "Discord bot setup"
 
     _settings()
-    bot.add_cog(Safe(bot))
+    cog = Safe(bot)
+
+    for c in cog.get_commands():
+        c.add_check(authz_safe)
+        c.add_check(channel_only)
+
+    bot.add_cog(cog)
 
 
 @blueprint.route('/post', methods=('POST',))

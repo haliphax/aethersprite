@@ -3,12 +3,11 @@
 # stdlib
 import typing
 # 3rd party
-from discord.ext.commands import check, Cog, command
+from discord.ext.commands import Cog, command
 from functools import partial
 # local
 from .. import log
 from ..authz import channel_only, require_roles
-from ..common import THUMBS_DOWN
 from ..settings import register, settings
 
 # messages
@@ -29,9 +28,7 @@ class Settings(Cog, name='settings'):
     def __init__(self, bot):
         self.bot = bot
 
-    @command(name='set')
-    @check(authz)
-    @check(channel_only)
+    @command()
     async def set(self, ctx, name: typing.Optional[str] = None, *value):
         """
         Change/view a setting's value
@@ -69,9 +66,7 @@ class Settings(Cog, name='settings'):
             await ctx.send(f':thumbsdown: Error updating value.')
             log.warn(f'{ctx.author} failed to update setting {name}: {val}')
 
-    @command(name='clear')
-    @check(authz)
-    @check(channel_only)
+    @command()
     async def clear(self, ctx, name):
         "Reset setting <name> to its default value"
 
@@ -86,9 +81,7 @@ class Settings(Cog, name='settings'):
         await ctx.send(':negative_squared_cross_mark: Setting cleared.')
         log.info(f'{ctx.author} cleared setting {name}')
 
-    @command(name='desc')
-    @check(authz)
-    @check(channel_only)
+    @command()
     async def desc(self, ctx, name):
         "View description of setting <name>"
 
@@ -117,4 +110,10 @@ def setup(bot):
              'The server roles that are allowed to administer settings. '
              'Separate multiple values with commas. Administrators and '
              'moderators have de facto access to all commands.')
-    bot.add_cog(Settings(bot))
+    cog = Settings(bot)
+
+    for c in cog.get_commands():
+        c.add_check(authz)
+        c.add_check(channel_only)
+
+    bot.add_cog(cog)

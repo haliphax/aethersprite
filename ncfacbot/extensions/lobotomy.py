@@ -23,7 +23,6 @@ class Lobotomy(Cog, name='lobotomy'):
         self.bot = bot
 
     @command(name='lobotomy.add')
-    @check(require_admin)
     async def add(self, ctx, command, server: typing.Optional[bool] = False):
         """
         Disable the given command
@@ -59,7 +58,6 @@ class Lobotomy(Cog, name='lobotomy'):
         await ctx.send(f':brain: Done.')
 
     @command(name='lobotomy.clear')
-    @check(require_admin)
     async def clear(self, ctx, command, server: typing.Optional[bool] = False):
         """
         Enable the given command
@@ -89,7 +87,6 @@ class Lobotomy(Cog, name='lobotomy'):
         await ctx.send(':wastebasket: Cleared.')
 
     @command(name='lobotomy.list')
-    @check(require_admin)
     async def list(self, ctx, server: typing.Optional[bool] = False):
         """
         List all current channel's lobotomized commands
@@ -145,4 +142,9 @@ async def check_lobotomy(ctx):
 
 def setup(bot):
     bot.add_check(check_lobotomy)
-    bot.add_cog(Lobotomy(bot))
+    cog = Lobotomy(bot)
+
+    for c in cog.get_commands():
+        c.add_check(require_admin)
+
+    bot.add_cog(cog)

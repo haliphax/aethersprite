@@ -45,7 +45,7 @@ async def tick(ctx, n: typing.Optional[int] = 1):
     future_tick = get_next_tick(n)
     tick_str = future_tick.strftime(f'{DATETIME_FORMAT} - ')
     until = seconds_to_str(
-            (future_tick - datetime.now(timezone.utc)).total_seconds)
+            (future_tick - datetime.now(timezone.utc)).total_seconds())
 
     if not len(until) and n > 0:
         until = ' - right now!'

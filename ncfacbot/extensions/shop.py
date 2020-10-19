@@ -4,6 +4,7 @@
 from collections import OrderedDict
 from functools import partial
 import typing
+from discord import channel
 # 3rd party
 from discord.ext.commands import check, Cog, command
 from sqlitedict import SqliteDict
@@ -97,7 +98,6 @@ class Shop(Cog, name='shop'):
 
     @command(name='shop.set', brief='Manipulate your shopping list')
     @check(authz_set)
-    @check(channel_only)
     async def set(self, ctx, num, *, item):
         """
         Manipulate your shopping list
@@ -197,7 +197,6 @@ class Shop(Cog, name='shop'):
 
     @command(name='shop.list', brief='Show shopping list(s)')
     @check(authz_list)
-    @check(channel_only)
     async def list(self, ctx, who: typing.Optional[str]):
         """
         Show shopping list(s)
@@ -272,7 +271,6 @@ class Shop(Cog, name='shop'):
 
     @command(name='shop.clear')
     @check(authz_set)
-    @check(channel_only)
     async def clear(self, ctx):
         "Empty your shopping list"
 
@@ -306,7 +304,12 @@ def setup(bot):
              'The set of roles that are allowed to maintain shopping lists. '
              'If set to the default, there are no restrictions. Separate '
              'multiple entries with commas.')
-    bot.add_cog(Shop(bot))
+    cog = Shop(bot)
+
+    for c in cog.get_commands():
+        c.add_check(channel_only)
+
+    bot.add_cog(cog)
 
 
 def teardown(bot):
