@@ -2,7 +2,7 @@
 
 # stdlib
 import asyncio as aio
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from functools import partial
 from math import ceil
 # 3rd party
@@ -94,24 +94,27 @@ class Raid(Cog, name='raid'):
 
         def reminder1():
             loop.create_task(
-                c.send(f':stopwatch: @here '
-                       f'Raid on {raid.target} in 30 minutes!'))
-            log.info(f'30 minute reminder for {raid.target} @ '
+                c.send(f':stopwatch: @everyone '
+                       f'**Reminder:** Raid on {raid.target} @ '
+                       f'{raid.schedule}! (in 8 hours)'))
+            log.info(f'8 hour reminder for {raid.target} @ '
                      f'{raid.schedule}')
-            self._handles[ctx.guild.id] = loop.call_later(900, reminder2)
+            next = datetime.timestamp(raid.schedule - timedelta(minutes=30))
+            self._handles[ctx.guild.id] = loop.call_at(next, reminder2)
 
         def reminder2():
             loop.create_task(
                 c.send(f':stopwatch: @here '
-                       f'Raid on {raid.target} in 15 minutes!'))
-            log.info(f'15 minute reminder for {raid.target} @ '
+                       f'**Reminder:** Raid on {raid.target} in 30 minutes!'))
+            log.info(f'30 minute reminder for {raid.target} @ '
                      f'{raid.schedule}')
-            self._handles[ctx.guild.id] = loop.call_later(900, announce)
+            next = datetime.timestamp(raid.schedule)
+            self._handles[ctx.guild.id] = loop.call_at(next, announce)
 
         def announce():
             loop.create_task(
                 c.send(f':crossed_swords: @everyone '
-                       f'Time to raid {raid.target}!'))
+                       f'**Time to raid {raid.target}!**'))
             log.info(f'Announcement for {raid.target}')
             self._reset(ctx.guild.id)
 
@@ -133,12 +136,12 @@ class Raid(Cog, name='raid'):
 
         handle = None
 
+        if wait > 28800:
+            handle = loop.call_later(wait - 28800, reminder1)
+            log.info(f'Set 8 hour reminder for {raid.target}')
         if wait > 1800:
-            handle = loop.call_later(wait - 1800, reminder1)
+            handle = loop.call_later(wait - 1800, reminder2)
             log.info(f'Set 30 minute reminder for {raid.target}')
-        elif wait > 900:
-            handle = loop.call_later(wait - 900, reminder2)
-            log.info(f'Set 15 minute reminder for {raid.target}')
         else:
             handle = loop.call_later(wait, announce)
             log.info(f'Scheduled announcement for {raid.target}')
