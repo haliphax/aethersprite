@@ -43,6 +43,7 @@ class Alias(Cog, name='alias'):
 
             return
 
+        # TODO this is too global!
         if cmd.aliases is None:
             cmd.aliases = [alias,]
         else:
