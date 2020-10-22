@@ -6,6 +6,7 @@ from collections import namedtuple
 from datetime import datetime, timezone
 from math import ceil, floor
 import re
+from typing import Optional
 
 # constants
 #: One minute in seconds
@@ -28,14 +29,39 @@ DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
 FakeContext = namedtuple('FakeContext', ('guild',))
 
 
-class StartupHandlers:
+class HandlerCollection:
 
-    "Startup handlers"
+    "Static collection of handlers; to be inherited from"
 
-    list = []
+    _handlers: Optional[set] = None
+    handlers: Optional[set] = None
 
     def __init__(self):
-        raise RuntimeError('Singleton collection; use .list member instead')
+        raise RuntimeError('Singleton collection')
+
+    @classmethod
+    def add(cls, handler):
+        "Add handler to collection."
+
+        if cls.handlers is None:
+            cls.handlers = set([])
+            cls._handlers = set([])
+
+        if handler.__name__ in set(cls._handlers):
+            return
+
+        cls._handlers.add(handler.__name__)
+        cls.handlers.add(handler)
+
+
+class MemberJoinHandlers(HandlerCollection):
+
+    "on_member_join handlers"
+
+
+class ReadyHandlers(HandlerCollection):
+
+    "on_ready handlers"
 
 
 def get_timespan_chunks(string):
@@ -73,22 +99,45 @@ def get_next_tick(n=1):
     return datetime.fromtimestamp(tick_stamp, tz=timezone.utc)
 
 
-def normalize_username(author):
+def handle_member_join(f):
+    "on_member_join event handler decorator"
+
+    MemberJoinHandlers.add(f)
+
+    return f
+
+
+def handle_ready(f):
     """
-    Normalize username for use in messages. If the user has a nick set, that
-    will be used; otherwise, their plain username will be returned.
+    Decorator to add function to list of handlers to run for the ``on_ready``
+    event. The first argument of the function (not counting ``self`` if the
+    function is a method) will be provided with a reference to the bot. To
+    decorate a method, assign the handler during ``__init__``.
 
-    :param author: The User object to normalize
-    :returns: The normalized name
-    :rtype: str
+    .. code:: python
+
+        from discord.ext.commands import Cog
+        from ncfacbot.common import startup
+
+        class SomeClass(Cog):
+            def __init__(self, bot):
+                self.bot = bot
+                self.on_ready = startup(self.on_ready)
+
+            def on_ready(self, _):
+                # don't care about the bot parameter here, but still have to include it
+                # to avoid exceptions
+                pass
+
+        @startup
+        def on_ready(bot):
+            # since we're not a Cog, we need the bot reference to do stuff
+            pass
     """
 
-    name = author.name
+    ReadyHandlers.add(f)
 
-    if hasattr(author, 'nick') and author.nick is not None:
-        name = author.nick
-
-    return name
+    return f
 
 
 def seconds_to_str(ts):
@@ -124,37 +173,3 @@ def seconds_to_str(ts):
         until.append(f'{seconds} second{"s" if seconds > 1 else ""}')
 
     return ', '.join(until)
-
-
-def startup(f):
-    """
-    Decorator to add function to list of handlers to run for the ``on_ready``
-    event. The first argument of the function (not counting ``self`` if the
-    function is a method) will be provided with a reference to the bot. To
-    decorate a method, assign the handler during ``__init__``.
-
-    .. code:: python
-
-        from discord.ext.commands import Cog
-        from ncfacbot.common import startup
-
-        class SomeClass(Cog):
-            def __init__(self, bot):
-                self.bot = bot
-                self.on_ready = startup(self.on_ready)
-
-            def on_ready(self, _):
-                # don't care about the bot parameter here, but still have to include it
-                # to avoid exceptions
-                pass
-
-        @startup
-        def on_ready(bot):
-            # since we're not a Cog, we need the bot reference to do stuff
-            pass
-    """
-
-    if f not in StartupHandlers.list:
-        StartupHandlers.list.append(f)
-
-    return f

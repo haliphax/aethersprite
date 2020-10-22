@@ -11,7 +11,7 @@ from sqlitedict import SqliteDict
 # local
 from .. import log
 from ..authz import channel_only, require_roles
-from ..common import normalize_username, THUMBS_DOWN
+from ..common import THUMBS_DOWN
 from ..settings import register, settings
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
@@ -116,7 +116,7 @@ class Shop(Cog, name='shop'):
         int_num = 0
         name = item.lower()
         author = str(ctx.author)
-        nick = normalize_username(ctx.author)
+        nick = ctx.author.display_name
 
         try:
             int_num = int(num)

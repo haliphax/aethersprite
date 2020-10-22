@@ -4,15 +4,14 @@
 import asyncio as aio
 from datetime import datetime, timedelta, timezone
 from functools import partial
-from math import ceil
 # 3rd party
 from discord.ext.commands import check, Cog, command
 from sqlitedict import SqliteDict
 # local
 from .. import log
 from ..authz import channel_only, require_roles
-from ..common import (DATETIME_FORMAT, FakeContext, normalize_username,
-                      seconds_to_str, startup, THUMBS_DOWN)
+from ..common import (DATETIME_FORMAT, FakeContext, handle_ready,
+                      seconds_to_str, THUMBS_DOWN)
 from ..settings import register, settings
 
 #: Expected format for schedule input
@@ -62,7 +61,7 @@ class Raid(Cog, name='raid'):
 
     def __init__(self, bot):
         self.bot = bot
-        self.on_ready = startup(self.on_ready)
+        self.ready = handle_ready(self.ready)
 
     def _reset(self, guild):
         "Delete schedule, handle, etc. and reset raid"
@@ -159,7 +158,7 @@ class Raid(Cog, name='raid'):
         log.info(f'{raid.leader} scheduled raid on {raid.target} @ '
                  f'{raid.schedule}')
 
-    async def on_ready(self, _):  # pylint: disable=method-hidden
+    async def ready(self, _):  # pylint: disable=method-hidden
         "Schedule raid announcements from database on startup"
 
         if hasattr(self.bot, '__raid_ready__'):
@@ -245,7 +244,7 @@ class Raid(Cog, name='raid'):
         """
 
         dt = datetime.now(timezone.utc)
-        nick = normalize_username(ctx.author)
+        nick = ctx.author.display_name
 
         try:
             if '-' in when:
@@ -264,7 +263,7 @@ class Raid(Cog, name='raid'):
                 if ctx.guild.id in self._schedules \
                 else RaidSchedule(ctx.guild.id, nick, ctx.channel.name)
         raid.schedule = dt
-        raid.leader = normalize_username(ctx.author)
+        raid.leader = nick
         self._schedules[ctx.guild.id] = raid
         await ctx.send(f':calendar: Schedule set to '
                        f'{dt.strftime(DATETIME_FORMAT)}.')
@@ -276,12 +275,12 @@ class Raid(Cog, name='raid'):
     async def target(self, ctx, *, target):
         "Set raid target"
 
-        nick = normalize_username(ctx.author)
+        nick = ctx.author.display_name
         raid = self._schedules[ctx.guild.id] \
                 if ctx.guild.id in self._schedules \
                 else RaidSchedule(ctx.guild.id, nick, ctx.channel.name)
         raid.target = target
-        raid.leader = normalize_username(ctx.author)
+        raid.leader = nick
         self._schedules[ctx.guild.id] = raid
         await ctx.send(f':point_right: Target set to {target}.')
         log.info(f'{ctx.author} set raid target: {target}')

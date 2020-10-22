@@ -11,7 +11,7 @@ from sqlitedict import SqliteDict
 # local
 from .. import log
 from ..authz import channel_only
-from ..common import FakeContext, normalize_username, startup, THUMBS_DOWN
+from ..common import FakeContext, handle_ready, THUMBS_DOWN
 from ..settings import register, settings
 
 #: Maximum allowed timer length
@@ -100,7 +100,7 @@ def _done(bot, guild, channel, user, nick):
         bot.sm_alerts[guild] = cd
 
 
-@startup
+@handle_ready
 async def ready(bot):
     "Schedule SMSchedule from database; immediately announce those missed"
 
@@ -147,7 +147,7 @@ async def sm(ctx, n: typing.Optional[int]=None):
     author = str(ctx.author)
     guild = str(ctx.guild.id)
     loop = aio.get_event_loop()
-    nick = normalize_username(ctx.author)
+    nick = ctx.author.display_name
     now = datetime.now(timezone.utc)
 
     if n is None:

@@ -45,15 +45,27 @@ async def on_command_error(_, error):
 
 
 @bot.event
+async def on_member_join(member):
+    "Fire on_member_join handlers."
+
+    from .common import MemberJoinHandlers
+
+    log.debug(f'New member {member} joined {member.guild}')
+
+    for f in set(MemberJoinHandlers.handlers):
+        await f(member)
+
+
+@bot.event
 async def on_ready():
     "Update presence and fire up registered startup handlers."
 
-    from .common import StartupHandlers
+    from .common import ReadyHandlers
 
     log.info(f'Logged in as {bot.user}')
     await bot.change_presence(activity=activity)
 
-    for f in StartupHandlers.list:
+    for f in set(ReadyHandlers.handlers):
         await f(bot)
 
 

@@ -49,6 +49,13 @@ _This bot is a work in progress. Please excuse my mess..._
 Some of the settings in the project do not have corresponding commands, and
 operate based entirely on events.
 
+- `greet.channel` _(server)_
+  The channel where greeting messages should be sent. Defaults to `general`.
+- `greet.message` _(server)_
+  The message that will be used to greet new users when they join the server.
+  If set to the default, no greeting will be posted. You may use the `{name}`
+  token in your message, and it will be replaced with the new member's
+  username.
 - `nameonly` _(server)_
   If set to anything other than the default value, the bot will only respond
   if it is mentioned directly
