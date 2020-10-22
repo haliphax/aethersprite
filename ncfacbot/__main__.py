@@ -5,7 +5,7 @@ from random import seed
 from sys import stdout
 # 3rd party
 from discord import Activity, ActivityType
-from discord.ext.commands import (Bot, CheckFailure, CommandNotFound,
+from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
                                   when_mentioned_or,)
 # local
 from . import log
@@ -20,8 +20,14 @@ log.setLevel(logging.INFO)
 #: Activity on login
 activity = Activity(name='!help for commands', type=ActivityType.listening)
 
+
 #: The bot itself
 bot = Bot(command_prefix=when_mentioned_or('!'))
+
+
+@command(aliases=['nchelp',])
+async def help(ctx):
+    await ctx.send_help()
 
 
 @bot.event
@@ -86,6 +92,8 @@ def entrypoint():
     seed()
     # load extensions
     bot.load_extension('ncfacbot.extensions._all')
+    bot.remove_command('help')
+    bot.add_command(help)
     # here we go!
     bot.run(environ['DISCORD_TOKEN'])
 
