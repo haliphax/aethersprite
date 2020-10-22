@@ -19,6 +19,7 @@ class Alias(Cog, name='alias'):
 
     def __init__(self, bot):
         self.bot = bot
+        self.aliases = aliases
 
     @command(name='alias.add')
     async def add(self, ctx, alias, command):
@@ -43,14 +44,6 @@ class Alias(Cog, name='alias'):
 
             return
 
-        # TODO this is too global!
-        if cmd.aliases is None:
-            cmd.aliases = [alias,]
-        else:
-            cmd.aliases.append(alias)
-
-        ctx.bot.remove_command(command)
-        ctx.bot.add_command(cmd)
         als[alias] = command
         aliases[guild] = als
         log.info(f'{ctx.author} added alias {alias} for {command}')
@@ -75,13 +68,6 @@ class Alias(Cog, name='alias'):
         else:
             aliases[guild] = als
 
-        cmd = ctx.bot.get_command(alias)
-
-        if cmd is not None \
-                and cmd.aliases is not None \
-                and alias in cmd.aliases:
-            cmd.aliases.remove(alias)
-
         log.info(f'{ctx.author} removed alias {alias}')
         await ctx.send(':wastebasket: Removed.')
 
@@ -96,7 +82,7 @@ class Alias(Cog, name='alias'):
 
         als = aliases[guild]
 
-        output = '**, **'.join([f'`{k} => {als[k]}`' for k in als.keys()])
+        output = '**, **'.join([f'`{k}` => `{als[k]}`' for k in als.keys()])
 
         if len(output) == 0:
             output = 'None'

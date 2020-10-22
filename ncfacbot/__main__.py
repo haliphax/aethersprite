@@ -6,10 +6,12 @@ from sys import stdout
 from typing import Optional
 # 3rd party
 from discord import Activity, ActivityType
+from discord import DMChannel
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
                                   when_mentioned_or,)
 # local
 from . import log
+from .settings import settings
 
 # logging stuff
 streamHandler = logging.StreamHandler(stdout)
@@ -45,11 +47,41 @@ async def on_disconnect():
 
 
 @bot.event
-async def on_command_error(_, error):
+async def on_command_error(ctx, error):
     "Suppress command check failures and invalid commands."
 
-    if isinstance(error, (CheckFailure, CommandNotFound)):
+    if isinstance(error, CheckFailure):
         return
+
+    if isinstance(error, CommandNotFound):
+        if isinstance(ctx.channel, DMChannel):
+            return
+
+        cog = ctx.bot.get_cog('alias')
+
+        if cog is None:
+            return
+
+        guild = str(ctx.guild.id)
+        aliases = cog.aliases[guild] if guild in cog.aliases else None
+
+        if aliases is None:
+            return
+
+        name = ctx.message.content \
+                .replace(ctx.prefix, '').split(' ')[0].strip()
+
+        if name not in aliases:
+            return
+
+        cmd = ctx.bot.get_command(aliases[name])
+
+        if cmd is None:
+            return
+
+        ctx.command = cmd
+
+        return await ctx.bot.invoke(ctx)
 
     raise error
 
