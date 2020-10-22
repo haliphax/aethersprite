@@ -76,7 +76,9 @@ class Alias(Cog, name='alias'):
 
         cmd = ctx.bot.get_command(alias)
 
-        if cmd is not None and cmd.aliases is not None:
+        if cmd is not None \
+                and cmd.aliases is not None \
+                and alias in cmd.aliases:
             cmd.aliases.remove(alias)
 
         log.info(f'{ctx.author} removed alias {alias}')

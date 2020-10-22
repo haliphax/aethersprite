@@ -16,7 +16,7 @@ streamHandler = logging.StreamHandler(stdout)
 streamHandler.setFormatter(logging.Formatter(
     '{asctime} {levelname:<7} {message} <{module}.{funcName}>', style='{'))
 log.addHandler(streamHandler)
-log.setLevel(logging.INFO)
+log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 
 #: Activity on login
 activity = Activity(name='!nchelp for commands', type=ActivityType.listening)
@@ -26,9 +26,12 @@ activity = Activity(name='!nchelp for commands', type=ActivityType.listening)
 bot = Bot(command_prefix=when_mentioned_or('!'))
 
 
-@command(aliases=['nchelp',])
-async def help(ctx, command: Optional[str]):
-    await ctx.send_help(command)
+@command()
+async def nchelp(ctx, command: Optional[str] = None):
+    if command is None:
+        await ctx.send_help()
+    else:
+        await ctx.send_help(command)
 
 
 @bot.event
@@ -91,10 +94,10 @@ def entrypoint():
         'DISCORD_TOKEN not found in environment variables'
     # for any commands or scheduled tasks, etc. that need random numbers
     seed()
+    bot.remove_command('help')
+    bot.add_command(nchelp)
     # load extensions
     bot.load_extension('ncfacbot.extensions._all')
-    bot.remove_command('help')
-    bot.add_command(help)
     # here we go!
     bot.run(environ['DISCORD_TOKEN'])
 
