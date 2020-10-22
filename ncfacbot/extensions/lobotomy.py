@@ -4,7 +4,7 @@
 import typing
 # 3rd party
 from discord import DMChannel
-from discord.ext.commands import check, Cog, command
+from discord.ext.commands import Cog, command
 from sqlitedict import SqliteDict
 # local
 from .. import log
@@ -57,8 +57,8 @@ class Lobotomy(Cog, name='lobotomy'):
         log.info(f'{ctx.author} lobotomized {server_key if server else key}')
         await ctx.send(f':brain: Done.')
 
-    @command(name='lobotomy.clear')
-    async def clear(self, ctx, command, server: typing.Optional[bool] = False):
+    @command(name='lobotomy.remove')
+    async def remove(self, ctx, command, server: typing.Optional[bool] = False):
         """
         Enable the given command
 
@@ -83,8 +83,8 @@ class Lobotomy(Cog, name='lobotomy'):
 
         lobs.remove(server_key if server else key)
         lobotomies[guild] = lobs
-        log.info(f'{ctx.author} cleared {server_key if server else key}')
-        await ctx.send(':wastebasket: Cleared.')
+        log.info(f'{ctx.author} removed {server_key if server else key}')
+        await ctx.send(':wastebasket: Removed.')
 
     @command(name='lobotomy.list')
     async def list(self, ctx, server: typing.Optional[bool] = False):
@@ -131,9 +131,9 @@ async def check_lobotomy(ctx):
 
     for k in keys:
         if k in lobotomies[guild]:
-            log.warn(f'Suppressing lobotomized command from '
-                     f'{ctx.author}: {ctx.command.name} in '
-                     f'#{ctx.channel.name} ({ctx.guild.name})')
+            log.debug(f'Suppressing lobotomized command from '
+                      f'{ctx.author}: {ctx.command.name} in '
+                      f'#{ctx.channel.name} ({ctx.guild.name})')
 
             return False
 

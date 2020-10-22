@@ -28,6 +28,8 @@ _This bot is a work in progress. Please excuse my mess..._
   and per-channel
 - `nick`
   Change the bot's nickname per-server
+- `only`
+  Only allow whitelisted commands in a channel
 - `raid`
   A collection of commands for scheduling and announcing raids
 - `safe`
