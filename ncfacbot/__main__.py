@@ -19,7 +19,7 @@ log.addHandler(streamHandler)
 log.setLevel(logging.INFO)
 
 #: Activity on login
-activity = Activity(name='!help for commands', type=ActivityType.listening)
+activity = Activity(name='!nchelp for commands', type=ActivityType.listening)
 
 
 #: The bot itself
