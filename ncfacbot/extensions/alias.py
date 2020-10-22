@@ -82,7 +82,7 @@ class Alias(Cog, name='alias'):
 
         als = aliases[guild]
 
-        output = '**, **'.join([f'`{k}` => `{als[k]}`' for k in als.keys()])
+        output = ', '.join([f'`{k}` => `{als[k]}`' for k in als.keys()])
 
         if len(output) == 0:
             output = 'None'
