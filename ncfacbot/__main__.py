@@ -3,6 +3,7 @@ import logging
 from os import environ
 from random import seed
 from sys import stdout
+from typing import Optional
 # 3rd party
 from discord import Activity, ActivityType
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
@@ -26,8 +27,8 @@ bot = Bot(command_prefix=when_mentioned_or('!'))
 
 
 @command(aliases=['nchelp',])
-async def help(ctx):
-    await ctx.send_help()
+async def help(ctx, command: Optional[str]):
+    await ctx.send_help(command)
 
 
 @bot.event
