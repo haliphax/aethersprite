@@ -4,11 +4,12 @@
 import typing
 # 3rd party
 from discord import DMChannel
+from discord import channel
 from discord.ext.commands import Cog, command
 from sqlitedict import SqliteDict
 # local
 from .. import log
-from ..authz import require_admin
+from ..authz import channel_only, require_admin
 
 #: Only whitelist database
 onlies = SqliteDict('only.sqlite3', tablename='onlies',
@@ -176,6 +177,7 @@ def setup(bot):
     cog = Only(bot)
 
     for c in cog.get_commands():
+        c.add_check(channel_only)
         c.add_check(require_admin)
 
     bot.add_cog(cog)

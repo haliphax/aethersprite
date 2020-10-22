@@ -17,6 +17,8 @@ _This bot is a work in progress. Please excuse my mess..._
 
 ## Commands
 
+- `alias`
+  Manage aliases for other commands
 - `closest`
   Return the closest tick to the given GMT offset (or now)
 - `github`
