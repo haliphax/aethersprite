@@ -8,10 +8,9 @@ from typing import Optional
 from discord import Activity, ActivityType
 from discord import DMChannel
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
-                                  when_mentioned_or,)
+                                  DefaultHelpCommand, when_mentioned_or,)
 # local
 from . import log
-from .settings import settings
 
 # logging stuff
 streamHandler = logging.StreamHandler(stdout)
@@ -24,16 +23,24 @@ log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 activity = Activity(name='!nchelp for commands', type=ActivityType.listening)
 
 
-#: The bot itself
-bot = Bot(command_prefix=when_mentioned_or('!'))
+def get_ending_note(self):
+    return ('Type !nchelp <command> for more info on a command.\n'
+            'You can also type !nchelp <category> for more info on a '
+            'category.')
+
+DefaultHelpCommand.get_ending_note = get_ending_note
 
 
-@command()
+@command(name='nchelp', hidden=True)
 async def nchelp(ctx, command: Optional[str] = None):
     if command is None:
         await ctx.send_help()
     else:
         await ctx.send_help(command)
+
+
+#: The bot itself
+bot = Bot(command_prefix=when_mentioned_or('!'))
 
 
 @bot.event
