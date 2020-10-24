@@ -12,8 +12,7 @@ from .. import log
 from ..authz import channel_only, require_admin
 
 #: Only whitelist database
-onlies = SqliteDict('only.sqlite3', tablename='onlies',
-                        autocommit=True)
+onlies = SqliteDict('only.sqlite3', tablename='onlies', autocommit=True)
 
 
 class Only(Cog, name='only'):
