@@ -115,7 +115,7 @@ class Shop(Cog, name='shop'):
 
         int_num = 0
         name = item.lower()
-        author = str(ctx.author)
+        author = ctx.author.name
         nick = ctx.author.display_name
 
         try:
@@ -204,7 +204,7 @@ class Shop(Cog, name='shop'):
         Show current shopping list for [who]. If no value is provided, your own list will be shown. If "all" is used, a list of users with lists that have at least one item will be shown (but not their items). If "net" is used, a list of all items needed from all combined lists will be shown (but not who needs them).
         """
 
-        author = str(ctx.author)
+        author = ctx.author.name
         guild = ctx.guild.id
 
         if who is None:
@@ -274,7 +274,7 @@ class Shop(Cog, name='shop'):
     async def clear(self, ctx):
         "Empty your shopping list"
 
-        author = str(ctx.author)
+        author = ctx.author.name
         guild = ctx.guild.id
 
         if not guild in self._lists \
