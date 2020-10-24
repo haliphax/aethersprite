@@ -141,7 +141,7 @@ async def sm(ctx, n: typing.Optional[int]=None):
 
     You may also use a value of 0 to cancel the countdown. If no value is provided, the remaining time of the countdown will be shown.
 
-    Values of n up to 55 are allowed.
+    Values of n up to 100 are allowed.
     """
 
     author = str(ctx.author)
