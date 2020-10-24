@@ -32,12 +32,17 @@ async def require_admin(ctx):
     return False
 
 
-async def require_roles(ctx, setting):
+async def require_roles(ctx, setting, open_by_default=True):
     """
     Check for requiring particular roles (loaded from the given setting) to
     execute a command. For more than one setting (if ``setting`` is a
     list/tuple), the aggregate list will be used. Membership in at least one of
     the roles pulled from the settings is required to pass the filter.
+
+    If this check is used and the setting is empty or nonexistent, the default
+    behavior is to allow anyone and everyone to use the command. If you would
+    like for it to default to "closed" behavior, set the ``open_by_default``
+    argument to ``False``.
 
     Example, if your setting with role(s) is ``setting.name``:
 
@@ -88,8 +93,8 @@ async def require_roles(ctx, setting):
         raise ValueError('setting must be str, list, or tuple')
 
     if values is None:
-        # no roles set; allow anyone
-        return True
+        # no roles set, use default
+        return open_by_default
 
     roles = [s.strip().lower() for s in values.split(',')] \
             if len(values) else tuple()

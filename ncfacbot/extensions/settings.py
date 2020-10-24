@@ -14,7 +14,8 @@ from ..settings import register, settings
 MSG_NO_SETTING = ':person_shrugging: No such setting exists.'
 
 # authorization decorator
-authz = partial(require_roles, setting='settings.adminroles')
+authz = partial(require_roles, setting='settings.adminroles',
+                open_by_default=False)
 
 
 class Settings(Cog, name='settings'):
