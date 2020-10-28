@@ -99,7 +99,7 @@ async def on_member_join(member):
 
     from .common import MemberJoinHandlers
 
-    log.debug(f'New member {member} joined {member.guild}')
+    log.info(f'New member {member} joined {member.guild}')
 
     for f in set(MemberJoinHandlers.handlers):
         await f(member)

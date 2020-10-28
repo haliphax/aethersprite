@@ -3,9 +3,6 @@ Greet extension; sends a pre-defined greeting to a specified channel when new
 users join the guild.
 """
 
-# 3rd party
-from discord import DMChannel, Member
-from discord.ext.commands import Context
 # local
 from .. import log
 from ..common import FakeContext, handle_member_join
@@ -25,7 +22,8 @@ async def member_join(member):
 
     channel = [c for c in member.guild.channels if c.name == chan_setting][0]
     log.info(f'Greeting new member {member} in {member.guild} {channel}')
-    await channel.send(msg_setting.format(name=member.display_name))
+    await channel.send(msg_setting.format(name=member.display_name,
+                                          nl='\n'))
 
 
 def setup(bot):
@@ -35,4 +33,5 @@ def setup(bot):
     register('greet.message', None, lambda x: True, False,
              'The message new members will be greeted with. You may use '
              'the `{name}` token in your message and it will be replaced '
-             'automatically with the member\'s username.')
+             'automatically with the member\'s username. The `{nl}` token '
+             'will be replaced with a line break (new line).')
