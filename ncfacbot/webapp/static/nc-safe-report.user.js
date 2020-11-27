@@ -36,7 +36,7 @@
 	const
 		categories = ['Component', 'Potion', 'Spell'],
 		regex_category = /Retrieve ([A-Za-z]+)/,
-		regex_spellblind = /^small [a-z]+ gem, [0-9]+ shots( \([0-9]+\))?$/i,
+		regex_spellblind = /^small [a-z]+ gem(, [0-9]+ shots)?( \([0-9]+\))?$/i,
 		category_items = {},
 		chars = GM_getValue('characters', {}),
 		last_known = GM_getValue('last_known', ''),
