@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Nexus Clash Discord Bot Safe Contents (B4)
 // @namespace	https://roadha.us
-// @version		0.10
+// @version		0.11
 // @description	Sends the components, potions, and spell gems in the safe for consumption by https://github.com/haliphax/ncfacbot
 // @author		haliphax
 // @match		https://www.nexusclash.com/modules.php?name=Game*
