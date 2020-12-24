@@ -29,14 +29,23 @@ async def require_admin(ctx):
             or environ.get('NCFACBOT_OWNER', '') == str(ctx.author):
         return True
 
-    help_cmd = ctx.bot.get_command('nchelp')
-    help_aliases = ['nchelp'] + help_cmd.aliases
+    cog = ctx.bot.get_cog('alias')
 
-    # only react if they invoked the command directly
+    if cog is None:
+        return False
+
+    aliases = cog.get_aliases(ctx, 'nchelp')
+    help_aliases = ['nchelp'] + aliases
+
+    # only react if they invoked the command directly (i.e. not via !help)
     if ctx.invoked_with not in help_aliases:
         await ctx.message.add_reaction(POLICE_OFFICER)
+        log.warn(f'{ctx.author} attempted to access admin command '
+                 f'{ctx.command}')
 
-    return False
+        return False
+
+    return True
 
 
 async def require_roles(ctx, setting, open_by_default=True):
@@ -110,13 +119,22 @@ async def require_roles(ctx, setting, open_by_default=True):
                                if r.name.lower() in roles]) > 0:
         return True
 
-    help_cmd = ctx.bot.get_command('nchelp')
-    help_aliases = ['nchelp'] + help_cmd.aliases
+    cog = ctx.bot.get_cog('alias')
 
-    # only react if they invoked the command directly
+    if cog is None:
+        log.warn('alias cog not loaded')
+
+        return False
+
+    aliases = cog.get_aliases(ctx, 'nchelp')
+    help_aliases = ['nchelp'] + aliases
+
+    # only react if they invoked the command directly (i.e. not via !help)
     if ctx.invoked_with not in help_aliases:
         await ctx.message.add_reaction(POLICE_OFFICER)
         log.warn(f'{ctx.author} attempted to access unauthorized command '
                  f'{ctx.command}')
 
-    return False
+        return False
+
+    return True

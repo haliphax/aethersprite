@@ -17,6 +17,24 @@ class Alias(Cog, name='alias'):
 
     "Alias commands; add and remove command aliases"
 
+    @staticmethod
+    def get_aliases(ctx, cmd):
+        "Get aliases for the given command and context."
+
+        mylist = list()
+        guild = str(ctx.guild.id)
+
+        if guild not in aliases:
+            return mylist
+
+        glist = aliases[guild]
+
+        for k in glist:
+            if glist[k] == cmd:
+                mylist.append(k)
+
+        return mylist
+
     def __init__(self, bot):
         self.bot = bot
         self.aliases = aliases
@@ -81,7 +99,6 @@ class Alias(Cog, name='alias'):
             aliases[guild] = dict()
 
         als = aliases[guild]
-
         output = ', '.join([f'`{k}` => `{als[k]}`' for k in als.keys()])
 
         if len(output) == 0:
