@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name		Nexus Clash Discord Bot Safe Contents (B4)
 // @namespace	https://roadha.us
-// @version		0.10
+// @version		0.12
 // @description	Sends the components, potions, and spell gems in the safe for consumption by https://github.com/haliphax/ncfacbot
 // @author		haliphax
 // @match		https://www.nexusclash.com/modules.php?name=Game*
@@ -36,7 +36,7 @@
 	const
 		categories = ['Component', 'Potion', 'Spell'],
 		regex_category = /Retrieve ([A-Za-z]+)/,
-		regex_spellblind = /^small [a-z]+ gem, [0-9]+ shots( \([0-9]+\))?$/i,
+		regex_spellblind = /^small [a-z]+ gem(, [0-9]+ shots)?( \([0-9]+\))?$/i,
 		category_items = {},
 		chars = GM_getValue('characters', {}),
 		last_known = GM_getValue('last_known', ''),
@@ -108,14 +108,12 @@
 			category = categories[category_idx],
 			items = form.querySelectorAll('option');
 
-		last_counts[category] = items.length;
-
 		for (let i = 0; i < items.length; i++) {
 			const name = items[i].innerText.trim();
 
 			// if spell blind or can't tell potions apart, skip category
 			if ((category == 'Spell' && regex_spellblind.exec(name))
-				|| (category == 'Potion' && name.indexOf('Liq') >= 0))
+				|| (category == 'Potion' && name.indexOf('Bot') == 0))
 			{
 				category_items[category].push('0');
 

@@ -43,9 +43,7 @@ async def require_admin(ctx):
         log.warn(f'{ctx.author} attempted to access admin command '
                  f'{ctx.command}')
 
-        return False
-
-    return True
+    return False
 
 
 async def require_roles(ctx, setting, open_by_default=True):
@@ -135,6 +133,4 @@ async def require_roles(ctx, setting, open_by_default=True):
         log.warn(f'{ctx.author} attempted to access unauthorized command '
                  f'{ctx.command}')
 
-        return False
-
-    return True
+    return False
