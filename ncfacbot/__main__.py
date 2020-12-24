@@ -20,7 +20,7 @@ log.addHandler(streamHandler)
 log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 
 #: Activity on login
-activity = Activity(name='!nchelp for commands', type=ActivityType.listening)
+activity = Activity(name='!nchelp', type=ActivityType.listening)
 
 
 def get_ending_note(self):
