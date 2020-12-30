@@ -122,8 +122,7 @@ class Raid(Cog, name='raid'):
 
         if ctx.guild.id in self._handles \
                 and self._handles[ctx.guild.id] is not None:
-            self._handles[ctx.guild.id].cancel()
-            del self._handles[ctx.guild.id]
+            self._reset(ctx.guild.id)
 
         wait = (raid.schedule - datetime.now(timezone.utc)).total_seconds()
 
@@ -138,7 +137,7 @@ class Raid(Cog, name='raid'):
         if wait > 28800:
             handle = loop.call_later(wait - 28800, reminder1)
             log.info(f'Set 8 hour reminder for {raid.target}')
-        if wait > 1800:
+        elif wait > 1800:
             handle = loop.call_later(wait - 1800, reminder2)
             log.info(f'Set 30 minute reminder for {raid.target}')
         else:
