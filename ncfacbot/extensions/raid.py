@@ -95,7 +95,8 @@ class Raid(Cog, name='raid'):
             loop.create_task(
                 c.send(f':stopwatch: @everyone '
                        f'**Reminder:** Raid on {raid.target} @ '
-                       f'{raid.schedule}! (in 8 hours)'))
+                       f'{raid.schedule.strftime(DATETIME_FORMAT)}! '
+                       f'(in 8 hours)'))
             log.info(f'8 hour reminder for {raid.target} @ '
                      f'{raid.schedule}')
             next = datetime.timestamp(raid.schedule - timedelta(minutes=30))
@@ -123,6 +124,7 @@ class Raid(Cog, name='raid'):
         if ctx.guild.id in self._handles \
                 and self._handles[ctx.guild.id] is not None:
             self._reset(ctx.guild.id)
+            self._schedules[ctx.guild.id] = raid
 
         wait = (raid.schedule - datetime.now(timezone.utc)).total_seconds()
 
