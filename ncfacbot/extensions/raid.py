@@ -121,11 +121,6 @@ class Raid(Cog, name='raid'):
         if raid.target is None or raid.schedule is None:
             return True
 
-        if ctx.guild.id in self._handles \
-                and self._handles[ctx.guild.id] is not None:
-            self._reset(ctx.guild.id)
-            self._schedules[ctx.guild.id] = raid
-
         wait = (raid.schedule - datetime.now(timezone.utc)).total_seconds()
 
         if wait <= 0:
@@ -146,6 +141,7 @@ class Raid(Cog, name='raid'):
             handle = loop.call_later(wait, announce)
             log.info(f'Scheduled announcement for {raid.target}')
 
+        self._schedules[ctx.guild.id] = raid
         self._handles[ctx.guild.id] = handle
 
         if silent:
