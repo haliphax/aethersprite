@@ -64,7 +64,36 @@ class ReadyHandlers(HandlerCollection):
     "on_ready handlers"
 
 
-def get_timespan_chunks(string):
+def get_channel_for_id(guild, id: int) -> str:
+    """
+    Return channel name for given guild and channel ID.
+
+    :param guild: The guild object to search
+    :param id: The channel ID to search for
+    :returns: The name of the channel
+    """
+
+    chans = [c.name for c in guild.channels if c.id == id]
+
+    return chans[0] if len(chans) else None
+
+
+def get_id_for_channel(guild, channel: str) -> int:
+    """
+    Return channel ID for given guild and channel name.
+
+    :param guild: The guild object to search
+    :param channel: The channel to search for
+    :returns: The ID of the channel
+    """
+
+    channel = channel.lower()
+    ids = [c.id for c in guild.channels if c.name.lower() == channel]
+
+    return ids[0] if len(ids) else None
+
+
+def get_timespan_chunks(string: str):
     """
     Search string for chunks of timespan parameters, like 5d 10h 15m, etc.
 

@@ -12,7 +12,10 @@ from sqlitedict import SqliteDict
 from .. import log
 from ..authz import channel_only
 from ..common import FakeContext, handle_ready, THUMBS_DOWN
+from ..filters import ChannelFilter
 from ..settings import register, settings
+
+channel_filter = ChannelFilter('sm.channel')
 
 #: Maximum allowed timer length
 SM_LIMIT = 100
@@ -258,7 +261,8 @@ def setup(bot):
     register('sm.channel', None, lambda x: True, False,
              'The channel where SM countdown expiry announcements will be '
              'posted. If set to the default, they will be announced in the '
-             'same channel where they were last manipulated (per-user).')
+             'same channel where they were last manipulated (per-user).',
+             filter=channel_filter)
     bot.add_command(sm)
 
 

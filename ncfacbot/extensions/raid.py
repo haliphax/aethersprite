@@ -12,6 +12,7 @@ from .. import log
 from ..authz import channel_only, require_roles
 from ..common import (DATETIME_FORMAT, FakeContext, handle_ready,
                       seconds_to_str, THUMBS_DOWN)
+from ..filters import ChannelFilter
 from ..settings import register, settings
 
 #: Expected format for schedule input
@@ -284,12 +285,16 @@ class Raid(Cog, name='raid'):
         await self._go(raid, ctx)
 
 
+channel_filter = ChannelFilter('raid.channel')
+
+
 def setup(bot):
     # settings
     register('raid.channel', None, lambda x: True, False,
              'The channel where raids will be announced. If set to the '
              'default, they will be announced in the same channel where the '
-             'last modification to the target or schedule was made.')
+             'last modification to the target or schedule was made.',
+             filter=channel_filter)
     register('raid.scheduleroles', None, lambda x: True, False,
              'The server roles that are allowed to schedule/cancel raids and '
              'set raid targets. If set to the default, there are no '

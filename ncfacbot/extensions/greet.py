@@ -6,7 +6,10 @@ users join the guild.
 # local
 from .. import log
 from ..common import FakeContext, handle_member_join
+from ..filters import ChannelFilter
 from ..settings import register, settings
+
+channel_filter = ChannelFilter('greet.channel')
 
 
 @handle_member_join
@@ -29,7 +32,8 @@ async def member_join(member):
 def setup(bot):
     # settings
     register('greet.channel', 'general', lambda x: True, False,
-             'The channel where greetings should be sent.')
+             'The channel where greetings should be sent.',
+             filter=channel_filter)
     register('greet.message', None, lambda x: True, False,
              'The message new members will be greeted with. You may use '
              'the `{name}` token in your message and it will be replaced '

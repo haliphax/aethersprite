@@ -4,7 +4,6 @@
 import typing
 # 3rd party
 from discord import DMChannel
-from discord import channel
 from discord.ext.commands import Cog, command
 from sqlitedict import SqliteDict
 # local

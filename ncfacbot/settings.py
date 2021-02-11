@@ -29,6 +29,7 @@ Examples for registering a setting and getting/changing/resetting its value:
 """
 
 # stdlib
+from __future__ import annotations
 import typing
 # 3rd party
 from sqlitedict import SqliteDict
@@ -49,7 +50,8 @@ class Setting(object):
 
     def __init__(self, name: str, default: str, validate: callable,
                  channel: typing.Optional[bool] = False,
-                 description: typing.Optional[str] = None):
+                 description: typing.Optional[str] = None,
+                 filter: 'SettingFilter' = None):
         if name is None:
             raise ValueError('Name must not be None')
 
@@ -63,6 +65,8 @@ class Setting(object):
         self.channel = channel
         #: This setting's description
         self.description = description
+        #: The filter used to manipulate setting input/output
+        self.filter = filter
 
     def _ctxkey(self, ctx):
         """
@@ -81,18 +85,22 @@ class Setting(object):
 
         return key
 
-    def set(self, ctx, value: str):
+    def set(self, ctx, value: str, raw: bool = False):
         """
         Change the setting's value.
 
         :param ctx: The Discord connection context
         :param value: The value to assign (or ``None`` for the default)
+        :param raw: Set to True to bypass filtering
         :returns: Success
         :rtype: bool
         """
 
         key = self._ctxkey(ctx)
         vals = self._values[key] if key in self._values else {}
+
+        if not raw and self.filter is not None:
+            value = self.filter.in_(ctx, value)
 
         if value is None:
             vals[self.name] = self.default
@@ -106,12 +114,13 @@ class Setting(object):
 
         return True
 
-    def get(self, ctx):
+    def get(self, ctx, raw: bool = False):
         """
         Get the setting's value.
 
         :param ctx: The Discord connection context
         :returns: The setting's value
+        :param raw: Set to True to bypass filtering
         :rtype: str
         """
 
@@ -120,12 +129,36 @@ class Setting(object):
                 if key in self._values and self.name in self._values[key] \
                 else None
 
+        if not raw and self.filter is not None:
+            val = self.filter.out(ctx)
+
         return self.default if val is None else val
+
+
+class SettingFilter(object):
+
+    "A class with methods for filtering a setting's input and output"
+
+    setting = None
+
+    def __init__(self, setting):
+        self.setting = setting
+
+    def in_(self, ctx, value: str):
+        "Must override; input filter."
+
+        raise NotImplementedError()
+
+    def out(self, ctx):
+        "Must override; output filter."
+
+        raise NotImplementedError()
 
 
 def register(name: str, default: str, validator: callable,
              channel: typing.Optional[bool] = False,
-             description: typing.Optional[str] = None):
+             description: typing.Optional[str] = None,
+             filter: typing.Optional[SettingFilter] = None):
     """
     Register a setting.
 
@@ -133,6 +166,7 @@ def register(name: str, default: str, validator: callable,
     :param default: The default value if none is provided
     :param validator: The validation function for the setting's value
     :param channel: If this is a channel (and not a guild) setting
+    :param filter:
     """
 
     global settings
@@ -140,4 +174,5 @@ def register(name: str, default: str, validator: callable,
     if name in settings:
         raise Exception(f'Setting already exists: {name}')
 
-    settings[name] = Setting(name, default, validator, channel, description)
+    settings[name] = Setting(name, default, validator, channel, description,
+                             filter=filter)
