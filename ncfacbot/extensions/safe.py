@@ -18,6 +18,8 @@ from ..settings import register, settings
 MAX_ITEMS_PER_MESSAGE = 20
 #: Regex for splitting apart spell gem text
 SPELLS_PATTERN = r'([- a-zA-Z0-9]+) - Small \w+ Gem, (\d+) shots \((\d+)\)'
+#: Regex for getting counts from potions, etc.
+COUNTS_PATTERN = r'\((\d+)\)'
 #: URL for UserScript, if any
 USERSCRIPT_URL = environ.get(
         'SAFE_CONTENTS_USERSCRIPT',
@@ -219,6 +221,26 @@ def http_safe():
 
             d = data['items']
             d['Spell'] = cleaned
+            data['items'] = d
+
+        # add icons to potion listings
+        elif category == 'Potion':
+            updated = []
+
+            for item in data['items'][category]:
+                icon = ':green_circle:'
+                m = re.search(COUNTS_PATTERN, item)
+                count = int(m.groups()[0])
+
+                if count < 12:
+                    icon = ':red_circle:'
+                elif count < 24:
+                    icon = ':yellow_circle:'
+
+                updated.append(' '.join((icon, item)))
+
+            d = data['items']
+            d['Potion'] = updated
             data['items'] = d
 
     db[guild] = {
