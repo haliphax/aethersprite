@@ -87,7 +87,7 @@ def get_id_for_channel(guild, channel: str) -> int:
     :returns: The ID of the channel
     """
 
-    channel = channel.lower()
+    channel = channel.lower() if channel is not None else channel
     ids = [c.id for c in guild.channels if c.name.lower() == channel]
 
     return ids[0] if len(ids) else None
