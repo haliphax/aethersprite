@@ -12,7 +12,7 @@ from .. import log
 from ..authz import channel_only, require_roles
 from ..common import (DATETIME_FORMAT, FakeContext, handle_ready,
                       seconds_to_str, THUMBS_DOWN)
-from ..filters import ChannelFilter
+from ..filters import ChannelFilter, RoleFilter
 from ..settings import register, settings
 
 #: Expected format for schedule input
@@ -286,6 +286,8 @@ class Raid(Cog, name='raid'):
 
 
 channel_filter = ChannelFilter('raid.channel')
+scheduleroles_filter = RoleFilter('raid.scheduleroles')
+checkroles_filter = RoleFilter('raid.checkroles')
 
 
 def setup(bot):
@@ -298,11 +300,13 @@ def setup(bot):
     register('raid.scheduleroles', None, lambda x: True, False,
              'The server roles that are allowed to schedule/cancel raids and '
              'set raid targets. If set to the default, there are no '
-             'restrictions. Separate multiple entries with commas.')
+             'restrictions. Separate multiple entries with commas.',
+             filter=scheduleroles_filter)
     register('raid.checkroles', None, lambda x: True, False,
              'The server roles that are allowed to check current raid '
              'schedule and target. If set to the default, there are no '
-             'restrictions. Separate multiple entries with commas.')
+             'restrictions. Separate multiple entries with commas.',
+             filter=checkroles_filter)
     cog = Raid(bot)
 
     for c in cog.get_commands():

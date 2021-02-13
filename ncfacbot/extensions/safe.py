@@ -12,6 +12,7 @@ from sqlitedict import SqliteDict
 from .. import log
 from ..authz import channel_only, require_roles
 from ..common import FakeContext
+from ..filters import RoleFilter
 from ..settings import register, settings
 
 #: Maximum number of items listed per Discord message to avoid rejection
@@ -121,6 +122,9 @@ class Safe(Cog, name='safe'):
         log.info(f'{ctx.author} viewed list of components')
 
 
+roles_filter = RoleFilter('safe.roles')
+
+
 def _settings():
     "Helper function for registering settings"
 
@@ -129,7 +133,7 @@ def _settings():
     register('safe.roles', None, lambda x: True, False,
              'The server roles that are allowed to view safe contents. If set '
              'there are no restrictions. Separate multiple entries with '
-             'commas.')
+             'commas.', filter=roles_filter)
 
 
 def setup(bot):

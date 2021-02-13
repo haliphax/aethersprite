@@ -99,8 +99,11 @@ class Setting(object):
         key = self._ctxkey(ctx)
         vals = self._values[key] if key in self._values else {}
 
-        if not raw and self.filter is not None:
-            value = self.filter.in_(ctx, value)
+        try:
+            if not raw and self.filter is not None:
+                value = self.filter.in_(ctx, value)
+        except ValueError:
+            return False
 
         if value is None:
             vals[self.name] = self.default

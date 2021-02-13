@@ -93,6 +93,35 @@ def get_id_for_channel(guild, channel: str) -> int:
     return ids[0] if len(ids) else None
 
 
+def get_id_for_role(guild, role: str) -> int:
+    """
+    Return role ID for given guild and role name.
+
+    :param guild: The guild object to search
+    :param role: The role to search for
+    :returns: The ID of the role
+    """
+
+    role = role.lower() if role is not None else role
+    ids = [c.id for c in guild.roles if c.name.lower() == role]
+
+    return ids[0] if len(ids) else None
+
+
+def get_role_for_id(guild, id: int) -> str:
+    """
+    Return role name for given guild and role ID.
+
+    :param guild: The guild object to search
+    :param id: The role ID to search for
+    :returns: The name of the role
+    """
+
+    roles = [c.name for c in guild.roles if c.id == id]
+
+    return roles[0] if len(roles) else None
+
+
 def get_timespan_chunks(string: str):
     """
     Search string for chunks of timespan parameters, like 5d 10h 15m, etc.

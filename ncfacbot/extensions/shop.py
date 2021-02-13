@@ -12,6 +12,7 @@ from sqlitedict import SqliteDict
 from .. import log
 from ..authz import channel_only, require_roles
 from ..common import THUMBS_DOWN
+from ..filters import RoleFilter
 from ..settings import register, settings
 
 #: Hard-coded list of components keyed by lowercase item name for lookup
@@ -294,16 +295,20 @@ class Shop(Cog, name='shop'):
                        'cleared.')
 
 
+list_filter = RoleFilter('shop.listroles')
+set_filter = RoleFilter('shop.setroles')
+
+
 def setup(bot):
     # settings
     register('shop.listroles', None, lambda x: True, False,
              'The set of roles that are allowed to view shopping lists. '
              'If set to the default, there are no restrictions. Separate '
-             'multiple entries with commas.')
+             'multiple entries with commas.', filter=list_filter)
     register('shop.setroles', None, lambda x: True, False,
              'The set of roles that are allowed to maintain shopping lists. '
              'If set to the default, there are no restrictions. Separate '
-             'multiple entries with commas.')
+             'multiple entries with commas.', filter=set_filter)
     cog = Shop(bot)
 
     for c in cog.get_commands():

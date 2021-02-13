@@ -78,7 +78,7 @@ class Settings(Cog, name='settings'):
 
             return
 
-        settings[name].set(ctx, None)
+        settings[name].set(ctx, None, raw=True)
         await ctx.send(':negative_squared_cross_mark: Setting cleared.')
         log.info(f'{ctx.author} cleared setting {name}')
 

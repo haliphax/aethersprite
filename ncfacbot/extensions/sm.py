@@ -12,7 +12,7 @@ from sqlitedict import SqliteDict
 from .. import log
 from ..authz import channel_only
 from ..common import FakeContext, handle_ready, THUMBS_DOWN
-from ..filters import ChannelFilter
+from ..filters import ChannelFilter, RoleFilter
 from ..settings import register, settings
 
 channel_filter = ChannelFilter('sm.channel')
@@ -253,11 +253,15 @@ async def sm(ctx, n: typing.Optional[int]=None):
     log.info(f'{ctx.author} started SM countdown for {n} {minutes}')
 
 
+medic_filter = RoleFilter('sm.medicrole')
+
+
 def setup(bot):
     # settings
-    register('sm.medicrole', 'medic', lambda x: True, False,
+    register('sm.medicrole', None, lambda x: True, False,
              'The Discord server role used for announcing SM countdown '
-             'expirations. Will be suppressed if it doesn\'t exist.')
+             'expirations. Will be suppressed if it doesn\'t exist.',
+             filter=medic_filter)
     register('sm.channel', None, lambda x: True, False,
              'The channel where SM countdown expiry announcements will be '
              'posted. If set to the default, they will be announced in the '
