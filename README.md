@@ -11,9 +11,12 @@ _This bot is a work in progress. Please excuse my mess..._
 - Multi-server, multi-channel capable
 - Built on [discord.py], so new commands are easy to create and integrate
 - Server- and channel-specific settings framework for command customization
+  - Input and output filters for further customization of settings
 - Role-based authorization for commands
 - Persistence of data and scheduled events during downtime
 - [Flask]-based web application for web hooks, pages, file storage, etc.
+- Deal with friendly role and channel names in commands, but store reliable
+  IDs for permanence
 
 ## Commands
 
