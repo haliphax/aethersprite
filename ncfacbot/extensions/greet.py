@@ -31,7 +31,7 @@ async def member_join(member):
 
 def setup(bot):
     # settings
-    register('greet.channel', 'general', lambda x: True, False,
+    register('greet.channel', None, lambda x: True, False,
              'The channel where greetings should be sent.',
              filter=channel_filter)
     register('greet.message', None, lambda x: True, False,

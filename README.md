@@ -57,7 +57,9 @@ Some of the settings in the project do not have corresponding commands, and
 operate based entirely on events.
 
 - `greet.channel` _(server)_
-  The channel where greeting messages should be sent. Defaults to `general`.
+  The channel where greeting messages should be sent. Defaults to an empty
+  value. Both the channel and message must be set before this feature will be
+  enabled.
 - `greet.message` _(server)_
   The message that will be used to greet new users when they join the server.
   If set to the default, no greeting will be posted. You may use the `{name}`
