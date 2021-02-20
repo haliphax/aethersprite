@@ -2,7 +2,7 @@
 token = "SOMEREALLYLONGSTRINGTHATDISCORDGIVESYOU"
 owner = "haliphax#4859"
 extensions = [
-	"ncfacbot.extensions.base._all",
+	"aethersprite.extensions.base._all",
 ]
 
 [webapp]
