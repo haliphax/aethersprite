@@ -1,6 +1,7 @@
 "Setting filters module"
 
 # local
+from . import log
 from .common import (get_channel_for_id, get_id_for_channel, get_id_for_role,
                      get_role_for_id)
 from .settings import SettingFilter, settings
@@ -33,7 +34,8 @@ class RoleFilter(SettingFilter):
     "Filter used for converting role names to IDs and back"
 
     def in_(self, ctx, value: str):
-        ids = [get_id_for_role(ctx.guild, v) for v in value.split(',')]
+        log.info(value.split(','))
+        ids = [get_id_for_role(ctx.guild, v.strip()) for v in value.split(',')]
 
         for id in ids:
             if id is None:
