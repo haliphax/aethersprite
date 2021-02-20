@@ -1,10 +1,18 @@
 "Load all command extensions"
 
-from .. import base
-
 META_EXTENSION = True
 
-_mods = [m for m in dir(base) if m[0] != '_']
+_mods = (
+    'alias',
+    'github',
+    'greet',
+    'gmt',
+    'lobotomy',
+    'name_only',
+    'nick',
+    'only',
+    'settings',
+)
 _package = __name__.replace('._all', '')
 
 
