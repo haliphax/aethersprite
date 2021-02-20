@@ -141,22 +141,6 @@ def get_timespan_chunks(string: str):
     return (days, hours, minutes)
 
 
-def get_next_tick(n=1):
-    """
-    Calculate future tick as datetime in GMT.
-
-    :param n: The number of ticks forward to calculate
-    :type n: int
-    :returns: The time of the calculated tick
-    :rtype: datetime
-    """
-
-    now = calendar.timegm(datetime.now(timezone.utc).timetuple())
-    tick_stamp = (now + (n * FIFTEEN_MINS)) - (now % FIFTEEN_MINS)
-
-    return datetime.fromtimestamp(tick_stamp, tz=timezone.utc)
-
-
 def handle_member_join(f):
     "on_member_join event handler decorator"
 
@@ -175,19 +159,19 @@ def handle_ready(f):
     .. code:: python
 
         from discord.ext.commands import Cog
-        from aethersprite.common import startup
+        from aethersprite.common import handle_ready
 
         class SomeClass(Cog):
             def __init__(self, bot):
                 self.bot = bot
-                self.on_ready = startup(self.on_ready)
+                self.on_ready = handle_ready(self.on_ready)
 
             def on_ready(self, _):
                 # don't care about the bot parameter here, but still have to include it
                 # to avoid exceptions
                 pass
 
-        @startup
+        @handle_ready
         def on_ready(bot):
             # since we're not a Cog, we need the bot reference to do stuff
             pass
