@@ -25,7 +25,7 @@ config = {
 }
 
 # Load config from file and merge with defaults
-config_file = environ.get('NCFACBOT_CONFIG', './config.toml')
+config_file = environ.get('AETHERSPRITE_CONFIG', 'config.toml')
 config = {**config, **toml.load(config_file)}
 
 # load webapp just so the config gets set for url_for, etc.
