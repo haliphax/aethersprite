@@ -1,4 +1,4 @@
-"Nexus Clash Faction Discord bot"
+"Aethersprite Discord bot/framework"
 
 # stdlib
 from importlib import import_module
