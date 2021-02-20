@@ -2,6 +2,8 @@
 
 A [Discord] bot and extension framework.
 
+![Aethersprite](https://github.com/haliphax/aethersprite/raw/assets/aethersprite.png)
+
 _This bot is a work in progress. Please excuse my mess..._
 
 ## Features
