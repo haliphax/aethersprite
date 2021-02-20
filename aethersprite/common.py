@@ -175,7 +175,7 @@ def handle_ready(f):
     .. code:: python
 
         from discord.ext.commands import Cog
-        from ncfacbot.common import startup
+        from aethersprite.common import startup
 
         class SomeClass(Cog):
             def __init__(self, bot):

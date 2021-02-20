@@ -6,9 +6,9 @@ import typing
 from discord.ext.commands import Cog, command
 from functools import partial
 # local
-from .. import log
-from ..authz import channel_only, require_roles
-from ..settings import register, settings
+from aethersprite import log
+from aethersprite.authz import channel_only, require_roles
+from aethersprite.settings import register, settings
 
 # messages
 MSG_NO_SETTING = ':person_shrugging: No such setting exists.'

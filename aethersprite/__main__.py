@@ -10,7 +10,7 @@ from discord import DMChannel
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
                                   DefaultHelpCommand, when_mentioned_or,)
 # local
-from . import log
+from . import config, log
 
 # logging stuff
 streamHandler = logging.StreamHandler(stdout)
@@ -126,19 +126,23 @@ async def on_resumed():
 # redundant, but one last check in case someone wants to get real shifty and
 # do something that requires them to import __main__ from another entry point
 def entrypoint():
-    "ncfacbot main entry point."
+    "aethersprite main entry point."
 
+    token = config['bot'].get('token', environ.get('DISCORD_TOKEN', None))
     # need credentials
-    assert 'DISCORD_TOKEN' in environ, \
-        'DISCORD_TOKEN not found in environment variables'
+    assert token is not None, \
+        'bot.token not in config and DISCORD_TOKEN not in env variables'
     # for any commands or scheduled tasks, etc. that need random numbers
     seed()
     bot.remove_command('help')
     bot.add_command(nchelp)
+
     # load extensions
-    bot.load_extension('ncfacbot.extensions._all')
+    for ext in config['bot']['extensions']:
+        bot.load_extension(ext)
+
     # here we go!
-    bot.run(environ['DISCORD_TOKEN'])
+    bot.run(token)
 
 if __name__ == '__main__':
     entrypoint()

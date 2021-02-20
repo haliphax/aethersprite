@@ -1,8 +1,6 @@
-# ncfacbot
+# Aethersprite
 
-A [Nexus Clash] Faction [Discord] bot.
-
-<img src="https://raw.githubusercontent.com/haliphax/ncfacbot/assets/assets/ncfacbot-header.jpg" style="width: 100%; max-width: 100%;" alt="Header image" />
+A [Discord] bot and extension framework.
 
 _This bot is a work in progress. Please excuse my mess..._
 
@@ -17,13 +15,13 @@ _This bot is a work in progress. Please excuse my mess..._
 - [Flask]-based web application for web hooks, pages, file storage, etc.
 - Deal with friendly role and channel names in commands, but store reliable
   IDs for permanence
+- [TOML] configuration file for immutable settings
+- Able to load multiple commands together as [extension packs]
 
 ## Commands
 
 - `alias`
   Manage aliases for other commands
-- `closest`
-  Return the closest tick to the given GMT offset (or now)
 - `github`
   Information about the project and a link to this repository
 - `gmt`
@@ -35,21 +33,8 @@ _This bot is a work in progress. Please excuse my mess..._
   Change the bot's nickname per-server
 - `only`
   Only allow whitelisted commands in a channel
-- `raid`
-  A collection of commands for scheduling and announcing raids
-- `safe`
-  A collection of commands for viewing faction safe contents -
-  [Discord Bot Safe README]
 - `settings`
   A collection of commands for manipulating the bot's settings framework
-- `shop`
-  A collection of commands for viewing and maintaining crafting/alchemy/ammo
-  shopping lists
-- `sm`
-  Announce the end of Sorcerers Might
-- `tick`
-  GMT timestamp and timespan (e.g. _"1 day, 8 hours, 4 minutes"_) of the next
-  tick (or _x_ ticks from now)
 
 ## Stand-alone settings
 
@@ -75,18 +60,17 @@ operate based entirely on events.
 
 - Ability to set guild for using guild-locked commands via DM
 - Set command prefix per-server and per-channel
-- Split bot framework into separate project, leave NC commands here
-- [TOML] configuration file(s) for immutable settings
 
-## Pipe dreams
+## Extension packs
 
-- Tie-in with TamperMonkey UserScript for aggregating search odds data
-- ...
+- [ncfacbot] - The [Nexus Clash] Faction Discord Bot
 
 
 [discord.py]: https://discordpy.readthedocs.io
 [Discord]: https://discordapp.com
 [Discord Bot Safe README]: ./ncfacbot/extensions/safe.md
+[extension packs]: #extension-packs
 [Flask]: https://flask.palletsprojects.com
+[ncfacbot]: https://github.com/haliphax/ncfacbot
 [Nexus Clash]: https://www.nexusclash.com
 [TOML]: https://github.com/toml-lang/toml

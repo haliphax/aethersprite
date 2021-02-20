@@ -4,10 +4,10 @@ users join the guild.
 """
 
 # local
-from .. import log
-from ..common import FakeContext, handle_member_join
-from ..filters import ChannelFilter
-from ..settings import register, settings
+from aethersprite import log
+from aethersprite.common import FakeContext, handle_member_join
+from aethersprite.filters import ChannelFilter
+from aethersprite.settings import register, settings
 
 channel_filter = ChannelFilter('greet.channel')
 

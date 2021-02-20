@@ -5,8 +5,10 @@ from os import environ
 # 3rd party
 from discord import DMChannel
 # local
-from . import log
+from . import config, log
 from .common import POLICE_OFFICER
+
+owner = config['bot'].get('owner', environ.get('NCFACBOT_OWNER', None))
 
 
 async def channel_only(ctx):
@@ -26,7 +28,7 @@ async def require_admin(ctx):
     perms = ctx.author.permissions_in(ctx.channel)
 
     if perms.administrator or perms.manage_channels or perms.manage_guild \
-            or environ.get('NCFACBOT_OWNER', '') == str(ctx.author):
+            or owner == str(ctx.author):
         return True
 
     cog = ctx.bot.get_cog('alias')
@@ -64,7 +66,7 @@ async def require_roles(ctx, setting, open_by_default=True):
 
         from functools import partial
         from discord.ext.commands import check, command
-        from ncfacbot.authz import require_roles
+        from aethersprite.authz import require_roles
 
         authz = partial(require_roles, setting='setting.name')
 
@@ -85,7 +87,7 @@ async def require_roles(ctx, setting, open_by_default=True):
     perms = ctx.author.permissions_in(ctx.channel)
 
     if perms.administrator or perms.manage_channels or perms.manage_guild \
-            or environ.get('NCFACBOT_OWNER', '') == str(ctx.author):
+            or owner == str(ctx.author):
         # Superusers get a pass
         return True
 

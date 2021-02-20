@@ -1,5 +1,5 @@
 """
-Settings module; interfaced with via :mod:`ncfacbot.extensions.settings`
+Settings module; interfaced with via :mod:`aethersprite.extensions.settings`
 
 This provides methods by which extension authors can register and use settings
 in their code, and end users can manipulate those settings via bot commands
@@ -10,7 +10,7 @@ Examples for registering a setting and getting/changing/resetting its value:
 .. code:: python
 
     from discord.ext.commands import command
-    from ncfacbot.settings import register, settings
+    from aethersprite.settings import register, settings
 
     register('my.setting', 'default value', False, lambda x: True,
              'There are many settings like it, but this one is mine.')

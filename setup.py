@@ -21,10 +21,10 @@ if __name__ == '__main__':
             extras[extra] = reqfile.readlines()
 
     setup(
-        name='ncfacbot',
+        name='aethersprite',
         version='1.0.0',
         author='haliphax',
-        packages=['ncfacbot'],
+        packages=['aethersprite'],
         install_requires=reqs,
         extras_require=extras,
     )

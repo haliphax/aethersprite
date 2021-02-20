@@ -1,9 +1,7 @@
-"Commands module"
+"Base extensions module"
 
-# local
 from . import (
     alias,
-    closest,
     github,
     greet,
     gmt,
@@ -11,10 +9,5 @@ from . import (
     name_only,
     nick,
     only,
-    raid,
-    safe,
     settings,
-    shop,
-    sm,
-    tick,
 )

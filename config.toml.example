@@ -1,0 +1,14 @@
+[bot]
+token = "SOMEREALLYLONGSTRINGTHATDISCORDGIVESYOU"
+owner = "haliphax#4859"
+extensions = [
+	"ncfacbot.extensions.base._all",
+]
+
+[webapp]
+proxies = 1
+
+	[webapp.flask]
+	SERVER_NAME = 'localhost:5000'
+	SERVER_HOST = '0.0.0.0'
+	SERVER_PORT = 5000

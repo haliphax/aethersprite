@@ -1,8 +1,10 @@
 "Load all command extensions"
 
-from .. import extensions
+from .. import base
 
-_mods = [m for m in dir(extensions) if m[0] != '_']
+META_EXTENSION = True
+
+_mods = [m for m in dir(base) if m[0] != '_']
 _package = __name__.replace('._all', '')
 
 

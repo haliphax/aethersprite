@@ -7,8 +7,8 @@ and only respond to commands when addressed directly.
 from discord import DMChannel
 from discord.ext.commands import Context
 # local
-from .. import log
-from ..settings import register, settings
+from aethersprite import log
+from aethersprite.settings import register, settings
 
 
 async def check_name_only(ctx: Context):

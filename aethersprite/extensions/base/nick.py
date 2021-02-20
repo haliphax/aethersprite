@@ -3,8 +3,8 @@
 # 3rd party
 from discord.ext.commands import check, command
 # local
-from .. import log
-from ..authz import channel_only, require_admin
+from aethersprite import log
+from aethersprite.authz import channel_only, require_admin
 
 
 @command()

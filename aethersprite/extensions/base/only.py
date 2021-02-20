@@ -7,8 +7,8 @@ from discord import DMChannel
 from discord.ext.commands import Cog, command
 from sqlitedict import SqliteDict
 # local
-from .. import log
-from ..authz import channel_only, require_admin
+from aethersprite import log
+from aethersprite.authz import channel_only, require_admin
 
 #: Only whitelist database
 onlies = SqliteDict('only.sqlite3', tablename='onlies', autocommit=True)

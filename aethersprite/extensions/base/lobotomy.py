@@ -7,8 +7,8 @@ from discord import DMChannel
 from discord.ext.commands import Cog, command
 from sqlitedict import SqliteDict
 # local
-from .. import log
-from ..authz import require_admin
+from aethersprite import log
+from aethersprite.authz import require_admin
 
 #: Lobotomies database
 lobotomies = SqliteDict('lobotomy.sqlite3', tablename='lobotomies',
