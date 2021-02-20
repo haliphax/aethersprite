@@ -20,19 +20,19 @@ log.addHandler(streamHandler)
 log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 
 #: Activity on login
-activity = Activity(name='!nchelp', type=ActivityType.listening)
+activity = Activity(name='!aehelp', type=ActivityType.listening)
 
 
 def get_ending_note(self):
-    return ('Type !nchelp <command> for more info on a command.\n'
-            'You can also type !nchelp <category> for more info on a '
+    return ('Type !aehelp <command> for more info on a command.\n'
+            'You can also type !aehelp <category> for more info on a '
             'category.')
 
 DefaultHelpCommand.get_ending_note = get_ending_note
 
 
-@command(name='nchelp', hidden=True)
-async def nchelp(ctx, command: Optional[str] = None):
+@command(name='aehelp', hidden=True)
+async def aehelp(ctx, command: Optional[str] = None):
     if command is None:
         await ctx.send_help()
     else:
@@ -135,7 +135,7 @@ def entrypoint():
     # for any commands or scheduled tasks, etc. that need random numbers
     seed()
     bot.remove_command('help')
-    bot.add_command(nchelp)
+    bot.add_command(aehelp)
 
     # load extensions
     for ext in config['bot']['extensions']:
