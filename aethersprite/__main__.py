@@ -19,19 +19,21 @@ streamHandler.setFormatter(logging.Formatter(
 log.addHandler(streamHandler)
 log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 
+_help = config['bot']['help_command']
+
 #: Activity on login
-activity = Activity(name='!aehelp', type=ActivityType.listening)
+activity = Activity(name=f'!{_help}', type=ActivityType.listening)
 
 
 def get_ending_note(self):
-    return ('Type !aehelp <command> for more info on a command.\n'
-            'You can also type !aehelp <category> for more info on a '
+    return (f'Type !{_help} <command> for more info on a command.\n'
+            f'You can also type !{_help} <category> for more info on a '
             'category.')
 
 DefaultHelpCommand.get_ending_note = get_ending_note
 
 
-@command(name='aehelp', hidden=True)
+@command(name=_help, hidden=True)
 async def aehelp(ctx, command: Optional[str] = None):
     if command is None:
         await ctx.send_help()

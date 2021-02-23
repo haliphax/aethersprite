@@ -9,6 +9,7 @@ from . import config, log
 from .common import POLICE_OFFICER
 
 owner = config['bot'].get('owner', environ.get('NCFACBOT_OWNER', None))
+_help = config['bot']['help_command']
 
 
 async def channel_only(ctx):
@@ -36,8 +37,8 @@ async def require_admin(ctx):
     if cog is None:
         return False
 
-    aliases = cog.get_aliases(ctx, 'nchelp')
-    help_aliases = ['nchelp'] + aliases
+    aliases = cog.get_aliases(ctx, _help)
+    help_aliases = [_help] + aliases
 
     # only react if they invoked the command directly (i.e. not via !help)
     if ctx.invoked_with not in help_aliases:
@@ -126,8 +127,8 @@ async def require_roles(ctx, setting, open_by_default=True):
 
         return False
 
-    aliases = cog.get_aliases(ctx, 'nchelp')
-    help_aliases = ['nchelp'] + aliases
+    aliases = cog.get_aliases(ctx, _help)
+    help_aliases = [_help] + aliases
 
     # only react if they invoked the command directly (i.e. not via !help)
     if ctx.invoked_with not in help_aliases:

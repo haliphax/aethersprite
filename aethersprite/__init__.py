@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 config = {
     'bot': {
         'extensions': ['aethersprite.extensions.base._all'],
+        'help_command': 'aehelp',
     },
     'webapp': {
         'proxies': None,
