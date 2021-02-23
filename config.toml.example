@@ -1,9 +1,10 @@
 [bot]
-token = "SOMEREALLYLONGSTRINGTHATDISCORDGIVESYOU"
-owner = "haliphax#4859"
 extensions = [
 	"aethersprite.extensions.base._all",
 ]
+help_command = "aehelp"
+token = "SOMEREALLYLONGSTRINGTHATDISCORDGIVESYOU"
+owner = "haliphax#4859"
 
 [webapp]
 proxies = 1
