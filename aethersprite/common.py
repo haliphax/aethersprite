@@ -1,7 +1,6 @@
 "Common functions module"
 
 # stdlib
-import calendar
 from collections import namedtuple
 from datetime import datetime, timezone
 from math import ceil, floor
