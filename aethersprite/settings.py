@@ -11,7 +11,8 @@ Examples for registering a setting and getting/changing/resetting its value:
 .. note::
 
     There are commands for doing each of these things already in the base
-    extension mentioned above, but these are just simple examples.
+    extension mentioned above that provide authorization checks, but these are
+    just simple examples.
 
 .. code:: python
 
