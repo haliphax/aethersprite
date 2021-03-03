@@ -5,7 +5,7 @@ Event handler utilities
 
     Decorators must be handled differently for methods vs. independent
     functions due to how they are invoked. To decorate a method, assign the
-    handler during ``__init__``. AN alternative, if you are able to do so,
+    handler during ``__init__``. An alternative, if you are able to do so,
     is to use a static method. To decorate a plain function, you may use the
     decorator as normal.
 
