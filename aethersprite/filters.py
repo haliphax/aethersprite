@@ -17,7 +17,7 @@ class SettingFilter(object):
     #: The name of the setting to filter
     setting: str = None
 
-    def __init__(self, setting):
+    def __init__(self, setting: str):
         self.setting = setting
 
     def in_(self, ctx: Context, value: str) -> None:
