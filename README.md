@@ -60,11 +60,6 @@ operate based entirely on events.
 - `nameonly.channel` _(channel)_
   Like `nameonly`, but this setting applies to individual channels
 
-## Plans
-
-- Ability to set guild for using guild-locked commands via DM
-- Set command prefix per-server and per-channel
-
 ## Extension packs
 
 - [ncfacbot] - The [Nexus Clash] Faction Discord Bot
