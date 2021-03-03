@@ -20,7 +20,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - [TOML] configuration file for immutable settings
 - Able to load multiple commands together as [extension packs]
 
-## Commands
+## Command sets
 
 - `alias`
   Manage aliases for other commands
