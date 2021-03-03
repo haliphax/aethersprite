@@ -35,6 +35,8 @@ _This bot is a work in progress. Please excuse my mess..._
   Change the bot's nickname per-server
 - `only`
   Only allow whitelisted commands in a channel
+- `roles`
+  Allow members to manage their own membership in chosen roles
 - `settings`
   A collection of commands for manipulating the bot's settings framework
 
