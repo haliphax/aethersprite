@@ -8,6 +8,11 @@ in their code, and end users can manipulate those settings via bot commands
 
 Examples for registering a setting and getting/changing/resetting its value:
 
+.. note::
+
+    There are commands for doing each of these things already in the base
+    extension mentioned above, but these are just simple examples.
+
 .. code:: python
 
     from discord.ext.commands import command
