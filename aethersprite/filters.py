@@ -2,7 +2,7 @@
 
 # stdlib
 import re
-from typing import Any, List, Union
+from typing import Any, List
 # 3rd party
 from discord.ext.commands import Context
 # local
@@ -14,18 +14,30 @@ class SettingFilter(object):
 
     "A class with methods for filtering a setting's input and output"
 
-    setting = None
+    #: The name of the setting to filter
+    setting: str = None
 
     def __init__(self, setting):
         self.setting = setting
 
-    def in_(self, ctx, value: str) -> None:
-        "Must override; input filter."
+    def in_(self, ctx: Context, value: str) -> None:
+        """
+        Must override; input filter method.
+
+        :param ctx: The current context
+        :param value: The incoming value
+        """
 
         raise NotImplementedError()
 
-    def out(self, ctx, value) -> Union[str, Any]:
-        "Must override; output filter."
+    def out(self, ctx: Context, value: Any) -> Any:
+        """
+        Must override; output filter method.
+
+        :param ctx: The current context
+        :param value: The raw setting value
+        :returns: The filtered setting value
+        """
 
         raise NotImplementedError()
 
@@ -41,7 +53,14 @@ class ChannelFilter(SettingFilter):
         super().__init__(setting)
         self.multiple = multiple
 
-    def in_(self, ctx, value: str):
+    def in_(self, ctx: Context, value: str) -> None:
+        """
+        Filter setting input.
+
+        :param ctx: The current context
+        :param value: The incoming value
+        """
+
         channels = get_mixed_channels(value)
         ids = []
 
@@ -65,13 +84,18 @@ class ChannelFilter(SettingFilter):
         return ids
 
     def out(self, ctx: Context, value: List[int]) -> List[str]:
+        """
+        Filter setting output.
+
+        :param ctx: The current context
+        :param value: The raw setting value: a list of channel IDs
+        :returns: The filtered setting value: a list of channel names
+        """
+
         if value is None:
             return
 
         return [get_channel_for_id(ctx.guild, v) for v in value]
-
-ChannelFilter.in_.__doc__ = SettingFilter.in_.__doc__
-ChannelFilter.out.__doc__ = SettingFilter.out.__doc__
 
 
 class RoleFilter(SettingFilter):
@@ -85,7 +109,14 @@ class RoleFilter(SettingFilter):
         super().__init__(setting)
         self.multiple = multiple
 
-    def in_(self, ctx, value: str):
+    def in_(self, ctx: Context, value: str) -> None:
+        """
+        Filter setting input.
+
+        :param ctx: The current context
+        :param value: The incoming value
+        """
+
         roles = get_mixed_roles(value)
         ids = []
 
@@ -109,10 +140,15 @@ class RoleFilter(SettingFilter):
         return ids
 
     def out(self, ctx: Context, value: List[int]) -> List[str]:
+        """
+        Filter setting output.
+
+        :param ctx: The current context
+        :param value: The raw setting value: a list of role IDs
+        :returns: The filtered setting value: a list of role names
+        """
+
         if value is None:
             return
 
         return [get_role_for_id(ctx.guild, v) for v in value]
-
-RoleFilter.in_.__doc__ = SettingFilter.in_.__doc__
-RoleFilter.out.__doc__ = SettingFilter.out.__doc__
