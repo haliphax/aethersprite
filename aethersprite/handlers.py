@@ -1,4 +1,34 @@
-"Event handler utilities"
+"""
+Event handler utilities
+
+.. note::
+
+    Decorators must be handled differently for class methods due to how they
+    are invoked. The first argument of the function (not counting ``self``
+    if the function is a method) will be provided with a reference to the bot.
+    To decorate a method, assign the handler during ``__init__``. To decorate
+    a plain function, you may use the decorator as normal.
+
+.. code:: python
+
+    from discord.ext.commands import Cog
+    from aethersprite.common import handle_ready
+
+    class SomeClass(Cog):
+        def __init__(self, bot):
+            self.bot = bot
+            self.on_ready = handle_ready(self.on_ready)
+
+        def on_ready(self, _):
+            # don't care about the bot parameter here, but still have to include it
+            # to avoid exceptions
+            pass
+
+    @handle_ready
+    def on_ready(bot):
+        # since we're not a Cog, we need the bot reference to do stuff
+        pass
+"""
 
 # stdlib
 from typing import Callable, Optional
@@ -59,30 +89,7 @@ def handle_member_join(f: Callable) -> Callable:
 
 def handle_ready(f: Callable):
     """
-    Decorator to add function to list of handlers to run for the ``on_ready``
-    event. The first argument of the function (not counting ``self`` if the
-    function is a method) will be provided with a reference to the bot. To
-    decorate a method, assign the handler during ``__init__``.
-
-    .. code:: python
-
-        from discord.ext.commands import Cog
-        from aethersprite.common import handle_ready
-
-        class SomeClass(Cog):
-            def __init__(self, bot):
-                self.bot = bot
-                self.on_ready = handle_ready(self.on_ready)
-
-            def on_ready(self, _):
-                # don't care about the bot parameter here, but still have to include it
-                # to avoid exceptions
-                pass
-
-        @handle_ready
-        def on_ready(bot):
-            # since we're not a Cog, we need the bot reference to do stuff
-            pass
+    on_ready event handler decorator.
 
     :param f: The handler callable to hook to the event
     :returns: The untouched callable
