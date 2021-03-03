@@ -4,11 +4,13 @@ Event handler utilities
 .. note::
 
     Decorators must be handled differently for methods vs. independent
-    functions due to how they are invoked. The first argument of the function
-    (not counting ``self`` if the function is a method) will be provided with a
-    reference to the bot. To decorate a method, assign the handler during
-    ``__init__``. To decorate a plain function, you may use the decorator as
-    normal.
+    functions due to how they are invoked. To decorate a method, assign the
+    handler during ``__init__``. AN alternative, if you are able to do so,
+    is to use a static method. To decorate a plain function, you may use the
+    decorator as normal.
+
+    The first argument of the function (not counting ``self`` if the function
+    is a method) will be provided with a reference to the bot.
 
 .. code:: python
 
@@ -23,6 +25,13 @@ Event handler utilities
         def on_ready(self, _):
             # don't care about the bot parameter here, but still have to
             # include it to avoid exceptions
+            pass
+
+        @handle_ready
+        @staticmethod
+        def static_ready(bot)
+            # since this is a static method, we need the bot reference to do
+            # stuff, as we cannot access "self"
             pass
 
     @handle_ready
