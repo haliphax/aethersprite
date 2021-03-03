@@ -1,5 +1,6 @@
 """
-Settings module; interfaced with via :mod:`aethersprite.extensions.settings`
+Settings module; interfaced with via
+:mod:`aethersprite.extensions.base.settings`
 
 This provides methods by which extension authors can register and use settings
 in their code, and end users can manipulate those settings via bot commands
