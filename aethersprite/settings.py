@@ -33,6 +33,8 @@ from __future__ import annotations
 import typing
 # 3rd party
 from sqlitedict import SqliteDict
+# local
+from . import data_folder
 
 # TODO cleanup settings for missing servers/channels on startup
 
@@ -45,7 +47,7 @@ class Setting(object):
     "Setting class; represents an individual setting definition"
 
     # Setting values
-    _values = SqliteDict('settings.sqlite3', tablename='values',
+    _values = SqliteDict(f'{data_folder}settings.sqlite3', tablename='values',
                          autocommit=True)
 
     def __init__(self, name: str, default: str, validate: callable,

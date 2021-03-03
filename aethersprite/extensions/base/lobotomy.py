@@ -7,12 +7,12 @@ from discord import DMChannel
 from discord.ext.commands import Cog, command
 from sqlitedict import SqliteDict
 # local
-from aethersprite import log
+from aethersprite import data_folder, log
 from aethersprite.authz import require_admin
 
 #: Lobotomies database
-lobotomies = SqliteDict('lobotomy.sqlite3', tablename='lobotomies',
-                        autocommit=True)
+lobotomies = SqliteDict(f'{data_folder}lobotomy.sqlite3',
+                        tablename='lobotomies', autocommit=True)
 
 
 class Lobotomy(Cog, name='lobotomy'):

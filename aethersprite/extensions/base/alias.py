@@ -4,11 +4,12 @@
 from discord.ext.commands import Cog, command
 from sqlitedict import SqliteDict
 # local
-from aethersprite import log
+from aethersprite import data_folder, log
 from aethersprite.authz import channel_only, require_admin
 
 #: Aliases database
-aliases = SqliteDict('alias.sqlite3', tablename='aliases', autocommit=True)
+aliases = SqliteDict(f'{data_folder}alias.sqlite3', tablename='aliases',
+                     autocommit=True)
 
 
 class Alias(Cog, name='alias'):
