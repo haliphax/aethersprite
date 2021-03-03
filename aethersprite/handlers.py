@@ -49,7 +49,8 @@ class HandlerCollection:
     @classmethod
     def add(cls, handler: Callable) -> None:
         """
-        Add handler to collection.
+        Add handler to collection. This tracks handlers by their `__name__`,
+        and is preferred to manipulating `handlers` directly.
 
         :param handler: The handler callable to hook to the event
         """
