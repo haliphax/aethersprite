@@ -1,5 +1,7 @@
 "Setting filters module"
 
+# stdlib
+import re
 # local
 from .common import (get_channel_for_id, get_id_for_channel, get_id_for_role,
                      get_role_for_id)
@@ -11,7 +13,13 @@ class ChannelFilter(SettingFilter):
     "Filter used for converting channel names to IDs and back"
 
     def in_(self, ctx, value: str):
-        val = get_id_for_channel(ctx.guild, value)
+        match = re.match(r'^<#(\d+)>$', value.strip())
+        val = None
+
+        if match is None:
+            val = get_id_for_channel(ctx.guild, value)
+        else:
+            val = int(match.groups()[0])
 
         if val is None:
             raise ValueError()
@@ -33,11 +41,21 @@ class RoleFilter(SettingFilter):
     "Filter used for converting role names to IDs and back"
 
     def in_(self, ctx, value: str):
-        ids = [get_id_for_role(ctx.guild, v.strip()) for v in value.split(',')]
+        roles = [v.strip() for v in value.split(',')]
+        ids = []
 
-        for id in ids:
+        for r in roles:
+            match = re.match(r'^<@&(\d+)>$', r)
+
+            if match is None:
+                id = get_id_for_role(ctx.guild, r)
+            else:
+                id = int(match.groups()[0])
+
             if id is None:
-                raise ValueError()
+                raise ValueError(r)
+
+            ids.append(id)
 
         return ids
 
