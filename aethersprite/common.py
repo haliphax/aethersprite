@@ -5,7 +5,7 @@ from collections import namedtuple
 from datetime import datetime, timezone
 from math import ceil, floor
 import re
-from typing import Optional
+from typing import Optional, Tuple
 
 # constants
 #: One minute in seconds
@@ -62,7 +62,6 @@ class ReadyHandlers(HandlerCollection):
 
     "on_ready handlers"
 
-
 def get_channel_for_id(guild, id: int) -> str:
     """
     Return channel name for given guild and channel ID.
@@ -92,6 +91,20 @@ def get_id_for_channel(guild, channel: str) -> int:
     return ids[0] if len(ids) else None
 
 
+def get_mixed_channels(value: str) -> Tuple[Tuple[str, str]]:
+    """
+    Return a series of group pairs matched from the provided value. The first
+    element in each pair will be the channel ID if the match was a mention;
+    it will be empty otherwise. The second element in each pair will be the
+    plain text of the string token; it will be empty otherwise.
+
+    :param value: The value to match against
+    :returns: A series of group pairs (channel ID, channel text)
+    """
+
+    return re.findall(r'<#(\d+)> ?|([-_a-zA-Z0-9]+)[, ]*', value.strip())
+
+
 def get_id_for_role(guild, role: str) -> int:
     """
     Return role ID for given guild and role name.
@@ -119,6 +132,20 @@ def get_role_for_id(guild, id: int) -> str:
     roles = [c.name for c in guild.roles if c.id == id]
 
     return roles[0] if len(roles) else None
+
+
+def get_mixed_roles(value: str) -> Tuple[Tuple[str, str]]:
+    """
+    Return a series of group pairs matched from the provided value. The first
+    element in each pair will be the role ID if the match was a mention;
+    it will be empty otherwise. The second element in each pair will be the
+    plain text of the string token; it will be empty otherwise.
+
+    :param value: The value to match against
+    :returns: A series of group pairs (role ID, role text)
+    """
+
+    return re.findall(r'<@&(\d+)> ?|([^,]+)[, ]*', value.strip())
 
 
 def get_timespan_chunks(string: str):

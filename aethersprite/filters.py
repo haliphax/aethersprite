@@ -2,11 +2,32 @@
 
 # stdlib
 import re
+from typing import Any, List, Union
+# 3rd party
+from discord.ext.commands import Context
 # local
-from . import log
 from .common import (get_channel_for_id, get_id_for_channel, get_id_for_role,
-                     get_role_for_id)
-from .settings import SettingFilter, settings
+                     get_mixed_channels, get_mixed_roles, get_role_for_id)
+
+
+class SettingFilter(object):
+
+    "A class with methods for filtering a setting's input and output"
+
+    setting = None
+
+    def __init__(self, setting):
+        self.setting = setting
+
+    def in_(self, ctx, value: str) -> None:
+        "Must override; input filter."
+
+        raise NotImplementedError()
+
+    def out(self, ctx, value) -> Union[str, Any]:
+        "Must override; output filter."
+
+        raise NotImplementedError()
 
 
 class ChannelFilter(SettingFilter):
@@ -21,8 +42,7 @@ class ChannelFilter(SettingFilter):
         self.multiple = multiple
 
     def in_(self, ctx, value: str):
-        channels = re.findall(r'<#(\d+)> ?|([-_a-zA-Z0-9]+)[, ]*', value.strip())
-        log.info(channels)
+        channels = get_mixed_channels(value)
         ids = []
 
         for c in channels:
@@ -44,9 +64,7 @@ class ChannelFilter(SettingFilter):
 
         return ids
 
-    def out(self, ctx) -> str:
-        value = settings[self.setting].get(ctx, raw=True)
-
+    def out(self, ctx: Context, value: List[int]) -> List[str]:
         if value is None:
             return
 
@@ -68,7 +86,7 @@ class RoleFilter(SettingFilter):
         self.multiple = multiple
 
     def in_(self, ctx, value: str):
-        roles = re.findall(r'<@&(\d+)> ?|([^,]+)[, ]*', value)
+        roles = get_mixed_roles(value)
         ids = []
 
         for r in roles:
@@ -90,9 +108,7 @@ class RoleFilter(SettingFilter):
 
         return ids
 
-    def out(self, ctx) -> str:
-        value = settings[self.setting].get(ctx, raw=True)
-
+    def out(self, ctx: Context, value: List[int]) -> List[str]:
         if value is None:
             return
 

@@ -31,6 +31,10 @@ Examples for registering a setting and getting/changing/resetting its value:
 # stdlib
 from __future__ import annotations
 import typing
+
+if typing.TYPE_CHECKING:
+    from .filters import SettingFilter
+
 # 3rd party
 from sqlitedict import SqliteDict
 # local
@@ -135,35 +139,15 @@ class Setting(object):
                 else None
 
         if not raw and self.filter is not None:
-            val = self.filter.out(ctx)
+            val = self.filter.out(ctx, val)
 
         return self.default if val is None else val
-
-
-class SettingFilter(object):
-
-    "A class with methods for filtering a setting's input and output"
-
-    setting = None
-
-    def __init__(self, setting):
-        self.setting = setting
-
-    def in_(self, ctx, value: str):
-        "Must override; input filter."
-
-        raise NotImplementedError()
-
-    def out(self, ctx):
-        "Must override; output filter."
-
-        raise NotImplementedError()
 
 
 def register(name: str, default: str, validator: callable,
              channel: typing.Optional[bool] = False,
              description: typing.Optional[str] = None,
-             filter: typing.Optional[SettingFilter] = None):
+             filter: typing.Optional['SettingFilter'] = None):
     """
     Register a setting.
 
