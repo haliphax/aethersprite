@@ -55,7 +55,13 @@ class Roles(Cog, name='roles'):
 
     @command(name='roles.add')
     async def add(self, ctx: Context, roles: str):
-        "Add yourself to [roles]"
+        """
+        Add yourself to [roles]
+
+        You may use mentions or plain text. Plain text entries should be separated by a comma.
+
+        Mixed example: !roles.add @Role1 Role2, Role3 @Role4
+        """
 
         valid = self._validate(ctx, roles)
 
@@ -73,7 +79,13 @@ class Roles(Cog, name='roles'):
 
     @command(name='roles.remove')
     async def remove(self, ctx: Context, roles: str):
-        "Remove yourself from [roles]"
+        """
+        Remove yourself from [roles]
+
+        You may use mentions or plain text. Plain text entries should be separated by a comma.
+
+        Mixed example: !roles.remove @Role1 Role2, Role3 @Role4
+        """
 
         valid = self._validate(ctx, roles)
 
