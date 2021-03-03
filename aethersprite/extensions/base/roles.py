@@ -93,7 +93,7 @@ class Roles(Cog, name='roles'):
         "List available self-service roles"
 
         roles = settings['roles.catalog'].get(ctx)
-        msg = f":notebook: Available roles\n>>> - "
+        msg = f":notebook: **Available roles**\n>>> - "
 
         if roles is None:
             msg += "`None`"
