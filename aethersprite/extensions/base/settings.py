@@ -8,6 +8,7 @@ from functools import partial
 # local
 from aethersprite import log
 from aethersprite.authz import channel_only, require_roles_from_setting
+from aethersprite.filters import RoleFilter
 from aethersprite.settings import register, settings
 
 # messages
@@ -105,12 +106,16 @@ class Settings(Cog, name='settings'):
         log.info(f'{ctx.author} viewed description of setting {name}')
 
 
+role_filter = RoleFilter('settings.adminroles')
+
+
 def setup(bot):
     # settings
     register('settings.adminroles', None, lambda x: True, False,
              'The server roles that are allowed to administer settings. '
              'Separate multiple values with commas. Administrators and '
-             'moderators have de facto access to all commands.')
+             'moderators have de facto access to all commands.',
+             filter=role_filter)
     cog = Settings(bot)
 
     for c in cog.get_commands():
