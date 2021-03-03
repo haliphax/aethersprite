@@ -98,7 +98,7 @@ class Roles(Cog, name='roles'):
         if roles is None:
             msg += "`None`"
         else:
-            msg += '\r\n- '.join(roles)
+            msg += '\r\n- '.join(sorted(roles, key=lambda x: x.lower()))
 
         await ctx.send(msg)
         log.info(f'{ctx.author} viewed roles list')
