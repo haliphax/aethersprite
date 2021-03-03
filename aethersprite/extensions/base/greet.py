@@ -5,7 +5,7 @@ users join the guild.
 
 # local
 from aethersprite import log
-from aethersprite.common import handle_member_join
+from aethersprite.handlers import handle_member_join
 from aethersprite.filters import ChannelFilter
 from aethersprite.settings import register, settings
 
