@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 #: Configuration
 config = {
     'bot': {
-        'data_folder': 'data',
+        'data_folder': '.',
         'extensions': ['aethersprite.extensions.base._all'],
         'help_command': 'aehelp',
     },
