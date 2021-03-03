@@ -6,6 +6,7 @@ from typing import Any, List
 # 3rd party
 from discord.ext.commands import Context
 # local
+from . import log
 from .common import (get_channel_for_id, get_id_for_channel, get_id_for_role,
                      get_mixed_channels, get_mixed_roles, get_role_for_id)
 
@@ -47,7 +48,7 @@ class ChannelFilter(SettingFilter):
     "Filter used for converting channel names to IDs and back"
 
     #: True to allow multiple values
-    multiple: bool = True
+    multiple: bool = False
 
     def __init__(self, setting: str, multiple: bool = False):
         super().__init__(setting)
@@ -95,7 +96,16 @@ class ChannelFilter(SettingFilter):
         if value is None:
             return
 
-        return [get_channel_for_id(ctx.guild, v) for v in value]
+        channels = [get_channel_for_id(ctx.guild, v) for v in value]
+
+        if self.multiple:
+            log.info('multiple')
+            return channels
+
+        if len(channels) > 0:
+            return channels[0]
+
+        return None
 
 
 class RoleFilter(SettingFilter):
@@ -151,4 +161,12 @@ class RoleFilter(SettingFilter):
         if value is None:
             return
 
-        return [get_role_for_id(ctx.guild, v) for v in value]
+        roles = [get_role_for_id(ctx.guild, v) for v in value]
+
+        if self.multiple:
+            return roles
+
+        if len(roles) > 0:
+            return roles[0]
+
+        return None
