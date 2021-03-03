@@ -87,7 +87,7 @@ def handle_member_join(f: Callable) -> Callable:
     return f
 
 
-def handle_ready(f: Callable):
+def handle_ready(f: Callable) -> Callable:
     """
     on_ready event handler decorator.
 
