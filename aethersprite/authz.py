@@ -2,11 +2,14 @@
 
 # stdlib
 from os import environ
+from typing import Sequence
 # 3rd party
-from discord import DMChannel
+from discord import DMChannel, Member, Role
+from discord.ext.commands import Context
 # local
 from . import config, log
 from .common import POLICE_OFFICER
+from .settings import settings
 
 owner = config['bot'].get('owner', environ.get('NCFACBOT_OWNER', None))
 _help = config['bot']['help_command']
@@ -22,6 +25,46 @@ async def channel_only(ctx):
 
     return True
 
+
+def is_in_any_role(user: Member, roles: Sequence[Role]) -> bool:
+    """
+    Whether or not a member is in any of the given roles.
+
+    :param user: The user in question
+    :param roles: The roles to check for membership
+    """
+
+    if len(roles) > 0 and len([r for r in user.roles if r.id in roles]) > 0:
+        return True
+
+    return False
+
+async def react_if_not_help(ctx: Context):
+    """
+    If the command was not invoked as an alias of the help command, react with
+    the police officer emoji.
+
+    :param ctx: The current context
+    """
+
+    cog = ctx.bot.get_cog('alias')
+
+    if cog is None:
+        log.warn('alias cog not loaded')
+
+        return
+
+
+    aliases = cog.get_aliases(ctx, _help)
+    help_aliases = [_help] + aliases
+
+    # only react if they invoked the command directly (i.e. not via !help)
+    if ctx.invoked_with not in help_aliases:
+        await ctx.message.add_reaction(POLICE_OFFICER)
+        log.warn(f'{ctx.author} attempted to access unauthorized command '
+                 f'{ctx.command}')
+
+    return
 
 async def require_admin(ctx):
     "Check for requiring admin/mod privileges to execute a command."
@@ -49,7 +92,24 @@ async def require_admin(ctx):
     return False
 
 
-async def require_roles(ctx, setting, open_by_default=True):
+async def require_roles(ctx: Context, roles: Sequence[Role]) -> bool:
+    """
+    Check for requiring particular roles to execute a command. Membership in at
+    least one of the roles is requied to pass the filter.
+
+    :param ctx: The current context
+    :param roles: The roles to authorize
+    """
+
+    if is_in_any_role(ctx.author, roles):
+        return True
+
+    await react_if_not_help(ctx)
+
+    return False
+
+async def require_roles_from_setting(ctx: Context, setting: str,
+                                     open_by_default=True) -> bool:
     """
     Check for requiring particular roles (loaded from the given setting) to
     execute a command. For more than one setting (if ``setting`` is a
@@ -67,23 +127,27 @@ async def require_roles(ctx, setting, open_by_default=True):
 
         from functools import partial
         from discord.ext.commands import check, command
-        from aethersprite.authz import require_roles
+        from aethersprite.authz require_roles, import require_roles_from_setting
+        from my_super_secret_special_code import get_roles
 
-        authz = partial(require_roles, setting='setting.name')
+        authz = partial(require_roles, get_roles())
+        authz_setting = partial(require_roles_from_setting, setting='setting.name')
 
         @command()
         @check(authz)
         async def my_command(ctx):
             await ctx.send('You are authorized. Congratulations!')
 
-        # to set via bot command: !set setting.name SomeRoleName, SomeOtherRole
+        @command()
+        @check(authz_setting)
+        async def my_other_command(ctx):
+            # to set via bot command: !set setting.name SomeRoleName, SomeOtherRole
+            await ctx.send('You are a member of one of the authorized roles. '
+                           'Congratulations!')
 
     :param setting: The name of the setting to pull the roles from
     :type setting: str or list or tuple
     """
-
-    # import at call-time to avoid cyclic reference
-    from .settings import settings
 
     perms = ctx.author.permissions_in(ctx.channel)
 
@@ -92,48 +156,15 @@ async def require_roles(ctx, setting, open_by_default=True):
         # Superusers get a pass
         return True
 
-    values = None
+    roles = settings[setting].get(ctx)
 
-    if isinstance(setting, str):
-        values = settings[setting].get(ctx)
-    elif isinstance(setting, (list, tuple)):
-        names = []
-
-        for s in setting:
-            val = settings[s].get(ctx)
-
-            if val is not None:
-                names.append(val)
-
-        values = ','.join(names)
-    else:
-        raise ValueError('setting must be str, list, or tuple')
-
-    if values is None:
+    if roles is None:
         # no roles set, use default
         return open_by_default
 
-    roles = [s.strip().lower() for s in values.split(',')] \
-            if len(values) else tuple()
-
-    if len(roles) > 0 and len([r for r in ctx.author.roles
-                               if r.name.lower() in roles]) > 0:
+    if is_in_any_role(ctx.author, roles):
         return True
 
-    cog = ctx.bot.get_cog('alias')
-
-    if cog is None:
-        log.warn('alias cog not loaded')
-
-        return False
-
-    aliases = cog.get_aliases(ctx, _help)
-    help_aliases = [_help] + aliases
-
-    # only react if they invoked the command directly (i.e. not via !help)
-    if ctx.invoked_with not in help_aliases:
-        await ctx.message.add_reaction(POLICE_OFFICER)
-        log.warn(f'{ctx.author} attempted to access unauthorized command '
-                 f'{ctx.command}')
+    await react_if_not_help(ctx)
 
     return False

@@ -7,14 +7,14 @@ from discord.ext.commands import Cog, command
 from functools import partial
 # local
 from aethersprite import log
-from aethersprite.authz import channel_only, require_roles
+from aethersprite.authz import channel_only, require_roles_from_setting
 from aethersprite.settings import register, settings
 
 # messages
 MSG_NO_SETTING = ':person_shrugging: No such setting exists.'
 
 # authorization decorator
-authz = partial(require_roles, setting='settings.adminroles',
+authz = partial(require_roles_from_setting, setting='settings.adminroles',
                 open_by_default=False)
 
 

@@ -99,7 +99,7 @@ async def on_command_error(ctx, error):
 async def on_member_join(member):
     "Fire on_member_join handlers."
 
-    from .common import MemberJoinHandlers
+    from .handlers import MemberJoinHandlers
 
     log.info(f'New member {member} joined {member.guild}')
 
@@ -111,7 +111,7 @@ async def on_member_join(member):
 async def on_ready():
     "Update presence and fire up registered startup handlers."
 
-    from .common import ReadyHandlers
+    from .handlers import ReadyHandlers
 
     log.info(f'Logged in as {bot.user}')
     await bot.change_presence(activity=activity)
