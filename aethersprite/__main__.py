@@ -15,7 +15,7 @@ from . import config, log
 # logging stuff
 streamHandler = logging.StreamHandler(stdout)
 streamHandler.setFormatter(logging.Formatter(
-    '{asctime} {levelname:<7} {message} <{module}.{funcName}>', style='{'))
+    '{asctime} {levelname:<7} <{module}.{funcName}> {message}', style='{'))
 log.addHandler(streamHandler)
 log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 
