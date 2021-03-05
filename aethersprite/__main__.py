@@ -6,9 +6,10 @@ from sys import stdout
 from typing import Optional
 # 3rd party
 from discord import Activity, ActivityType
-from discord import DMChannel
+from discord import DMChannel, Member, RawReactionActionEvent
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
-                                  DefaultHelpCommand, when_mentioned_or,)
+                                  Context, DefaultHelpCommand,
+                                  when_mentioned_or,)
 # local
 from . import config, log
 
@@ -34,7 +35,7 @@ DefaultHelpCommand.get_ending_note = get_ending_note
 
 
 @command(name=_help, hidden=True)
-async def aehelp(ctx, command: Optional[str] = None):
+async def aehelp(ctx: Context, command: Optional[str] = None):
     if command is None:
         await ctx.send_help()
     else:
@@ -56,7 +57,7 @@ async def on_disconnect():
 
 
 @bot.event
-async def on_command_error(ctx, error):
+async def on_command_error(ctx: Context, error: Exception):
     "Suppress command check failures and invalid commands."
 
     if isinstance(error, CheckFailure):
@@ -96,15 +97,39 @@ async def on_command_error(ctx, error):
 
 
 @bot.event
-async def on_member_join(member):
+async def on_member_join(member: Member):
     "Fire on_member_join handlers."
 
     from .handlers import MemberJoinHandlers
 
-    log.info(f'New member {member} joined {member.guild}')
+    log.debug(f'{member!r}')
 
     for f in set(MemberJoinHandlers.handlers):
         await f(member)
+
+
+@bot.event
+async def on_raw_reaction_add(payload: RawReactionActionEvent):
+    "Fire on_raw_reaction_add handlers."
+
+    from .handlers import RawReactionAddHandlers
+
+    log.debug(f'{payload!r}')
+
+    for f in set(RawReactionAddHandlers.handlers):
+        await f(payload)
+
+
+@bot.event
+async def on_raw_reaction_remove(payload: RawReactionActionEvent):
+    "Fire on_raw_reaction_add handlers."
+
+    from .handlers import RawReactionAddHandlers
+
+    log.debug(f'{payload!r}')
+
+    for f in set(RawReactionAddHandlers.handlers):
+        await f(payload)
 
 
 @bot.event

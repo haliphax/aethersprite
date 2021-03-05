@@ -80,6 +80,16 @@ class MemberJoinHandlers(HandlerCollection):
     "on_member_join handlers"
 
 
+class RawReactionAddHandlers(HandlerCollection):
+
+    "on_raw_reaction_add handlers"
+
+
+class RawReactionRemoveHandlers(HandlerCollection):
+
+    "on_raw_reaction_remove handlers"
+
+
 class ReadyHandlers(HandlerCollection):
 
     "on_ready handlers"
@@ -94,6 +104,32 @@ def handle_member_join(f: Callable) -> Callable:
     """
 
     MemberJoinHandlers.add(f)
+
+    return f
+
+
+def handle_raw_reaction_add(f: Callable) -> Callable:
+    """
+    on_raw_reaction_add event handler decorator.
+
+    :param f: The handler callable to hook to the event
+    :returns: The untouched callable
+    """
+
+    RawReactionAddHandlers.add(f)
+
+    return f
+
+
+def handle_raw_reaction_remove(f: Callable) -> Callable:
+    """
+    on_raw_reaction_remove event handler decorator.
+
+    :param f: The handler callable to hook to the event
+    :returns: The untouched callable
+    """
+
+    RawReactionRemoveHandlers.add(f)
 
     return f
 
