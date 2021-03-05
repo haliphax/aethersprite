@@ -34,7 +34,7 @@ def is_in_any_role(user: Member, roles: Sequence[Role]) -> bool:
     :param roles: The roles to check for membership
     """
 
-    if len(roles) > 0 and len([r for r in user.roles if r.id in roles]) > 0:
+    if len(roles) > 0 and len([r for r in user.roles if r in roles]) > 0:
         return True
 
     return False
@@ -162,10 +162,9 @@ async def require_roles_from_setting(ctx: Context, setting: str,
         # no roles set, use default
         return open_by_default
 
-    roles = [r for r in ctx.guild.roles if r.id in roles_id]
-
-    if is_in_any_role(ctx.author, roles):
-        return True
+    for r in ctx.author.roles:
+        if r.id in roles_id:
+            return True
 
     await react_if_not_help(ctx)
 
