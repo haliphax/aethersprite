@@ -156,11 +156,13 @@ async def require_roles_from_setting(ctx: Context, setting: str,
         # Superusers get a pass
         return True
 
-    roles = settings[setting].get(ctx)
+    roles_id = settings[setting].get(ctx, raw=True)
 
-    if roles is None:
+    if roles_id is None:
         # no roles set, use default
         return open_by_default
+
+    roles = [r for r in ctx.guild.roles if r.id in roles_id]
 
     if is_in_any_role(ctx.author, roles):
         return True
