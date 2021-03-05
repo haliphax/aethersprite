@@ -156,7 +156,7 @@ async def require_roles_from_setting(ctx: Context, setting: str,
         # Superusers get a pass
         return True
 
-    roles_id = settings[setting].get(ctx, raw=True)
+    roles_id = [int(r) for r in settings[setting].get(ctx, raw=True)]
 
     if roles_id is None:
         # no roles set, use default
