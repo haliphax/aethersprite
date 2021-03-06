@@ -6,8 +6,8 @@ A [Discord] bot and extension framework
 
 - [Features](#mega-features)
 - [Command categories](#book-command-categories)
-- [Stand-alone commands](#game_die-independent-commands)
-- [Stand-alone settings](#wrench-independent-settings)
+- [Independent commands](#game_die-independent-commands)
+- [Independent settings](#wrench-independent-settings)
 - [Extension packs](#gift-extension-packs)
 
 ## :mega: Features
