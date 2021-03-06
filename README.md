@@ -61,6 +61,8 @@ operate based entirely on events.
   if it is mentioned directly
 - `nameonly.channel` _(channel)_
   Like `nameonly`, but this setting applies to individual channels
+- `prefix` _(server)_
+  Change the bot's command prefix (default `!`)
 
 ## Extension packs
 
