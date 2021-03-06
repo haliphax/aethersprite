@@ -130,8 +130,6 @@ async def on_command_error(ctx: Context, error: Exception):
 
 @bot.event
 async def on_ready():
-    "Update presence and fire up registered startup handlers."
-
     log.info(f'Logged in as {bot.user}')
     await bot.change_presence(activity=activity)
 
