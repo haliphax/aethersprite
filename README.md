@@ -55,7 +55,7 @@ operate based entirely on events.
   The message that will be used to greet new users when they join the server.
   If set to the default, no greeting will be posted. You may use the `{name}`
   token in your message, and it will be replaced with the new member's
-  username.
+  username. The `{nl}` token will be replaced with a line break (new line).
 - `nameonly` _(server)_
   If set to anything other than the default value, the bot will only respond
   if it is mentioned directly
