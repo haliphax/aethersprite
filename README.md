@@ -35,6 +35,8 @@ _This bot is a work in progress. Please excuse my mess..._
   Change the bot's nickname per-server
 - `only`
   Only allow whitelisted commands in a channel
+- `poll`
+  Create and manage polls that members can vote on
 - `roles`
   Allow members to manage their own membership in chosen roles
 - `settings`
