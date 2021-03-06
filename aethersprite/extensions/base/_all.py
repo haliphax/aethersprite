@@ -12,6 +12,7 @@ _mods = (
     'nick',
     'only',
     'poll',
+    'prefix',
     'roles',
     'settings',
 )

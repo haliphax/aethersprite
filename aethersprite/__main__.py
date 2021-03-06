@@ -5,7 +5,7 @@ from random import seed
 from sys import stdout
 from typing import Optional
 # 3rd party
-from discord import Activity, ActivityType, DMChannel, Intents
+from discord import Activity, ActivityType, DMChannel, Intents, Message
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
                                   Context, DefaultHelpCommand,
                                   when_mentioned_or,)
@@ -44,8 +44,27 @@ async def aehelp(ctx: Context, command: Optional[str] = None):
 intents: Intents = Intents.default()
 intents.members = True
 
+
+def get_prefixes(bot: Bot, message: Message):
+    from .settings import settings
+
+    user_id = bot.user.id
+    base = [f'<@!{user_id}> ', f'<@{user_id}> ']
+    default = ['!']
+
+    if 'prefix' not in settings:
+        return base + default
+
+    prefix = settings['prefix'].get(message)
+
+    if prefix is None:
+        return base + default
+
+    return base + [prefix]
+
+
 #: The bot itself
-bot = Bot(command_prefix=when_mentioned_or('!'), intents=intents)
+bot = Bot(command_prefix=get_prefixes, intents=intents)
 
 
 @bot.event
