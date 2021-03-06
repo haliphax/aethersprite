@@ -18,7 +18,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - Deal with friendly role and channel names in commands, but store reliable
   IDs for permanence
 - [TOML] configuration file for immutable settings
-- Able to load multiple commands together as [extension packs]
+- Able to import external command modules as [extension packs]
 
 ## Command categories
 
