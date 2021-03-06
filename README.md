@@ -33,8 +33,8 @@ These categories (referred to as "Cogs") provide multiple commands.
 - `alias`
   Manage aliases for other commands
 - `lobotomy`
-  A collection of commands for enabling/disabling other commands per-server
-  and per-channel
+  A collection of commands for disabling other commands per-server and
+  per-channel
 - `only`
   Only allow whitelisted commands in a channel
 - `poll`
