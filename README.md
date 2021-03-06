@@ -9,7 +9,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - [Features](#mega-features)
 - [Command categories](#book-command-categories)
 - [Stand-alone commands](#game_die-stand-alone-commands)
-- [Stand-alone settings](#gear-stand-alone-settings)
+- [Stand-alone settings](#wrench-stand-alone-settings)
 - [Extension packs](#gift-extension-packs)
 
 ## :mega: Features
@@ -57,7 +57,7 @@ _This bot is a work in progress. Please excuse my mess..._
 
 [Back to top](#aethersprite)
 
-## :gear: Stand-alone settings
+## :wrench: Stand-alone settings
 
 Some of the settings in the project do not have corresponding commands, and
 operate based entirely on events.
