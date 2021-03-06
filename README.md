@@ -20,19 +20,13 @@ _This bot is a work in progress. Please excuse my mess..._
 - [TOML] configuration file for immutable settings
 - Able to load multiple commands together as [extension packs]
 
-## Command sets
+## Command categories
 
 - `alias`
   Manage aliases for other commands
-- `github`
-  Information about the project and a link to this repository
-- `gmt`
-  Get the current time (or an offset from now) in GMT
 - `lobotomy`
   A collection of commands for enabling/disabling other commands per-server
   and per-channel
-- `nick`
-  Change the bot's nickname per-server
 - `only`
   Only allow whitelisted commands in a channel
 - `poll`
@@ -40,7 +34,16 @@ _This bot is a work in progress. Please excuse my mess..._
 - `roles`
   Allow members to manage their own membership in chosen roles
 - `settings`
-  A collection of commands for manipulating the bot's settings framework
+  Manipulate the bot's settings
+
+## Stand-alone commands
+
+- `github`
+  Information about the project and a link to this repository
+- `gmt`
+  Get the current time (or an offset from now) in GMT
+- `nick`
+  Change the bot's nickname per-server
 
 ## Stand-alone settings
 
