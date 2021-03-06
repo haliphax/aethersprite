@@ -39,6 +39,7 @@ def is_in_any_role(user: Member, roles: Sequence[Role]) -> bool:
 
     return False
 
+
 async def react_if_not_help(ctx: Context):
     """
     If the command was not invoked as an alias of the help command, react with
@@ -54,7 +55,6 @@ async def react_if_not_help(ctx: Context):
 
         return
 
-
     aliases = cog.get_aliases(ctx, _help)
     help_aliases = [_help] + aliases
 
@@ -66,6 +66,7 @@ async def react_if_not_help(ctx: Context):
 
     return
 
+
 async def require_admin(ctx):
     "Check for requiring admin/mod privileges to execute a command."
 
@@ -75,19 +76,7 @@ async def require_admin(ctx):
             or owner == str(ctx.author):
         return True
 
-    cog = ctx.bot.get_cog('alias')
-
-    if cog is None:
-        return False
-
-    aliases = cog.get_aliases(ctx, _help)
-    help_aliases = [_help] + aliases
-
-    # only react if they invoked the command directly (i.e. not via !help)
-    if ctx.invoked_with not in help_aliases:
-        await ctx.message.add_reaction(POLICE_OFFICER)
-        log.warn(f'{ctx.author} attempted to access admin command '
-                 f'{ctx.command}')
+    await react_if_not_help()
 
     return False
 
