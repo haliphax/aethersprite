@@ -76,6 +76,7 @@ async def poll(ctx: Context, *, options: str):
 
     poll = {'timestamp': datetime.utcnow(),
             'author': ctx.author.display_name,
+            'author_id': ctx.author.id,
             'avatar': str(ctx.author.avatar_url),
             'prompt': prompt,
             'options': opts,
@@ -155,9 +156,11 @@ async def _update_poll(member: Member, message: Message, emoji: str,
 
 def _allowed(setting: str, message: Message, member: Member) -> bool:
     perms = member.permissions_in(message.channel)
+    poll = polls[message.id]
 
+    # allow administrators, owners, moderators, bot owners, and poll author
     if perms.administrator or perms.manage_channels or perms.manage_guild \
-            or owner == str(member) or message.author.id == member.id:
+            or owner == str(member) or member.id == poll['author_id']:
         return True
 
     stg = settings[setting].get(message, raw=True)
