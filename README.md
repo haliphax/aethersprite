@@ -6,6 +6,12 @@ A [Discord] bot and extension framework.
 
 _This bot is a work in progress. Please excuse my mess..._
 
+- [Features](#mega-features)
+- [Command categories](#book-command-categories)
+- [Stand-alone commands](#game_die-stand-alone-commands)
+- [Stand-alone settings](#gear-stand-alone-settings)
+- [Extension packs](#gift-extension-packs)
+
 ## :mega: Features
 
 - Multi-server, multi-channel capable
@@ -19,6 +25,8 @@ _This bot is a work in progress. Please excuse my mess..._
   IDs for permanence
 - [TOML] configuration file for immutable settings
 - Able to import external command modules as [extension packs]
+
+[Back to top](#aethersprite)
 
 ## :book: Command categories
 
@@ -36,6 +44,8 @@ _This bot is a work in progress. Please excuse my mess..._
 - `settings`
   Manipulate the bot's settings
 
+[Back to top](#aethersprite)
+
 ## :game_die: Stand-alone commands
 
 - `github`
@@ -44,6 +54,8 @@ _This bot is a work in progress. Please excuse my mess..._
   Get the current time (or an offset from now) in GMT
 - `nick`
   Change the bot's nickname per-server
+
+[Back to top](#aethersprite)
 
 ## :gear: Stand-alone settings
 
@@ -67,9 +79,13 @@ operate based entirely on events.
 - `prefix` _(server)_
   Change the bot's command prefix (default `!`)
 
+[Back to top](#aethersprite)
+
 ## :gift: Extension packs
 
 - [ncfacbot] - The [Nexus Clash] Faction Discord Bot
+
+[Back to top](#aethersprite)
 
 
 [discord.py]: https://discordpy.readthedocs.io
