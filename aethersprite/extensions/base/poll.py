@@ -145,7 +145,7 @@ async def _update_poll(member: Member, message: Message, emoji: str,
     verb = 'voted' if adjustment > 0 else 'retracted vote'
 
     if acted:
-        log.info(f'{member} retracted vote for {emoji} - {poll["prompt"]}')
+        log.info(f'{member} {verb} for {emoji} - {poll["prompt"]}')
     else:
         log.warn(f'Ignored vote for {emoji} by {member} in {message.id} - '
                  f'{poll["prompt"]} (reacts are out of sync)')
@@ -226,7 +226,6 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
             return
 
     opts = poll['options']
-    log.info(poll['open'])
 
     if payload.emoji.name not in opts or not poll['open'] \
             or not _allowed('poll.voteroles', msg, payload.member):
@@ -235,8 +234,6 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
         return
 
     await _update_poll(payload.member, msg, payload.emoji.name, 1)
-    log.info(f'{payload.member} voted for {payload.emoji.name} - '
-             f'{poll["prompt"]}')
 
 
 async def on_raw_reaction_remove(payload: RawReactionActionEvent):
