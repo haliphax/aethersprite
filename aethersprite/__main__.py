@@ -26,9 +26,10 @@ activity = Activity(name=f'@me {_help}', type=ActivityType.listening)
 
 
 def get_ending_note(self):
-    return (f'Type !{_help} <command> for more info on a command.\n'
-            f'You can also type !{_help} <category> for more info on a '
-            'category.')
+    cmd = f'{self.clean_prefix}{self.invoked_with}'
+
+    return (f'Type {cmd} <command> for more info on a command.\n'
+            f'You can also type {cmd} <category> for more info on a category.')
 
 DefaultHelpCommand.get_ending_note = get_ending_note
 
