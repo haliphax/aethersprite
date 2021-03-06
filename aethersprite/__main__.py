@@ -9,9 +9,37 @@ from discord import Activity, ActivityType, DMChannel, Intents, Message
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
                                   Context, DefaultHelpCommand,
                                   when_mentioned_or,)
+from pretty_help import PrettyHelp
 # local
 from . import config, log
 
+_help = config['bot'].get('help_command', 'aehelp')
+
+
+@command(name=_help, hidden=True)
+async def help_proxy(ctx: Context, command: Optional[str] = None):
+    if command is None:
+        await ctx.send_help()
+    else:
+        await ctx.send_help(command)
+
+
+class MyHelp(PrettyHelp):
+
+    def __init__(self):
+        super().__init__()
+
+    @property
+    def invoked_with(self):
+        command_name = _help
+        ctx = self.context
+
+        if ctx is None or ctx.command is None or ctx.command.qualified_name != command_name:
+            return command_name
+
+        return ctx.invoked_with
+
+_helpcmd = MyHelp()
 # logging stuff
 streamHandler = logging.StreamHandler(stdout)
 streamHandler.setFormatter(logging.Formatter(
@@ -19,28 +47,8 @@ streamHandler.setFormatter(logging.Formatter(
 log.addHandler(streamHandler)
 log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 
-_help = config['bot']['help_command']
-
 #: Activity on login
 activity = Activity(name=f'@me {_help}', type=ActivityType.listening)
-
-
-def get_ending_note(self):
-    cmd = f'{self.clean_prefix}{self.invoked_with}'
-
-    return (f'Type {cmd} <command> for more info on a command.\n'
-            f'You can also type {cmd} <category> for more info on a category.')
-
-DefaultHelpCommand.get_ending_note = get_ending_note
-
-
-@command(name=_help, hidden=True)
-async def aehelp(ctx: Context, command: Optional[str] = None):
-    if command is None:
-        await ctx.send_help()
-    else:
-        await ctx.send_help(command)
-
 
 intents: Intents = Intents.default()
 intents.members = True
@@ -65,7 +73,7 @@ def get_prefixes(bot: Bot, message: Message):
 
 
 #: The bot itself
-bot = Bot(command_prefix=get_prefixes, intents=intents)
+bot = Bot(command_prefix=get_prefixes, intents=intents, help_command=_helpcmd)
 
 
 @bot.event
@@ -143,7 +151,7 @@ def entrypoint():
     # for any commands or scheduled tasks, etc. that need random numbers
     seed()
     bot.remove_command('help')
-    bot.add_command(aehelp)
+    bot.add_command(help_proxy)
 
     # load extensions
     for ext in config['bot']['extensions']:
