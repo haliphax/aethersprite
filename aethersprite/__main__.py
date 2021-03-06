@@ -34,10 +34,12 @@ class MyHelp(PrettyHelp):
         command_name = _help
         ctx = self.context
 
-        if ctx is None or ctx.command is None or ctx.command.qualified_name != command_name:
+        if ctx is None or ctx.command is None \
+                or ctx.command.qualified_name != command_name:
             return command_name
 
         return ctx.invoked_with
+
 
 _helpcmd = MyHelp()
 # logging stuff
