@@ -5,8 +5,7 @@ from random import seed
 from sys import stdout
 from typing import Optional
 # 3rd party
-from discord import Activity, ActivityType, Intents
-from discord import DMChannel, Member, RawReactionActionEvent
+from discord import Activity, ActivityType, DMChannel, Intents
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
                                   Context, DefaultHelpCommand,
                                   when_mentioned_or,)
@@ -23,7 +22,7 @@ log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 _help = config['bot']['help_command']
 
 #: Activity on login
-activity = Activity(name=f'!{_help}', type=ActivityType.listening)
+activity = Activity(name=f'@mention {_help}', type=ActivityType.listening)
 
 
 def get_ending_note(self):
