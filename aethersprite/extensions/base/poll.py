@@ -154,14 +154,11 @@ async def on_reaction_add(reaction: Reaction, user: User):
         role_ids = [int(r) for r in
                     settings['poll.createroles'].get(user)]
 
-    if role_ids is None or len(role_ids) == 0:
-        allowed = True
-    else:
-        for r in user.roles:
-            if r.id in role_ids:
-                allowed = True
+    for r in user.roles or []:
+        if r.id in role_ids:
+            allowed = True
 
-                break
+            break
 
     if reaction.emoji == WASTEBASKET and allowed:
         poll['delete'].add(user.id)
