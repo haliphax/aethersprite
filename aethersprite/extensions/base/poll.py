@@ -5,11 +5,11 @@ from datetime import datetime
 from functools import partial
 import re
 # 3rd party
-from discord import DMChannel, Message, Reaction, User
+from discord import Color, DMChannel, Embed, Message, Reaction, User
 from discord.ext.commands import check, command, Context
 from discord.ext.commands.bot import Bot
 from sqlitedict import SqliteDict
-# local
+# api
 from aethersprite import data_folder, log
 from aethersprite.authz import channel_only, owner, require_roles_from_setting
 from aethersprite.common import THUMBS_DOWN
@@ -22,6 +22,7 @@ SOLID_BLOCK = '\u2588'
 SHADE_BLOCK = '\u2591'
 WASTEBASKET = '\U0001f5d1'
 CHECK_MARK = '\u2705'
+PROHIBITED = '\U0001f6ab'
 BAR_WIDTH = 20
 POLL_EXPIRY = 86400 * 90  # 90 days
 
@@ -67,29 +68,41 @@ async def poll(ctx: Context, *, options: str):
     for s in qstr.split(','):
         emoji = f'{count}{DIGIT_SUFFIX}'
         opt = s.strip()
-        opts[emoji] = {'text': opt, 'count': 0}
+        opts[emoji] = {'text': opt, 'count': 0, 'votes': set([])}
         count += 1
 
     poll = {'timestamp': datetime.utcnow(),
+            'author': ctx.author.display_name,
+            'avatar': str(ctx.author.avatar_url),
             'prompt': prompt,
             'options': opts,
+            'open': 1,
             'delete': set([]),
             'confirm': set([])}
-    msg: Message = await ctx.send(_get_text(poll))
+    msg: Message = await ctx.send(embed=_get_embed(poll))
 
     for emoji in opts.keys():
         await msg.add_reaction(emoji)
 
+    await msg.add_reaction(PROHIBITED)
     await msg.add_reaction(WASTEBASKET)
     await msg.add_reaction(CHECK_MARK)
 
+    log.info(f'{poll!r}')
     polls[msg.id] = poll
     log.info(f'{ctx.author} created poll: {poll!r}')
 
 
-def _get_text(poll):
+def _get_embed(poll):
     total = sum([int(o['count']) for _, o in poll['options'].items()])
-    txt = [f':bar_chart: **__{poll["prompt"] or "Poll"}__**']
+    open = 'open' if poll['open'] else 'closed'
+    prohib_text = 'Close' if poll['open'] else 'Open'
+    embed = Embed(title=f':bar_chart: {poll["prompt"] or "Poll"}',
+                  description=f'Poll is: {open}',
+                  color=Color.blue())
+    embed.set_author(name=poll['author'], icon_url=poll['avatar'])
+    embed.set_footer(text=f'{PROHIBITED} {prohib_text} | '
+                          f'{WASTEBASKET} Delete | {CHECK_MARK} Confirm')
 
     for key, opt in poll['options'].items():
         count = int(opt['count'])
@@ -98,24 +111,52 @@ def _get_text(poll):
         pct = 0 if (total == 0 or count == 0) else round((count / total) * 20)
         left = 20 - pct
         bar = f'{SOLID_BLOCK * pct}{SHADE_BLOCK * left}'
-        txt.append(f'> {key} **{opt["text"]}**\n> {bar} {opt["count"]} '
-                   f'({rawpct}%)')
+        embed.add_field(name=f'{key} {opt["text"]}', inline=False,
+                        value=f'{bar} {opt["count"]} ({rawpct}%)')
 
-    txt.append('Vote using reactions.')
-
-    return '\n'.join(txt)
+    return embed
 
 
-async def _update_poll(reaction: Reaction, adjustment: int):
+async def _update_poll(uid: int, reaction: Reaction, adjustment: int):
     poll = polls[reaction.message.id]
     opts = poll['options']
     opt = opts[reaction.emoji]
     opt['count'] += adjustment
+
+    if adjustment > 0:
+        if uid in opt['votes']:
+            opt['count'] -= adjustment
+        else:
+            opt['votes'].add(uid)
+
+    elif adjustment < 0:
+        opt['votes'].remove(uid)
+
     opts[reaction.emoji] = opt
     poll['options'] = opts
     polls[reaction.message.id] = poll
-    await reaction.message.edit(content=_get_text(poll))
+    await reaction.message.edit(embed=_get_embed(poll))
 
+
+def _allowed(reaction: Reaction, user: User) -> bool:
+    perms = user.permissions_in(reaction.message.channel)
+
+    if perms.administrator or perms.manage_channels or perms.manage_guild \
+            or owner == str(user) or reaction.message.author.id == user.id:
+        return True
+
+    role_ids = []
+    setting = settings['poll.createroles'].get(user, raw=True)
+
+    if setting is not None:
+        role_ids = [int(r) for r in
+                    settings['poll.createroles'].get(user)]
+
+    for r in user.roles or []:
+        if r.id in role_ids:
+            return True
+
+    return False
 
 async def on_reaction_add(reaction: Reaction, user: User):
     "Handle on_reaction_add event."
@@ -140,46 +181,36 @@ async def on_reaction_add(reaction: Reaction, user: User):
             del polls[reaction.message.id]
             log.info(f'{user} deleted poll {reaction.message.id} - {prompt}')
 
-    allowed = False
-    perms = user.permissions_in(reaction.message.channel)
+    if _allowed(reaction, user):
+        if reaction.emoji == WASTEBASKET:
+            poll['delete'].add(user.id)
+            polls[reaction.message.id] = poll
+            await _delete()
 
-    if perms.administrator or perms.manage_channels or perms.manage_guild \
-            or owner == str(user) or reaction.message.author.id == user.id:
-        allowed = True
+            return
 
-    role_ids = []
-    setting = settings['poll.createroles'].get(user, raw=True)
+        if reaction.emoji == CHECK_MARK:
+            poll['confirm'].add(user.id)
+            polls[reaction.message.id] = poll
+            await _delete()
 
-    if setting is not None:
-        role_ids = [int(r) for r in
-                    settings['poll.createroles'].get(user)]
+            return
 
-    for r in user.roles or []:
-        if r.id in role_ids:
-            allowed = True
+        if reaction.emoji == PROHIBITED:
+            poll['open'] = False
+            polls[reaction.message.id] = poll
+            await reaction.message.edit(embed=_get_embed(poll))
 
-            break
-
-    if reaction.emoji == WASTEBASKET and allowed:
-        poll['delete'].add(user.id)
-        polls[reaction.message.id] = poll
-        await _delete()
-
-        return
-
-    if reaction.emoji == CHECK_MARK and allowed:
-        poll['confirm'].add(user.id)
-        polls[reaction.message.id] = poll
-        await _delete()
-
-        return
+            return
 
     opts = poll['options']
 
-    if reaction.emoji not in opts:
+    if reaction.emoji not in opts or not poll['open']:
+        await reaction.remove(user)
+
         return
 
-    await _update_poll(reaction, 1)
+    await _update_poll(user.id, reaction, 1)
     log.info(f'{user} voted for {reaction.emoji} - {poll["prompt"]}')
 
 
@@ -204,10 +235,17 @@ async def on_reaction_remove(reaction: Reaction, user: User):
 
         return
 
-    if reaction.emoji not in opts:
+    if reaction.emoji == PROHIBITED and _allowed(reaction, user):
+        poll['open'] = True
+        polls[reaction.message.id] = poll
+        await reaction.message.edit(embed=_get_embed(poll))
+
         return
 
-    await _update_poll(reaction, -1)
+    if reaction.emoji not in opts or not poll['open']:
+        return
+
+    await _update_poll(user.id, reaction, -1)
     log.info(f'{user} retracted vote for {reaction.emoji} - {poll["prompt"]}')
 
 
