@@ -28,7 +28,7 @@ A [Discord] bot and extension framework
 
 ## :book: Command categories
 
-Each of these categories (referred to as "Cogs") provides multiple commands.
+These categories (referred to as "Cogs") provide multiple commands.
 
 - `alias`
   Manage aliases for other commands
