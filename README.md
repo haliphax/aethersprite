@@ -6,7 +6,7 @@ A [Discord] bot and extension framework.
 
 _This bot is a work in progress. Please excuse my mess..._
 
-## Features
+## :mega: Features
 
 - Multi-server, multi-channel capable
 - Built on [discord.py], so new commands are easy to create and integrate
@@ -20,7 +20,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - [TOML] configuration file for immutable settings
 - Able to import external command modules as [extension packs]
 
-## Command categories
+## :book: Command categories
 
 - `alias`
   Manage aliases for other commands
@@ -36,7 +36,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - `settings`
   Manipulate the bot's settings
 
-## Stand-alone commands
+## :game_die: Stand-alone commands
 
 - `github`
   Information about the project and a link to this repository
@@ -45,7 +45,7 @@ _This bot is a work in progress. Please excuse my mess..._
 - `nick`
   Change the bot's nickname per-server
 
-## Stand-alone settings
+## :gear: Stand-alone settings
 
 Some of the settings in the project do not have corresponding commands, and
 operate based entirely on events.
@@ -67,7 +67,7 @@ operate based entirely on events.
 - `prefix` _(server)_
   Change the bot's command prefix (default `!`)
 
-## Extension packs
+## :gift: Extension packs
 
 - [ncfacbot] - The [Nexus Clash] Faction Discord Bot
 
