@@ -67,7 +67,7 @@ operate based entirely on events.
 | `greet.message` | Server | The message that will be used to greet new users when they join the server. If set to the default, no greeting will be posted. You may use the `{name}` token in your message, and it will be replaced with the new member's username. The `{nl}` token will be replaced with a line break (new line). |
 | `nameonly` | Server | If set to anything other than the default value, the bot will only respond if it is mentioned directly. |
 | `nameonly.channel` | Channel | Like `nameonly`, but this setting applies to individual channels. |
-| `prefix` | Server | Change the bot's command prefix (default `!`) |
+| `prefix` | Server | Change the bot's command prefix. (Default: `!`) |
 
 [Back to top](#aethersprite)
 
