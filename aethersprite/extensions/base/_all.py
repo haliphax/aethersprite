@@ -11,6 +11,7 @@ _mods = (
     'name_only',
     'nick',
     'only',
+    'poll',
     'roles',
     'settings',
 )

@@ -5,7 +5,7 @@ from random import seed
 from sys import stdout
 from typing import Optional
 # 3rd party
-from discord import Activity, ActivityType
+from discord import Activity, ActivityType, Intents
 from discord import DMChannel, Member, RawReactionActionEvent
 from discord.ext.commands import (Bot, CheckFailure, command, CommandNotFound,
                                   Context, DefaultHelpCommand,
@@ -42,8 +42,11 @@ async def aehelp(ctx: Context, command: Optional[str] = None):
         await ctx.send_help(command)
 
 
+intents: Intents = Intents.default()
+intents.members = True
+
 #: The bot itself
-bot = Bot(command_prefix=when_mentioned_or('!'))
+bot = Bot(command_prefix=when_mentioned_or('!'), intents=intents)
 
 
 @bot.event
@@ -97,52 +100,11 @@ async def on_command_error(ctx: Context, error: Exception):
 
 
 @bot.event
-async def on_member_join(member: Member):
-    "Fire on_member_join handlers."
-
-    from .handlers import MemberJoinHandlers
-
-    log.debug(f'{member!r}')
-
-    for f in set(MemberJoinHandlers.handlers):
-        await f(member)
-
-
-@bot.event
-async def on_raw_reaction_add(payload: RawReactionActionEvent):
-    "Fire on_raw_reaction_add handlers."
-
-    from .handlers import RawReactionAddHandlers
-
-    log.debug(f'{payload!r}')
-
-    for f in set(RawReactionAddHandlers.handlers):
-        await f(payload)
-
-
-@bot.event
-async def on_raw_reaction_remove(payload: RawReactionActionEvent):
-    "Fire on_raw_reaction_add handlers."
-
-    from .handlers import RawReactionAddHandlers
-
-    log.debug(f'{payload!r}')
-
-    for f in set(RawReactionAddHandlers.handlers):
-        await f(payload)
-
-
-@bot.event
 async def on_ready():
     "Update presence and fire up registered startup handlers."
 
-    from .handlers import ReadyHandlers
-
     log.info(f'Logged in as {bot.user}')
     await bot.change_presence(activity=activity)
-
-    for f in set(ReadyHandlers.handlers):
-        await f(bot)
 
 
 @bot.event
@@ -167,6 +129,15 @@ def entrypoint():
     # load extensions
     for ext in config['bot']['extensions']:
         bot.load_extension(ext)
+
+    if log.level >= logging.DEBUG:
+        for key, evs in bot.extra_events.items():
+            out = []
+
+            for f in evs:
+                out.append(f'{f.__module__}:{f.__name__}')
+
+            log.debug(f'{key} => {out!r}')
 
     # here we go!
     bot.run(token)
