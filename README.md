@@ -6,8 +6,8 @@ A [Discord] bot and extension framework
 
 - [Features](#mega-features)
 - [Command categories](#book-command-categories)
-- [Stand-alone commands](#game_die-stand-alone-commands)
-- [Stand-alone settings](#wrench-stand-alone-settings)
+- [Stand-alone commands](#game_die-independent-commands)
+- [Stand-alone settings](#wrench-independent-settings)
 - [Extension packs](#gift-extension-packs)
 
 ## :mega: Features
@@ -45,7 +45,7 @@ These categories (referred to as "Cogs") provide multiple commands.
 
 [Back to top](#aethersprite)
 
-## :game_die: Stand-alone commands
+## :game_die: Independent commands
 
 - `github`
   Information about the project and a link to this repository
@@ -56,7 +56,7 @@ These categories (referred to as "Cogs") provide multiple commands.
 
 [Back to top](#aethersprite)
 
-## :wrench: Stand-alone settings
+## :wrench: Independent settings
 
 Some of the settings in the project do not have corresponding commands, and
 operate based entirely on events.
