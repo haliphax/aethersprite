@@ -195,6 +195,18 @@ async def on_reaction_remove(reaction: Reaction, user: User):
     poll = polls[reaction.message.id]
     opts = poll['options']
 
+    if reaction.emoji == WASTEBASKET:
+        poll['delete'].remove(user.id)
+        polls[reaction.message.id] = poll
+
+        return
+
+    if reaction.emoji == CHECK_MARK:
+        poll['confirm'].remove(user.id)
+        polls[reaction.message.id] = poll
+
+        return
+
     if reaction.emoji not in opts:
         return
 
