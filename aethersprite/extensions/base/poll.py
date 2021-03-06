@@ -156,9 +156,9 @@ async def _update_poll(member: Member, message: Message, emoji: str,
 def _allowed(setting: str, message: Message, member: Member) -> bool:
     perms = member.permissions_in(message.channel)
 
-    # if perms.administrator or perms.manage_channels or perms.manage_guild \
-    #         or owner == str(member) or message.author.id == member.id:
-    #     return True
+    if perms.administrator or perms.manage_channels or perms.manage_guild \
+            or owner == str(member) or message.author.id == member.id:
+        return True
 
     stg = settings[setting].get(message, raw=True)
 
