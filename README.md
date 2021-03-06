@@ -30,6 +30,8 @@ _This bot is a work in progress. Please excuse my mess..._
 
 ## :book: Command categories
 
+Each of these categories (referred to as "Cogs") provides multiple commands.
+
 - `alias`
   Manage aliases for other commands
 - `lobotomy`
