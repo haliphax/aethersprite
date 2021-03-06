@@ -1,6 +1,6 @@
 # Aethersprite
 
-A [Discord] bot and extension framework.
+A [Discord] bot and extension framework
 
 ![Aethersprite](https://github.com/haliphax/aethersprite/raw/assets/aethersprite.jpg)
 
