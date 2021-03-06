@@ -22,7 +22,7 @@ log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 _help = config['bot']['help_command']
 
 #: Activity on login
-activity = Activity(name=f'@mention {_help}', type=ActivityType.listening)
+activity = Activity(name=f'@me {_help}', type=ActivityType.listening)
 
 
 def get_ending_note(self):
