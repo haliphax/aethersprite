@@ -2,7 +2,7 @@
 
 # stdlib
 from os import environ
-from typing import Sequence
+from typing import Sequence, Union
 # 3rd party
 from discord import DMChannel, Member, Role
 from discord.ext.commands import Context
@@ -97,7 +97,8 @@ async def require_roles(ctx: Context, roles: Sequence[Role]) -> bool:
 
     return False
 
-async def require_roles_from_setting(ctx: Context, setting: str,
+async def require_roles_from_setting(ctx: Context,
+                                     setting: Union[str, Sequence],
                                      open_by_default=True) -> bool:
     """
     Check for requiring particular roles (loaded from the given setting) to
@@ -145,9 +146,17 @@ async def require_roles_from_setting(ctx: Context, setting: str,
         # Superusers get a pass
         return True
 
-    roles_id = [int(r) for r in settings[setting].get(ctx, raw=True)]
+    roles_id = []
 
-    if roles_id is None:
+    if isinstance(setting, str):
+        roles_id = [int(r) for r in settings[setting].get(ctx, raw=True)]
+    elif isinstance(setting, Sequence):
+        for s in setting:
+            roles_id += [int(r) for r in settings[s].get(ctx, raw=True)]
+    else:
+        raise ValueError(setting)
+
+    if len(roles_id) == 0:
         # no roles set, use default
         return open_by_default
 
