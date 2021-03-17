@@ -1,8 +1,11 @@
+"Entry point"
+
+# 3rd party
+import colorlog
 # stdlib
 import logging
 from os import environ
 from random import seed
-from sys import stdout
 from typing import Optional
 # 3rd party
 from discord import Activity, ActivityType, DMChannel, Intents, Message
@@ -41,19 +44,21 @@ class MyHelp(PrettyHelp):
         return ctx.invoked_with
 
 
-_helpcmd = MyHelp()
-# logging stuff
-streamHandler = logging.StreamHandler(stdout)
-streamHandler.setFormatter(logging.Formatter(
-    '{asctime} {levelname:<7} <{module}.{funcName}> {message}', style='{'))
+# colored log output
+streamHandler = logging.StreamHandler()
+streamHandler.setFormatter(colorlog.ColoredFormatter(
+    '{asctime} {log_color}{levelname:<7}{reset} '
+    '{bold_white}{module}:{funcName}{reset} {cyan}\u00bb{reset} {message}',
+    style='{'))
 log.addHandler(streamHandler)
-log.setLevel(getattr(logging, environ.get('LOGLEVEL', 'INFO')))
 
 #: Activity on login
 activity = Activity(name=f'@me {_help}', type=ActivityType.listening)
 
 intents: Intents = Intents.default()
 intents.members = True
+
+_helpcmd = MyHelp()
 
 
 def get_prefixes(bot: Bot, message: Message):
@@ -111,7 +116,7 @@ async def on_command_error(ctx: Context, error: Exception):
             return
 
         name = ctx.message.content \
-                .replace(ctx.prefix, '').split(' ')[0].strip()
+            .replace(ctx.prefix, '').split(' ')[0].strip()
 
         if name not in aliases:
             return
@@ -168,6 +173,7 @@ def entrypoint():
 
     # here we go!
     bot.run(token)
+
 
 if __name__ == '__main__':
     entrypoint()
