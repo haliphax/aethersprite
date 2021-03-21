@@ -193,9 +193,6 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
     channel: TextChannel = payload.member.guild.get_channel(payload.channel_id)
     msg: Message = await channel.fetch_message(payload.message_id)
 
-    if isinstance(msg.channel, DMChannel):
-        return
-
     async def _delete():
         prompt = poll['prompt']
         delete = payload.member.id in poll['delete']
