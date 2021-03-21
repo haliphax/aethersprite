@@ -36,10 +36,6 @@ These categories (referred to as "Cogs") provide multiple commands.
   Disable other commands per-server and per-channel
 - `only`
   Only allow whitelisted commands in a channel
-- `poll`
-  Create and manage polls that members can vote on
-- `roles`
-  Allow members to manage their own membership in chosen roles
 - `settings`
   Manipulate the bot's settings
 
@@ -53,6 +49,10 @@ These categories (referred to as "Cogs") provide multiple commands.
   Get the current time (or an offset from now) in GMT
 - `nick`
   Change the bot's nickname per-server
+- `poll`
+  Create and manage polls that members can vote on
+- `roles`
+  Allow members to manage their own membership in chosen roles
 
 [Back to top](#aethersprite)
 
