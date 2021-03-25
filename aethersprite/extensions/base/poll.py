@@ -94,6 +94,7 @@ async def poll(ctx: Context, *, options: str):
 
     polls[msg.id] = poll
     log.info(f'{ctx.author} created poll: {poll!r}')
+    await ctx.message.delete()
 
 
 def _get_embed(poll):
