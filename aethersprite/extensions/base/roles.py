@@ -67,6 +67,7 @@ async def roles(ctx: Context):
 
     log.info(f'{ctx.author} invoked roles self-service')
     loop.call_later(expiry_raw, _delete, msg.id)
+    await ctx.message.delete()
 
 
 async def on_raw_reaction_add(payload: RawReactionActionEvent):
