@@ -4,13 +4,13 @@ A [Discord] bot and extension framework
 
 ![Aethersprite](https://github.com/haliphax/aethersprite/raw/assets/aethersprite.jpg)
 
-- [Features](#mega-features)
-- [Command categories](#book-command-categories)
-- [Independent commands](#game_die-independent-commands)
-- [Independent settings](#wrench-independent-settings)
-- [Extension packs](#gift-extension-packs)
+- [Features](#features)
+- [Command categories](#command-categories)
+- [Independent commands](#independent-commands)
+- [Independent settings](#independent-settings)
+- [Extension packs](#extension-packs)
 
-## :mega: Features
+## 📣 Features
 
 - Multi-server, multi-channel capable
 - Built on [discord.py], so new commands are easy to create and integrate
@@ -26,7 +26,7 @@ A [Discord] bot and extension framework
 
 [Back to top](#aethersprite)
 
-## :book: Command categories
+## 📖 Command categories
 
 These categories (referred to as "Cogs") provide multiple commands.
 
@@ -41,7 +41,7 @@ These categories (referred to as "Cogs") provide multiple commands.
 
 [Back to top](#aethersprite)
 
-## :game_die: Independent commands
+## 🎲 Independent commands
 
 - `github`
   Information about the project and a link to this repository
@@ -56,7 +56,7 @@ These categories (referred to as "Cogs") provide multiple commands.
 
 [Back to top](#aethersprite)
 
-## :wrench: Independent settings
+## 🔧 Independent settings
 
 Some of the settings in the project do not have corresponding commands, and
 operate based entirely on events.
@@ -71,7 +71,7 @@ operate based entirely on events.
 
 [Back to top](#aethersprite)
 
-## :gift: Extension packs
+## 🎁 Extension packs
 
 - [ncfacbot] - The [Nexus Clash] Faction Discord Bot
 
