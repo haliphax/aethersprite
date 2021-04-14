@@ -21,41 +21,48 @@ bot: Bot = None
 loop = aio.get_event_loop()
 # constants
 DIGIT_SUFFIX = '\ufe0f\u20e3'
-# filters
-roles_filter = RoleFilter('roles.catalog')
 # database
 postdb_file = f'{data_folder}roles.sqlite3'
 posts = SqliteDict(postdb_file, tablename='selfserv_posts', autocommit=True)
 directories = SqliteDict(postdb_file, tablename='catalog', autocommit=True)
 
-def _update_filter(self, ctx: Context, value: str) -> None:
-    val = super(RoleFilter, self).in_(ctx, value)
-    directory = directories[ctx.guild.id] \
-        if ctx.guild.id in directories else None
 
-    if directory is None:
+class DirectoryUpdateFilter(RoleFilter):
+
+    "Automatically update directory post when roles.catalog is updated"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def in_(self, ctx: Context, value: str) -> None:
+        "Filter input."
+
+        val = super().in_(ctx, value)
+        directory = directories[ctx.guild.id] \
+            if ctx.guild.id in directories else None
+
+        if directory is None:
+            return val
+
+        chan: TextChannel = ctx.guild.get_channel(directory['channel'])
+
+        if chan is None:
+            return val
+
+        async def update():
+            msg = await chan.fetch_message(directory['message'])
+
+            if msg is None:
+                return
+
+            await _get_message(ctx, msg)
+
+        aio.ensure_future(update())
+
         return val
 
-    chan: TextChannel = ctx.guild.get_channel(directory['channel'])
 
-    if chan is None:
-        return val
-
-    async def update():
-        msg = await chan.fetch_message(directory['message'])
-
-        if msg is None:
-            return
-
-        await _get_message(ctx, msg)
-
-    aio.get_event_loop().run_until_complete(update())
-
-    return val
-
-
-# monkey patch :(
-roles_filter.in_ = _update_filter
+roles_filter = DirectoryUpdateFilter('roles.catalog')
 
 
 async def _get_message(ctx: Context, msg: Optional[Message] = None,
@@ -78,7 +85,7 @@ async def _get_message(ctx: Context, msg: Optional[Message] = None,
         msg: Message = await ctx.send(embed=embed)
     else:
         await msg.edit(embed=embed)
-        await msg.reactions.clear()
+        await msg.clear_reactions()
 
     for i in range(0, count):
         await msg.add_reaction(f'{i}{DIGIT_SUFFIX}')
