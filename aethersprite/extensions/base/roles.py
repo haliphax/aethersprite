@@ -3,6 +3,7 @@
 # stdlib
 import asyncio as aio
 from datetime import datetime, timedelta
+from typing import Optional
 # 3rd party
 from discord import Color, Embed, Guild, Member, Message, TextChannel
 from discord.errors import NotFound
@@ -11,9 +12,9 @@ from discord.raw_models import RawReactionActionEvent
 from sqlitedict import SqliteDict
 # local
 from aethersprite import data_folder, log
-from aethersprite.authz import channel_only
+from aethersprite.authz import channel_only, require_admin
 from aethersprite.common import FakeContext, seconds_to_str
-from aethersprite.filters import RoleFilter
+from aethersprite.filters import RoleFilter, SettingFilter
 from aethersprite.settings import register, settings
 
 bot: Bot = None
@@ -23,8 +24,66 @@ DIGIT_SUFFIX = '\ufe0f\u20e3'
 # filters
 roles_filter = RoleFilter('roles.catalog')
 # database
-posts = SqliteDict(f'{data_folder}roles.sqlite3', tablename='selfserv_posts',
-                   autocommit=True)
+postdb_file = f'{data_folder}roles.sqlite3'
+posts = SqliteDict(postdb_file, tablename='selfserv_posts', autocommit=True)
+directories = SqliteDict(postdb_file, tablename='catalog', autocommit=True)
+
+def _update_filter(self, ctx: Context, value: str) -> None:
+    val = super(RoleFilter, self).in_(ctx, value)
+    directory = directories[ctx.guild.id] \
+        if ctx.guild.id in directories else None
+
+    if directory is None:
+        return val
+
+    chan: TextChannel = ctx.guild.get_channel(directory['channel'])
+
+    if chan is None:
+        return val
+
+    async def update():
+        msg = await chan.fetch_message(directory['message'])
+
+        if msg is None:
+            return
+
+        await _get_message(ctx, msg)
+
+    aio.get_event_loop().run_until_complete(update())
+
+    return val
+
+
+# monkey patch :(
+roles_filter.in_ = _update_filter
+
+
+async def _get_message(ctx: Context, msg: Optional[Message] = None,
+        expiry: Optional[str] = None):
+    roles = settings['roles.catalog'].get(ctx)[:10]
+    embed = Embed(title=f':billed_cap: Available roles',
+                  description='Use post reactions to manage role membership',
+                  color=Color.purple())
+
+    if expiry is not None:
+        embed.set_footer(text=f'This post will be deleted in {expiry}.')
+
+    count = 0
+
+    for role in sorted(roles, key=lambda x: x.lower()):
+        embed.add_field(name=f'{count}{DIGIT_SUFFIX} {role}', value='\u200b')
+        count += 1
+
+    if msg is None:
+        msg: Message = await ctx.send(embed=embed)
+    else:
+        await msg.edit(embed=embed)
+        await msg.reactions.clear()
+
+    for i in range(0, count):
+        await msg.add_reaction(f'{i}{DIGIT_SUFFIX}')
+
+    return msg
 
 
 @command()
@@ -44,22 +103,7 @@ async def roles(ctx: Context):
 
         return
 
-    roles = roles[:10]
-    embed = Embed(title=f':billed_cap: Available roles',
-                  description='Use post reactions to manage role membership',
-                  color=Color.purple())
-    embed.set_footer(text=f'This post will be deleted in {expiry}.')
-    count = 0
-
-    for role in sorted(roles, key=lambda x: x.lower()):
-        embed.add_field(name=f'{count}{DIGIT_SUFFIX} {role}', value='\u200b')
-        count += 1
-
-    msg: Message = await ctx.send(embed=embed)
-
-    for i in range(0, count):
-        await msg.add_reaction(f'{i}{DIGIT_SUFFIX}')
-
+    msg = await _get_message(ctx, expiry=expiry)
     posts[msg.id] = {'guild': ctx.guild.id,
                      'channel': ctx.channel.id,
                      'expiry': datetime.utcnow()
@@ -70,10 +114,53 @@ async def roles(ctx: Context):
     await ctx.message.delete()
 
 
+@command(name='roles.catalog')
+@check(channel_only)
+@check(require_admin)
+async def catalog(ctx: Context):
+    "Create a permanent roles catalog post in the current channel."
+
+    roles = settings['roles.catalog'].get(ctx)
+
+    if roles is None or len(roles) == 0:
+        await ctx.send(':person_shrugging: There are no available '
+                       'self-service roles.')
+        log.warn(f'{ctx.author} attempted to post roles catalog, but no roles '
+                 'are available')
+
+        return
+
+    guild_id = str(ctx.guild.id)
+
+    if guild_id in directories:
+        existing = directories[guild_id]
+        chan: TextChannel = ctx.guild.get_channel(existing['channel'])
+
+        if chan is not None:
+            msg = await chan.fetch_message(existing['message'])
+
+            if msg is not None:
+                await msg.delete()
+
+    msg = await _get_message(ctx)
+    directories[guild_id] = {'message': msg.id,
+                             'channel': ctx.channel.id}
+
+    log.info(f'{ctx.author} posted roles catalog to {ctx.channel}')
+    await ctx.message.delete()
+
+
 async def on_raw_reaction_add(payload: RawReactionActionEvent):
     "Handle on_reaction_add event."
 
-    if payload.user_id == bot.user.id or payload.message_id not in posts:
+    if payload.user_id == bot.user.id:
+        return
+
+    directory = directories[payload.guild_id] \
+        if payload.guild_id in directories else None
+
+    if payload.message_id not in posts and (
+            directory is None or payload.message_id != directory['message']):
         return
 
     guild: Guild = bot.get_guild(payload.guild_id)
@@ -106,7 +193,14 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
 async def on_raw_reaction_remove(payload: RawReactionActionEvent):
     "Handle on_reaction_remove event."
 
-    if payload.user_id == bot.user.id or payload.message_id not in posts:
+    if payload.user_id == bot.user.id:
+        return
+
+    directory = directories[payload.guild_id] \
+        if payload.guild_id in directories else None
+
+    if payload.message_id not in posts and (
+            directory is None or payload.message_id != directory['message']):
         return
 
     split = str(payload.emoji).split('\ufe0f')
@@ -131,8 +225,19 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent):
 
 
 async def on_ready():
-    "Clear expired roles posts on startup."
+    "Clear expired/missing roles posts on startup."
 
+    # clean up missing directories
+    for guild_id, directory in directories.items():
+        try:
+            guild: Guild = bot.get_guild(int(guild_id))
+            chan: TextChannel = guild.get_channel(directory['channel'])
+            msg = await chan.fetch_message(directory['message'])
+        except NotFound:
+            log.warn(f'Deleted missing directory post for {guild_id}')
+            del directories[guild_id]
+
+    # clean up expired posts
     now = datetime.utcnow()
 
     for id, msg in posts.items():
@@ -184,6 +289,7 @@ def setup(bot_: Bot):
     bot.add_listener(on_ready)
 
     bot.add_command(roles)
+    bot.add_command(catalog)
 
 
 def teardown(bot):
