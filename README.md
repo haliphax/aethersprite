@@ -53,6 +53,8 @@ These categories (referred to as "Cogs") provide multiple commands.
   Create and manage polls that members can vote on
 - `roles`
   Allow members to manage their own membership in chosen roles
+- `roles.catalog`
+  Like `roles`, but uses a permanent post rather than on-demand access
 
 [Back to top](#aethersprite)
 
