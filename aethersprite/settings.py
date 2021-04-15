@@ -81,11 +81,12 @@ class Setting(object):
         #: The filter used to manipulate setting input/output
         self.filter = filter
 
-    def _ctxkey(self, ctx):
+    def _ctxkey(self, ctx, channel: str = None):
         """
         Get the key to use when storing/accessing the setting.
 
         :param ctx: The Discord connection context
+        :param channel: The channel (if not the same as the context)
         :returns: The composite key
         :rtype: str
         """
@@ -94,22 +95,23 @@ class Setting(object):
                   if isinstance(ctx.guild, dict) else ctx.guild.id)
 
         if self.channel:
-            key += f'#{ctx.channel.id}'
+            key += f'#{ctx.channel.id if channel is None else channel}'
 
         return key
 
-    def set(self, ctx, value: str, raw: bool = False):
+    def set(self, ctx, value: str, raw: bool = False, channel: str = None):
         """
         Change the setting's value.
 
         :param ctx: The Discord connection context
         :param value: The value to assign (or ``None`` for the default)
         :param raw: Set to True to bypass filtering
+        :param channel: The channel (if not the same as the context)
         :returns: Success
         :rtype: bool
         """
 
-        key = self._ctxkey(ctx)
+        key = self._ctxkey(ctx, channel)
         vals = self._values[key] if key in self._values else {}
 
         try:
@@ -130,13 +132,14 @@ class Setting(object):
 
         return True
 
-    def get(self, ctx, raw: bool = False):
+    def get(self, ctx, raw: bool = False, channel: str = None):
         """
         Get the setting's value.
 
         :param ctx: The Discord connection context
-        :returns: The setting's value
         :param raw: Set to True to bypass filtering
+        :param channel: The channel (if not the same as the context)
+        :returns: The setting's value
         :rtype: str
         """
 

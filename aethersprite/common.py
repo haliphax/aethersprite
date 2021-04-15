@@ -1,11 +1,14 @@
 "Common functions module"
 
+# 3rd party
+from discord.ext.commands import Context
 # stdlib
 from collections import namedtuple
 from datetime import datetime, timezone
+from functools import wraps
 from math import ceil, floor
 import re
-from typing import Optional, Tuple
+from typing import Callable, Tuple
 
 # constants
 #: One minute in seconds

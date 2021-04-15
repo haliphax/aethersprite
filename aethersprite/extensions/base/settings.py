@@ -1,9 +1,12 @@
 "Settings commands; store, view, and manipulate settings"
 
 # stdlib
-import typing
+import re
+from typing import Optional
 # 3rd party
-from discord.ext.commands import Cog, command
+from discord import TextChannel
+from discord.ext.commands import Cog, command, TextChannelConverter
+from discord_argparse import ArgumentConverter, OptionalArgument
 from functools import partial
 # local
 from aethersprite import log
@@ -11,12 +14,18 @@ from aethersprite.authz import channel_only, require_roles_from_setting
 from aethersprite.filters import RoleFilter
 from aethersprite.settings import register, settings
 
-# messages
+#: messages
 MSG_NO_SETTING = ':person_shrugging: No such setting exists.'
 
-# authorization decorator
+#: authorization decorator
 authz = partial(require_roles_from_setting, setting='settings.adminroles',
                 open_by_default=False)
+#: Argument converter for optional channel argument by keyword
+channel_arg = ArgumentConverter(
+    channel=OptionalArgument(
+        TextChannel, 'The channel to use (if not this one)'))
+#: Converter for turning text into TextChannel objects
+chan_converter = TextChannelConverter()
 
 
 class Settings(Cog, name='settings'):
@@ -31,11 +40,14 @@ class Settings(Cog, name='settings'):
         self.bot = bot
 
     @command()
-    async def set(self, ctx, name: typing.Optional[str] = None, *value):
+    async def get(self, ctx, name: Optional[str] = None, *,
+                  params: channel_arg = channel_arg.defaults()):
         """
-        Change/view a setting's value
+        View a setting's value
 
-        If [name] is not provided, a list of all settings (but not their values) will be shown. If [value] is not provided, the setting's current value (and its default) will be shown, instead. Note that channel-dependent settings must be set and viewed in relevant channels.
+        Use the 'channel' parameter to specify a channel other than the current one.
+
+        Example: get key channel=#lobby
         """
 
         if name is None:
@@ -45,43 +57,73 @@ class Settings(Cog, name='settings'):
 
             return
 
+        channel = ctx.channel if 'channel' not in params else params['channel']
+        val = settings[name].get(ctx, channel=channel)
+        default = settings[name].default
+        await ctx.send(f':gear: `{name}`\n'
+                        f'>>> Value: `{repr(val)}`\n'
+                        f'Default: `{repr(default)}`')
+        log.info(f'{ctx.author} viewed setting {name} in {channel}')
+
+    @command()
+    async def set(self, ctx, name: str, *, value: str,
+                  channel: Optional[str] = None):
+        """
+        Change/view a setting's value
+
+        If [name] is not provided, a list of all settings (but not their values) will be shown. If [value] is not provided, the setting's current value (and its default) will be shown, instead. Note that channel-dependent settings must be set and viewed in relevant channels.
+
+        Use the 'channel' parameter to specify a channel other than the current one.
+
+        Example: set key value channel=#lobby
+        """
+
+        chan = ctx.channel
+        matches = re.findall(r'\bchannel=(.+?)$', value)
+        val = value
+
+        if len(matches) > 0:
+            chan = await chan_converter.convert(ctx, matches[0])
+            val = re.sub(r'\bchannel=.+?$', '', value).strip()
+
         if name not in settings:
             await ctx.send(MSG_NO_SETTING)
             log.warn(f'{ctx.author} attempted to set nonexistent setting: '
-                     f'{name}')
+                     f'{name} in {chan}')
 
             return
 
-        val = ' '.join(value)
-
-        if not len(val):
-            val = settings[name].get(ctx)
-            default = settings[name].default
-            await ctx.send(f':gear: `{name}`\n'
-                           f'>>> Value: `{repr(val)}`\n'
-                           f'Default: `{repr(default)}`')
-            log.info(f'{ctx.author} viewed setting {name}')
-        elif settings[name].set(ctx, val):
+        if settings[name].set(ctx, val, channel=chan):
             await ctx.send(f':thumbsup: Value updated.')
-            log.info(f'{ctx.author} updated setting {name}: {val}')
+            log.info(f'{ctx.author} updated setting {name}: {val} in {chan}')
         else:
             await ctx.send(f':thumbsdown: Error updating value.')
-            log.warn(f'{ctx.author} failed to update setting {name}: {val}')
+            log.warn(f'{ctx.author} failed to update setting {name}: {val} '
+                     f'in {chan}')
 
     @command()
-    async def clear(self, ctx, name):
-        "Reset setting <name> to its default value"
+    async def clear(self, ctx, name, *,
+                    params: channel_arg = channel_arg.defaults()):
+        """
+        Reset setting <name> to its default value
+
+        Use the 'channel' parameter to specify a channel other than the current one.
+
+        Example: clear key channel=#lobby
+        """
+
+        channel = ctx.channel if 'channel' not in params else params['channel']
 
         if name not in settings:
             log.warn(f'{ctx.author} attempted to clear nonexistent setting: '
-                     f'{name}')
+                     f'{name} in {channel}')
             await ctx.send(MSG_NO_SETTING)
 
             return
 
-        settings[name].set(ctx, None, raw=True)
+        settings[name].set(ctx, None, raw=True, channel=channel)
         await ctx.send(':negative_squared_cross_mark: Setting cleared.')
-        log.info(f'{ctx.author} cleared setting {name}')
+        log.info(f'{ctx.author} cleared setting {name} in {channel}')
 
     @command()
     async def desc(self, ctx, name):
