@@ -50,12 +50,11 @@ class DirectoryUpdateFilter(RoleFilter):
             return val
 
         async def update():
-            msg = await chan.fetch_message(directory['message'])
-
-            if msg is None:
-                return
-
-            await _get_message(ctx, msg)
+            try:
+                msg = await chan.fetch_message(directory['message'])
+                await _get_message(ctx, msg)
+            except NotFound:
+                pass
 
         aio.ensure_future(update())
 
@@ -144,10 +143,11 @@ async def catalog(ctx: Context):
         chan: TextChannel = ctx.guild.get_channel(existing['channel'])
 
         if chan is not None:
-            msg = await chan.fetch_message(existing['message'])
-
-            if msg is not None:
+            try:
+                msg = await chan.fetch_message(existing['message'])
                 await msg.delete()
+            except NotFound:
+                pass
 
     msg = await _get_message(ctx)
     directories[guild_id] = {'message': msg.id,
