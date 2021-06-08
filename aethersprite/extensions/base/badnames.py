@@ -16,10 +16,11 @@ async def on_member_join(member: Member):
     if badnames_setting is None:
         return
 
-    badnames = [n.strip() for n in badnames_setting.split(',')]
+    badnames = [n.strip().lower() for n in badnames_setting.split(',')]
+    lowered_name = member.name.lower()
 
     for n in badnames:
-        if n in member.name:
+        if n in lowered_name:
             await member.kick(reason='Matched against badnames setting')
             log.warning(f'Kicked {member} due to match against badnames')
 
