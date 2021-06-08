@@ -4,6 +4,7 @@ META_EXTENSION = True
 
 _mods = (
     'alias',
+    'badnames',
     'github',
     'greet',
     'gmt',

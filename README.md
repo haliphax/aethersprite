@@ -65,6 +65,7 @@ operate based entirely on events.
 
 | Setting | Scope | Description |
 |---|---|---|
+| `badnames` | Server | A comma-separated list of substrings to search for in usernames to auto-kick. |
 | `greet.channel` | Server | The channel where greeting messages should be sent. Defaults to an empty value. Both the channel and message must be set before this feature will be enabled. |
 | `greet.message` | Server | The message that will be used to greet new users when they join the server. If set to the default, no greeting will be posted. You may use the `{name}` token in your message, and it will be replaced with the new member's username. The `{nl}` token will be replaced with a line break (new line). |
 | `nameonly` | Server | If set to anything other than the default value, the bot will only respond if it is mentioned directly. |
