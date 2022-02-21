@@ -96,7 +96,9 @@ class ChannelFilter(SettingFilter):
         if value is None:
             return
 
-        channels = [get_channel_for_id(ctx.guild, v) for v in value]
+        channels = [get_channel_for_id(ctx.guild, value)] \
+                   if value is int \
+                   else [get_channel_for_id(ctx.guild, v) for v in value]
 
         if self.multiple:
             log.info('multiple')
