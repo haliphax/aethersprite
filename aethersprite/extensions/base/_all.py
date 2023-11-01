@@ -1,30 +1,33 @@
 "Load all command extensions"
 
+# 3rd party
+from discord.ext.commands import Bot
+
 META_EXTENSION = True
 
 _mods = (
-    'alias',
-    'badnames',
-    'github',
-    'greet',
-    'gmt',
-    'lobotomy',
-    'name_only',
-    'nick',
-    'only',
-    'poll',
-    'prefix',
-    'roles',
-    'settings',
+    "alias",
+    "badnames",
+    "github",
+    "greet",
+    "gmt",
+    "lobotomy",
+    "name_only",
+    "nick",
+    "only",
+    "poll",
+    "prefix",
+    "roles",
+    "settings",
 )
-_package = __name__.replace('._all', '')
+_package = __name__.replace("._all", "")
 
 
-def setup(bot):
+async def setup(bot: Bot):
     for m in _mods:
-        bot.load_extension(f'{_package}.{m}')
+        await bot.load_extension(f"{_package}.{m}")
 
 
-def teardown(bot):
+async def teardown(bot: Bot):
     for m in _mods:
-        bot.unload_extension(f'{_package}.{m}')
+        await bot.unload_extension(f"{_package}.{m}")

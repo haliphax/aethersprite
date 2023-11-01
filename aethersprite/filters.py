@@ -3,16 +3,23 @@
 # stdlib
 import re
 from typing import Any, List
+
 # 3rd party
 from discord.ext.commands import Context
+
 # local
 from . import log
-from .common import (get_channel_for_id, get_id_for_channel, get_id_for_role,
-                     get_mixed_channels, get_mixed_roles, get_role_for_id)
+from .common import (
+    get_channel_for_id,
+    get_id_for_channel,
+    get_id_for_role,
+    get_mixed_channels,
+    get_mixed_roles,
+    get_role_for_id,
+)
 
 
 class SettingFilter(object):
-
     "A class with methods for filtering a setting's input and output"
 
     #: The name of the setting to filter
@@ -44,7 +51,6 @@ class SettingFilter(object):
 
 
 class ChannelFilter(SettingFilter):
-
     "Filter used for converting channel names to IDs and back"
 
     #: True to allow multiple values
@@ -68,7 +74,7 @@ class ChannelFilter(SettingFilter):
         for c in channels:
             id = None
 
-            if c[0] == '':
+            if c[0] == "":
                 id = get_id_for_channel(ctx.guild, c[1])
             else:
                 # convert mentions, if any
@@ -96,12 +102,13 @@ class ChannelFilter(SettingFilter):
         if value is None:
             return
 
-        channels = [get_channel_for_id(ctx.guild, value)] \
-                   if value is int \
-                   else [get_channel_for_id(ctx.guild, v) for v in value]
+        channels = (
+            [get_channel_for_id(ctx.guild, value)]
+            if value is int
+            else [get_channel_for_id(ctx.guild, v) for v in value]
+        )
 
         if self.multiple:
-            log.info('multiple')
             return channels
 
         if len(channels) > 0:
@@ -111,7 +118,6 @@ class ChannelFilter(SettingFilter):
 
 
 class RoleFilter(SettingFilter):
-
     "Filter used for converting role names to IDs and back"
 
     #: True to allow multiple values
@@ -135,7 +141,7 @@ class RoleFilter(SettingFilter):
         for r in roles:
             id = None
 
-            if r[0] == '':
+            if r[0] == "":
                 id = get_id_for_role(ctx.guild, r[1])
             else:
                 # convert mentions, if any

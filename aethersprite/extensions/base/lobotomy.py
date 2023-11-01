@@ -2,33 +2,38 @@
 
 # stdlib
 import typing
+
 # 3rd party
 from discord import DMChannel, TextChannel
-from discord.ext.commands import Cog, command
+from discord.ext.commands import Bot, Cog, command
 from discord_argparse import ArgumentConverter, OptionalArgument
 from sqlitedict import SqliteDict
+
 # local
 from aethersprite import data_folder, log
 from aethersprite.authz import require_admin
 
 #: Lobotomies database
-lobotomies = SqliteDict(f'{data_folder}lobotomy.sqlite3',
-                        tablename='lobotomies', autocommit=True)
-#: Argument converter for optional channel argument by keyword
-channel_arg = ArgumentConverter(
-    channel=OptionalArgument(
-        TextChannel, 'The channel to use (if not this one)'))
+lobotomies = SqliteDict(
+    f"{data_folder}lobotomy.sqlite3", tablename="lobotomies", autocommit=True
+)
 
-class Lobotomy(Cog, name='lobotomy'):
 
+class Lobotomy(Cog, name="lobotomy"):
     "Lobotomy commands; enable and disable commands per-server and per-channel"
 
     def __init__(self, bot):
         self.bot = bot
 
-    @command(name='lobotomy.add')
-    async def add(self, ctx, command, server: typing.Optional[bool] = False, *,
-                  params: channel_arg = channel_arg.defaults()):
+    @command(name="lobotomy.add")
+    async def add(
+        self,
+        ctx,
+        command,
+        server: typing.Optional[bool] = False,
+        *,
+        channel: TextChannel | None = None,
+    ):
         """
         Disable the given command
 
@@ -39,9 +44,9 @@ class Lobotomy(Cog, name='lobotomy'):
         Example: lobotomy.add test channel=#lobby
         """
 
-        chan = params['channel'] if 'channel' in params else ctx.channel
+        channel = ctx.channel if not channel else channel
         server_key = command.lower().strip()
-        key = f'{server_key}#{chan.id}'
+        key = f"{server_key}#{channel.id}"
         guild = str(ctx.guild.id)
 
         if not ctx.guild.id in lobotomies:
@@ -49,9 +54,8 @@ class Lobotomy(Cog, name='lobotomy'):
 
         lobs = lobotomies[guild]
 
-        if (key in lobs and not server) \
-                or (server_key in lobs and server):
-            await ctx.send(f':newspaper: Already done.')
+        if (key in lobs and not server) or (server_key in lobs and server):
+            await ctx.send(f":newspaper: Already done.")
 
             return
 
@@ -64,13 +68,20 @@ class Lobotomy(Cog, name='lobotomy'):
 
         lobs.add(server_key if server else key)
         lobotomies[guild] = lobs
-        log.info(f'{ctx.author} lobotomized {server_key if server else key} '
-                 f'in {chan}')
-        await ctx.send(f':brain: Done.')
+        log.info(
+            f"{ctx.author} lobotomized {server_key if server else key} " f"in {channel}"
+        )
+        await ctx.send(f":brain: Done.")
 
-    @command(name='lobotomy.remove')
-    async def remove(self, ctx, command, server: typing.Optional[bool] = False,
-                     *, params: channel_arg = channel_arg.defaults()):
+    @command(name="lobotomy.remove")
+    async def remove(
+        self,
+        ctx,
+        command,
+        server: typing.Optional[bool] = False,
+        *,
+        channel: TextChannel | None = None,
+    ):
         """
         Enable the given command
 
@@ -81,32 +92,37 @@ class Lobotomy(Cog, name='lobotomy'):
         Example: lobotomy.remove test channel=#lobby
         """
 
-        chan = params['channel'] if 'channel' in params else ctx.channel
+        channel = ctx.channel if not channel else channel
         server_key = command.lower().strip()
-        key = f'{server_key}#{chan.id}'
+        key = f"{server_key}#{channel.id}"
         guild = str(ctx.guild.id)
         lobs = lobotomies[guild] if guild in lobotomies else None
 
         if lobs is None:
-            await ctx.send(':person_shrugging: None set.')
+            await ctx.send(":person_shrugging: None set.")
 
             return
 
         if (key in lobs and server) or (server_key in lobs and not server):
-            await ctx.send(':thumbsdown: The opposite scope is '
-                           'currently set.')
+            await ctx.send(":thumbsdown: The opposite scope is " "currently set.")
 
             return
 
         lobs.remove(server_key if server else key)
         lobotomies[guild] = lobs
-        log.info(f'{ctx.author} removed {server_key if server else key} in '
-                 f'{chan}')
-        await ctx.send(':wastebasket: Removed.')
+        log.info(
+            f"{ctx.author} removed {server_key if server else key} in " f"{channel}"
+        )
+        await ctx.send(":wastebasket: Removed.")
 
-    @command(name='lobotomy.list')
-    async def list(self, ctx, server: typing.Optional[bool] = False, *,
-                   params: channel_arg = channel_arg.defaults()):
+    @command(name="lobotomy.list")
+    async def list(
+        self,
+        ctx,
+        server: typing.Optional[bool] = False,
+        *,
+        channel: TextChannel | None = None,
+    ):
         """
         List all current channel's lobotomized commands
 
@@ -117,24 +133,30 @@ class Lobotomy(Cog, name='lobotomy'):
         Example: lobotomy.list test channel=#lobby
         """
 
-        chan = params['channel'] if 'channel' in params else ctx.channel
+        channel = ctx.channel if not channel else channel
         guild = str(ctx.guild.id)
 
         if guild not in lobotomies:
             lobotomies[guild] = []
 
-        suffix = f'#{chan.id}'
+        suffix = f"#{channel.id}"
         suffixlen = len(suffix)
-        output = '**, **'.join([(l if server else l[:-suffixlen])
-                                for l in lobotomies[guild]
-                                if server or l.endswith(suffix)])
+        output = "**, **".join(
+            [
+                (l if server else l[:-suffixlen])
+                for l in lobotomies[guild]
+                if server or l.endswith(suffix)
+            ]
+        )
 
         if not len(output):
-            output = 'None'
+            output = "None"
 
-        log.info(f'{ctx.author} viewed {"server " if server else""}lobotomy '
-                 f'list in {chan}')
-        await ctx.send(f':medical_symbol: **{output}**')
+        log.info(
+            f'{ctx.author} viewed {"server " if server else""}lobotomy '
+            f"list in {channel}"
+        )
+        await ctx.send(f":medical_symbol: **{output}**")
 
 
 async def check_lobotomy(ctx):
@@ -151,24 +173,26 @@ async def check_lobotomy(ctx):
         # none set for this guild; bail
         return True
 
-    keys = (ctx.command.name, f'{ctx.command.name}#{ctx.channel.id}')
+    keys = (ctx.command.name, f"{ctx.command.name}#{ctx.channel.id}")
 
     for k in keys:
         if k in lobotomies[guild]:
-            log.debug(f'Suppressing lobotomized command from '
-                      f'{ctx.author}: {ctx.command.name} in '
-                      f'#{ctx.channel.name} ({ctx.guild.name})')
+            log.debug(
+                f"Suppressing lobotomized command from "
+                f"{ctx.author}: {ctx.command.name} in "
+                f"#{ctx.channel.name} ({ctx.guild.name})"
+            )
 
             return False
 
     return True
 
 
-def setup(bot):
+async def setup(bot: Bot):
     bot.add_check(check_lobotomy)
     cog = Lobotomy(bot)
 
     for c in cog.get_commands():
         c.add_check(require_admin)
 
-    bot.add_cog(cog)
+    await bot.add_cog(cog)

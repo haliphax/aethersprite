@@ -1,19 +1,20 @@
 "Alias cog"
 
 # 3rd party
-from discord.ext.commands import Cog, command
+from discord.ext.commands import Bot, command, Cog
 from sqlitedict import SqliteDict
+
 # local
 from aethersprite import data_folder, log
 from aethersprite.authz import channel_only, require_admin
 
 #: Aliases database
-aliases = SqliteDict(f'{data_folder}alias.sqlite3', tablename='aliases',
-                     autocommit=True)
+aliases = SqliteDict(
+    f"{data_folder}alias.sqlite3", tablename="aliases", autocommit=True
+)
 
 
-class Alias(Cog, name='alias'):
-
+class Alias(Cog, name="alias"):
     "Alias commands; add and remove command aliases"
 
     @staticmethod
@@ -38,8 +39,8 @@ class Alias(Cog, name='alias'):
         self.bot = bot
         self.aliases = aliases
 
-    @command(name='alias.add')
-    async def add(self, ctx, alias, command):
+    @command(name="alias.add")
+    async def add(self, ctx, alias: str, command: str):
         "Add an alias of <alias> for <command>"
 
         guild = str(ctx.guild.id)
@@ -50,31 +51,31 @@ class Alias(Cog, name='alias'):
         als = aliases[guild]
 
         if alias in als:
-            await ctx.send(f':newspaper: Already exists.')
+            await ctx.send(f":newspaper: Already exists.")
 
             return
 
         cmd = ctx.bot.get_command(command)
 
         if cmd is None:
-            await ctx.send(f':scream: No such command!')
+            await ctx.send(f":scream: No such command!")
 
             return
 
         als[alias] = command
         aliases[guild] = als
-        log.info(f'{ctx.author} added alias {alias} for {command}')
-        await ctx.send(f':sunglasses: Done.')
+        log.info(f"{ctx.author} added alias {alias} for {command}")
+        await ctx.send(f":sunglasses: Done.")
 
-    @command(name='alias.remove')
-    async def remove(self, ctx, alias):
+    @command(name="alias.remove")
+    async def remove(self, ctx, alias: str):
         "Remove <alias>"
 
         guild = str(ctx.guild.id)
         als = aliases[guild] if guild in aliases else None
 
         if als is None or alias not in als:
-            await ctx.send(':person_shrugging: None set.')
+            await ctx.send(":person_shrugging: None set.")
 
             return
 
@@ -85,10 +86,10 @@ class Alias(Cog, name='alias'):
         else:
             aliases[guild] = als
 
-        log.info(f'{ctx.author} removed alias {alias}')
-        await ctx.send(':wastebasket: Removed.')
+        log.info(f"{ctx.author} removed alias {alias}")
+        await ctx.send(":wastebasket: Removed.")
 
-    @command(name='alias.list')
+    @command(name="alias.list")
     async def list(self, ctx):
         "List all command aliases"
 
@@ -98,20 +99,20 @@ class Alias(Cog, name='alias'):
             aliases[guild] = dict()
 
         als = aliases[guild]
-        output = ', '.join([f'`{k}` => `{als[k]}`' for k in als.keys()])
+        output = ", ".join([f"`{k}` => `{als[k]}`" for k in als.keys()])
 
         if len(output) == 0:
-            output = 'None'
+            output = "None"
 
-        log.info(f'{ctx.author} viewed alias list')
-        await ctx.send(f':detective: **{output}**')
+        log.info(f"{ctx.author} viewed alias list")
+        await ctx.send(f":detective: **{output}**")
 
 
-def setup(bot):
+async def setup(bot: Bot):
     cog = Alias(bot)
 
     for c in cog.get_commands():
         c.add_check(channel_only)
         c.add_check(require_admin)
 
-    bot.add_cog(cog)
+    await bot.add_cog(cog)

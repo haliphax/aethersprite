@@ -3,23 +3,25 @@
 # stdlib
 from os import environ
 from typing import Sequence, Union
+
 # 3rd party
 from discord import DMChannel, Member, Role
 from discord.ext.commands import Context
+
 # local
 from . import config, log
 from .common import POLICE_OFFICER
 from .settings import settings
 
-owner = config['bot'].get('owner', environ.get('NCFACBOT_OWNER', None))
-_help = config['bot']['help_command']
+owner = config["bot"].get("owner", environ.get("NCFACBOT_OWNER", None))
+_help = config["bot"]["help_command"]
 
 
 async def channel_only(ctx):
     "Check for bot commands that should only operate in a channel"
 
     if isinstance(ctx.channel, DMChannel):
-        await ctx.send('This command must be used in a channel.')
+        await ctx.send("This command must be used in a channel.")
 
         return False
 
@@ -48,10 +50,10 @@ async def react_if_not_help(ctx: Context):
     :param ctx: The current context
     """
 
-    cog = ctx.bot.get_cog('alias')
+    cog = ctx.bot.get_cog("alias")
 
     if cog is None:
-        log.warn('alias cog not loaded')
+        log.warn("alias cog not loaded")
 
         return
 
@@ -61,19 +63,24 @@ async def react_if_not_help(ctx: Context):
     # only react if they invoked the command directly (i.e. not via !help)
     if ctx.invoked_with not in help_aliases:
         await ctx.message.add_reaction(POLICE_OFFICER)
-        log.warn(f'{ctx.author} attempted to access unauthorized command '
-                 f'{ctx.command}')
+        log.warn(
+            f"{ctx.author} attempted to access unauthorized command " f"{ctx.command}"
+        )
 
     return
 
 
-async def require_admin(ctx):
+async def require_admin(ctx: Context):
     "Check for requiring admin/mod privileges to execute a command."
 
-    perms = ctx.author.permissions_in(ctx.channel)
+    perms = ctx.channel.permissions_for(ctx.author)
 
-    if perms.administrator or perms.manage_channels or perms.manage_guild \
-            or owner == str(ctx.author):
+    if (
+        perms.administrator
+        or perms.manage_channels
+        or perms.manage_guild
+        or owner == str(ctx.author)
+    ):
         return True
 
     await react_if_not_help()
@@ -97,9 +104,10 @@ async def require_roles(ctx: Context, roles: Sequence[Role]) -> bool:
 
     return False
 
-async def require_roles_from_setting(ctx: Context,
-                                     setting: Union[str, Sequence],
-                                     open_by_default=True) -> bool:
+
+async def require_roles_from_setting(
+    ctx: Context, setting: Union[str, Sequence], open_by_default=True
+) -> bool:
     """
     Check for requiring particular roles (loaded from the given setting) to
     execute a command. For more than one setting (if ``setting`` is a
@@ -139,10 +147,14 @@ async def require_roles_from_setting(ctx: Context,
     :type setting: str or list or tuple
     """
 
-    perms = ctx.author.permissions_in(ctx.channel)
+    perms = ctx.channel.permissions_for(ctx.author)
 
-    if perms.administrator or perms.manage_channels or perms.manage_guild \
-            or owner == str(ctx.author):
+    if (
+        perms.administrator
+        or perms.manage_channels
+        or perms.manage_guild
+        or owner == str(ctx.author)
+    ):
         # Superusers get a pass
         return True
 

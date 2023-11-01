@@ -3,11 +3,12 @@
 # stdlib
 import re
 from typing import Optional
+
 # 3rd party
 from discord import TextChannel
-from discord.ext.commands import Cog, command, TextChannelConverter
-from discord_argparse import ArgumentConverter, OptionalArgument
+from discord.ext.commands import Bot, Cog, command
 from functools import partial
+
 # local
 from aethersprite import log
 from aethersprite.authz import channel_only, require_roles_from_setting
@@ -15,20 +16,15 @@ from aethersprite.filters import RoleFilter
 from aethersprite.settings import register, settings
 
 #: messages
-MSG_NO_SETTING = ':person_shrugging: No such setting exists.'
+MSG_NO_SETTING = ":person_shrugging: No such setting exists."
 
 #: authorization decorator
-authz = partial(require_roles_from_setting, setting='settings.adminroles',
-                open_by_default=False)
-#: Argument converter for optional channel argument by keyword
-channel_arg = ArgumentConverter(
-    channel=OptionalArgument(
-        TextChannel, 'The channel to use (if not this one)'))
-#: Converter for turning text into TextChannel objects
-chan_converter = TextChannelConverter()
+authz = partial(
+    require_roles_from_setting, setting="settings.adminroles", open_by_default=False
+)
 
 
-class Settings(Cog, name='settings'):
+class Settings(Cog, group_name="settings"):
 
     """
     Settings commands
@@ -40,8 +36,13 @@ class Settings(Cog, name='settings'):
         self.bot = bot
 
     @command()
-    async def get(self, ctx, name: Optional[str] = None, *,
-                  params: channel_arg = channel_arg.defaults()):
+    async def get(
+        self,
+        ctx,
+        name: Optional[str] = None,
+        *,
+        channel: TextChannel | None = None,
+    ):
         """
         View a setting's value
 
@@ -51,23 +52,26 @@ class Settings(Cog, name='settings'):
         """
 
         if name is None:
-            settings_str = '**, **'.join(sorted(settings.keys()))
-            await ctx.send(f':gear: All settings: **{settings_str}**')
-            log.info(f'{ctx.author} viewed all settings')
+            settings_str = "**, **".join(sorted(settings.keys()))
+            await ctx.send(f":gear: All settings: **{settings_str}**")
+            log.info(f"{ctx.author} viewed all settings")
 
             return
 
-        channel = ctx.channel if 'channel' not in params else params['channel']
+        channel = ctx.channel if not channel else channel
         val = settings[name].get(ctx, channel=channel)
         default = settings[name].default
-        await ctx.send(f':gear: `{name}`\n'
-                        f'>>> Value: `{repr(val)}`\n'
-                        f'Default: `{repr(default)}`')
-        log.info(f'{ctx.author} viewed setting {name} in {channel}')
+        await ctx.send(
+            f":gear: `{name}`\n"
+            f">>> Value: `{repr(val)}`\n"
+            f"Default: `{repr(default)}`"
+        )
+        log.info(f"{ctx.author} viewed setting {name} in {channel}")
 
     @command()
-    async def set(self, ctx, name: str, *, value: str,
-                  channel: Optional[str] = None):
+    async def set(
+        self, ctx, name: str, *, value: str, channel: TextChannel | None = None
+    ):
         """
         Change/view a setting's value
 
@@ -78,32 +82,29 @@ class Settings(Cog, name='settings'):
         Example: set key value channel=#lobby
         """
 
-        chan = ctx.channel
-        matches = re.findall(r'\bchannel=(.+?)$', value)
-        val = value
-
-        if len(matches) > 0:
-            chan = await chan_converter.convert(ctx, matches[0])
-            val = re.sub(r'\bchannel=.+?$', '', value).strip()
+        channel = ctx.channel if not channel else channel
 
         if name not in settings:
             await ctx.send(MSG_NO_SETTING)
-            log.warn(f'{ctx.author} attempted to set nonexistent setting: '
-                     f'{name} in {chan}')
+            log.warn(
+                f"{ctx.author} attempted to set nonexistent setting: "
+                f"{name} in {channel}"
+            )
 
             return
 
-        if settings[name].set(ctx, val, channel=chan):
-            await ctx.send(f':thumbsup: Value updated.')
-            log.info(f'{ctx.author} updated setting {name}: {val} in {chan}')
+        if settings[name].set(ctx, value, channel=channel):
+            await ctx.send(f":thumbsup: Value updated.")
+            log.info(f"{ctx.author} updated setting {name}: {value} in {channel}")
         else:
-            await ctx.send(f':thumbsdown: Error updating value.')
-            log.warn(f'{ctx.author} failed to update setting {name}: {val} '
-                     f'in {chan}')
+            await ctx.send(f":thumbsdown: Error updating value.")
+            log.warn(
+                f"{ctx.author} failed to update setting {name}: {value} "
+                f"in {channel}"
+            )
 
     @command()
-    async def clear(self, ctx, name, *,
-                    params: channel_arg = channel_arg.defaults()):
+    async def clear(self, ctx, name: str, *, channel: TextChannel):
         """
         Reset setting <name> to its default value
 
@@ -112,56 +113,71 @@ class Settings(Cog, name='settings'):
         Example: clear key channel=#lobby
         """
 
-        channel = ctx.channel if 'channel' not in params else params['channel']
+        channel = ctx.channel if not channel else channel
 
         if name not in settings:
-            log.warn(f'{ctx.author} attempted to clear nonexistent setting: '
-                     f'{name} in {channel}')
+            log.warn(
+                f"{ctx.author} attempted to clear nonexistent setting: "
+                f"{name} in {channel}"
+            )
             await ctx.send(MSG_NO_SETTING)
 
             return
 
         settings[name].set(ctx, None, raw=True, channel=channel)
-        await ctx.send(':negative_squared_cross_mark: Setting cleared.')
-        log.info(f'{ctx.author} cleared setting {name} in {channel}')
+        await ctx.send(":negative_squared_cross_mark: Setting cleared.")
+        log.info(f"{ctx.author} cleared setting {name} in {channel}")
 
     @command()
-    async def desc(self, ctx, name):
+    async def desc(self, ctx, name: str):
         "View description of setting <name>"
 
         if name not in settings:
             await ctx.send(MSG_NO_SETTING)
-            log.warn(f'{ctx.author} attempted to view description of '
-                     f'nonexistent setting {name}')
+            log.warn(
+                f"{ctx.author} attempted to view description of "
+                f"nonexistent setting {name}"
+            )
 
             return
 
         setting = settings[name]
 
         if setting.description is None:
-            await ctx.send(':person_shrugging: No description set.')
+            await ctx.send(":person_shrugging: No description set.")
         else:
-            await ctx.send(f':book: `{setting.name}` '
-                           f'_(Channel: **{str(setting.channel)}**)_\n'
-                           f'> {setting.description}')
+            await ctx.send(
+                f":book: `{setting.name}` "
+                f"_(Channel: **{str(setting.channel)}**)_\n"
+                f"> {setting.description}"
+            )
 
-        log.info(f'{ctx.author} viewed description of setting {name}')
+        log.info(f"{ctx.author} viewed description of setting {name}")
 
 
-role_filter = RoleFilter('settings.adminroles')
+role_filter = RoleFilter("settings.adminroles")
 
 
-def setup(bot):
+async def setup(_bot: Bot):
+    global bot
+
+    bot = _bot
+
     # settings
-    register('settings.adminroles', None, lambda x: True, False,
-             'The server roles that are allowed to administer settings. '
-             'Separate multiple values with commas. Administrators and '
-             'moderators have de facto access to all commands.',
-             filter=role_filter)
+    register(
+        "settings.adminroles",
+        None,
+        lambda x: True,
+        False,
+        "The server roles that are allowed to administer settings. "
+        "Separate multiple values with commas. Administrators and "
+        "moderators have de facto access to all commands.",
+        filter=role_filter,
+    )
     cog = Settings(bot)
 
     for c in cog.get_commands():
         c.add_check(authz)
         c.add_check(channel_only)
 
-    bot.add_cog(cog)
+    await bot.add_cog(cog)

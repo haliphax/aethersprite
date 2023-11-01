@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aethersprite"
+requires-python = ">=3.11"
+version = "1.0.0"
+dynamic = ["dependencies", "optional-dependencies"]
+
+[tool.setuptools]
+packages = ["aethersprite"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements/requirements.txt" }
+
+[tool.setuptools.dynamic.optional-dependencies]
+docs = { file = "requirements/docs.txt" }
+
