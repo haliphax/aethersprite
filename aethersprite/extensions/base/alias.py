@@ -14,7 +14,7 @@ aliases = SqliteDict(
 )
 
 
-class Alias(Cog, name="alias"):
+class Alias(Cog):
     "Alias commands; add and remove command aliases"
 
     @staticmethod

@@ -24,7 +24,7 @@ authz = partial(
 )
 
 
-class Settings(Cog, group_name="settings"):
+class Settings(Cog):
 
     """
     Settings commands

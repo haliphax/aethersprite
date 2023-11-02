@@ -23,7 +23,7 @@ channel_arg = ArgumentConverter(
 )
 
 
-class Only(Cog, name="only"):
+class Only(Cog):
     "Only commands; disable all commands except for those in a whitelist"
 
     def __init__(self, bot):

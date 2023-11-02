@@ -17,7 +17,7 @@ from aethersprite.authz import require_admin
 yeets = SqliteDict(f"{data_folder}yeet.sqlite3", tablename="yeets", autocommit=True)
 
 
-class Yeet(Cog, name="yeet-commands"):
+class Yeet(Cog):
     """Yeet commands; enable and disable commands per-server and per-channel"""
 
     def __init__(self, bot):
