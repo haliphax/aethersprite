@@ -11,7 +11,6 @@ _mods = (
     "github",
     "greet",
     "gmt",
-    "lobotomy",
     "name_only",
     "nick",
     "only",
@@ -19,6 +18,7 @@ _mods = (
     "prefix",
     "roles",
     "settings",
+    "yeet",
 )
 _package = __name__.replace("._all", "")
 

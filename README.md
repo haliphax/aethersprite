@@ -19,8 +19,8 @@ A [Discord] bot and extension framework
 - Role-based authorization for commands
 - Persistence of data and scheduled events during downtime
 - [Flask]-based web application for web hooks, pages, file storage, etc.
-- Deal with friendly role and channel names in commands, but store reliable
-  IDs for permanence
+- Deal with friendly role and channel names in commands, but store reliable IDs
+  for permanence
 - [TOML] configuration file for immutable settings
 - Able to import external command modules as [extension packs]
 
@@ -32,12 +32,12 @@ These categories (referred to as "Cogs") provide multiple commands.
 
 - `alias`
   Manage aliases for other commands
-- `lobotomy`
-  Disable other commands per-server and per-channel
 - `only`
   Only allow whitelisted commands in a channel
 - `settings`
   Manipulate the bot's settings
+- `yeet`
+  Disable other commands per-server and per-channel
 
 [Back to top](#aethersprite)
 
@@ -63,14 +63,14 @@ These categories (referred to as "Cogs") provide multiple commands.
 Some of the settings in the project do not have corresponding commands, and
 operate based entirely on events.
 
-| Setting | Scope | Description |
-|---|---|---|
-| `badnames` | Server | A comma-separated list of substrings to search for in usernames to auto-kick. |
-| `greet.channel` | Server | The channel where greeting messages should be sent. Defaults to an empty value. Both the channel and message must be set before this feature will be enabled. |
-| `greet.message` | Server | The message that will be used to greet new users when they join the server. If set to the default, no greeting will be posted. You may use the `{name}` token in your message, and it will be replaced with the new member's username. The `{nl}` token will be replaced with a line break (new line). |
-| `nameonly` | Server | If set to anything other than the default value, the bot will only respond if it is mentioned directly. |
-| `nameonly.channel` | Channel | Like `nameonly`, but this setting applies to individual channels. |
-| `prefix` | Server | Change the bot's command prefix. (Default: `!`) The bot will respond when mentioned directly, regardless of this setting. |
+| Setting            | Scope   | Description                                                                                                                                                                                                                                                                                            |
+| ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `badnames`         | Server  | A comma-separated list of substrings to search for in usernames to auto-kick.                                                                                                                                                                                                                          |
+| `greet.channel`    | Server  | The channel where greeting messages should be sent. Defaults to an empty value. Both the channel and message must be set before this feature will be enabled.                                                                                                                                          |
+| `greet.message`    | Server  | The message that will be used to greet new users when they join the server. If set to the default, no greeting will be posted. You may use the `{name}` token in your message, and it will be replaced with the new member's username. The `{nl}` token will be replaced with a line break (new line). |
+| `nameonly`         | Server  | If set to anything other than the default value, the bot will only respond if it is mentioned directly.                                                                                                                                                                                                |
+| `nameonly.channel` | Channel | Like `nameonly`, but this setting applies to individual channels.                                                                                                                                                                                                                                      |
+| `prefix`           | Server  | Change the bot's command prefix. (Default: `!`) The bot will respond when mentioned directly, regardless of this setting.                                                                                                                                                                              |
 
 [Back to top](#aethersprite)
 
@@ -79,7 +79,6 @@ operate based entirely on events.
 - [ncfacbot] - The [Nexus Clash] Faction Discord Bot
 
 [Back to top](#aethersprite)
-
 
 [discord.py]: https://discordpy.readthedocs.io
 [Discord]: https://discordapp.com
