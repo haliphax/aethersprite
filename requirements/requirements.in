@@ -3,5 +3,6 @@ discord_argparse
 discord-pretty-help
 discord.py
 flask
+pytz
 sqlitedict
 toml
