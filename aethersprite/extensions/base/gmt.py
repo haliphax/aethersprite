@@ -36,7 +36,7 @@ async def gmt(ctx: Context, *, offset: typing.Optional[str]):
     Arguments aren't validated, so anything goes... but please be reasonable. The command will silently fail if you choose an offset the bot can't process.
     """
 
-    await _time(ctx, "Etc/GMT")
+    await _time(ctx, "Etc/GMT", offset)
 
 
 @command(brief="Get current time or offset in UTC")
@@ -51,7 +51,7 @@ async def utc(ctx: Context, *, offset: typing.Optional[str]):
     Arguments aren't validated, so anything goes... but please be reasonable. The command will silently fail if you choose an offset the bot can't process.
     """
 
-    await _time(ctx, "Etc/UTC")
+    await _time(ctx, "Etc/UTC", offset)
 
 
 async def setup(bot: Bot):
