@@ -17,7 +17,7 @@ channel_filter = ChannelFilter("greet.channel")
 
 
 async def on_member_join(member: Member):
-    "Greet members when they join."
+    """Greet members when they join."""
 
     chan_setting = settings["greet.channel"].get(member)
     msg_setting = settings["greet.message"].get(member)
@@ -27,7 +27,13 @@ async def on_member_join(member: Member):
 
     channel = [c for c in member.guild.channels if c.name == chan_setting][0]
     log.info(f"Greeting new member {member} in {member.guild.name} " f"#{channel.name}")
-    await channel.send(msg_setting.format(name=member.display_name, nl="\n"))
+    await channel.send(
+        msg_setting.format(
+            mention=member.mention,
+            name=member.display_name,
+            nl="\n",
+        )
+    )
 
 
 async def setup(bot: Bot):
