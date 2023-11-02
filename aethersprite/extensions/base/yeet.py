@@ -49,26 +49,26 @@ class Yeet(Cog, name="yeet-commands"):
         if not ctx.guild.id in yeets:
             yeets[guild] = set([])
 
-        lobs = yeets[guild]
+        ys = yeets[guild]
 
-        if (key in lobs and not server) or (server_key in lobs and server):
+        if (key in ys and not server) or (server_key in ys and server):
             await ctx.send(f":newspaper: Already done.")
 
             return
 
         # if it's already in the opposite category (channel vs. server),
         # then clear it out
-        if key in lobs and server:
-            lobs.remove(key)
-        elif server_key in lobs and not server:
-            lobs.remove(server_key)
+        if key in ys and server:
+            ys.remove(key)
+        elif server_key in ys and not server:
+            ys.remove(server_key)
 
-        lobs.add(server_key if server else key)
-        yeets[guild] = lobs
+        ys.add(server_key if server else key)
+        yeets[guild] = ys
         log.info(
             f"{ctx.author} yeeted {server_key if server else key} in {ctx.channel}"
         )
-        await ctx.send(f":brain: Done.")
+        await ctx.send(f":boom: Yeet!")
 
     @command(name="unyeet")
     async def remove(
@@ -92,22 +92,22 @@ class Yeet(Cog, name="yeet-commands"):
         server_key = command.lower().strip()
         key = f"{server_key}#{channel.id}"
         guild = str(ctx.guild.id)
-        lobs = yeets[guild] if guild in yeets else None
+        ys = yeets[guild] if guild in yeets else None
 
-        if lobs is None:
+        if ys is None:
             await ctx.send(":person_shrugging: None set.")
 
             return
 
-        if (key in lobs and server) or (server_key in lobs and not server):
-            await ctx.send(":thumbsdown: The opposite scope is " "currently set.")
+        if (key in ys and server) or (server_key in ys and not server):
+            await ctx.send(":thumbsdown: The opposite scope is active.")
 
             return
 
-        lobs.remove(server_key if server else key)
-        yeets[guild] = lobs
+        ys.remove(server_key if server else key)
+        yeets[guild] = ys
         log.info(f"{ctx.author} removed {server_key if server else key} in {channel}")
-        await ctx.send(":wastebasket: Removed.")
+        await ctx.send(":tada: Re-enabled.")
 
     @command(name="yeets")
     async def list(
@@ -149,7 +149,7 @@ class Yeet(Cog, name="yeet-commands"):
             f'{ctx.author} viewed {"server " if server else""}yeet '
             f"list in {channel}"
         )
-        await ctx.send(f":medical_symbol: **{output}**")
+        await ctx.send(f":v: **{output}**")
 
 
 async def check_yeet(ctx: Context):
