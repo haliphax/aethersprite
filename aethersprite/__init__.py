@@ -1,4 +1,4 @@
-"Aethersprite Discord bot/framework"
+"""Aethersprite Discord bot/framework"""
 
 # stdlib
 from asyncio import new_event_loop
@@ -103,7 +103,7 @@ def get_prefixes(bot: Bot, message: Message):
 
     user_id = bot.user.id
     base = [f"<@!{user_id}> ", f"<@{user_id}> "]
-    default = ["!"]
+    default = [config.get("bot", {}).get("prefix", "!")]
 
     if "prefix" not in settings:
         return base + default
@@ -132,7 +132,9 @@ async def on_disconnect():
 
 @bot.event
 async def on_command_error(ctx: Context, error: Exception):
-    "Suppress command check failures and invalid commands."
+    """Suppress command check failures and invalid commands."""
+
+    from .extensions.base.alias import Alias
 
     if isinstance(error, CheckFailure):
         return
@@ -141,7 +143,8 @@ async def on_command_error(ctx: Context, error: Exception):
         if isinstance(ctx.channel, DMChannel):
             return
 
-        cog = ctx.bot.get_cog("alias")
+        bot: Bot = ctx.bot
+        cog: Alias | None = bot.get_cog("Alias")
 
         if cog is None:
             return
