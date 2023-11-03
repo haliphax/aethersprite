@@ -17,17 +17,19 @@ from sqlitedict import SqliteDict
 # api
 from aethersprite import data_folder, log
 from aethersprite.authz import channel_only, owner, require_roles_from_setting
-from aethersprite.common import THUMBS_DOWN
+from aethersprite.emotes import (
+    BUTTON_SUFFIX,
+    CHECK_MARK,
+    PROHIBITED,
+    SHADE_BLOCK,
+    SOLID_BLOCK,
+    THUMBS_DOWN,
+    WASTEBASKET,
+)
 from aethersprite.filters import RoleFilter
 from aethersprite.settings import register, settings
 
 # constants
-DIGIT_SUFFIX = "\ufe0f\u20e3"
-SOLID_BLOCK = "\u2588"
-SHADE_BLOCK = "\u2591"
-WASTEBASKET = "\U0001f5d1"
-CHECK_MARK = "\u2705"
-PROHIBITED = "\U0001f6ab"
 BAR_WIDTH = 20
 POLL_EXPIRY = 86400 * 90  # 90 days
 
@@ -70,7 +72,7 @@ async def poll(ctx: Context, *, options: str):
     opts = {}
 
     for s in qstr.split(","):
-        emoji = f"{count}{DIGIT_SUFFIX}"
+        emoji = f"{count}{BUTTON_SUFFIX}"
         opt = s.strip()
         opts[emoji] = {"text": opt, "count": 0, "votes": set([])}
         count += 1
@@ -200,7 +202,7 @@ def _allowed(setting: str, message: Message, member: Member) -> bool:
 
 
 async def on_raw_reaction_add(payload: RawReactionActionEvent):
-    "Handle on_reaction_add event."
+    """Handle on_reaction_add event."""
 
     if payload.user_id == bot.user.id or payload.message_id not in polls:
         return

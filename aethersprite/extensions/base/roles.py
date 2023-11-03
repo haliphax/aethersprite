@@ -104,12 +104,8 @@ async def roles(ctx: Context):
     roles_ = settings["roles.catalog"].get(ctx)
 
     if roles_ is None or len(roles_) == 0:
-        await ctx.send(
-            ":person_shrugging: There are no available " "self-service roles."
-        )
-        log.warn(
-            f"{ctx.author} invoked roles self-service, but no roles are " "available"
-        )
+        await ctx.send(":person_shrugging: There are no available self-service roles.")
+        log.warn(f"{ctx.author} invoked roles self-service, but no roles are available")
 
         return
 

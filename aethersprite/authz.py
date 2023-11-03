@@ -1,4 +1,4 @@
-"Authorization module"
+"""Authorization module"""
 
 # stdlib
 from os import environ
@@ -10,7 +10,7 @@ from discord.ext.commands import Context
 
 # local
 from . import config, log
-from .common import POLICE_OFFICER
+from .emotes import POLICE_OFFICER
 from .settings import settings
 
 owner = config["bot"].get("owner", environ.get("NCFACBOT_OWNER", None))
@@ -18,7 +18,7 @@ _help = config["bot"]["help_command"]
 
 
 async def channel_only(ctx):
-    "Check for bot commands that should only operate in a channel"
+    """Check for bot commands that should only operate in a channel"""
 
     if isinstance(ctx.channel, DMChannel):
         await ctx.send("This command must be used in a channel.")
@@ -71,7 +71,7 @@ async def react_if_not_help(ctx: Context):
 
 
 async def require_admin(ctx: Context):
-    "Check for requiring admin/mod privileges to execute a command."
+    """Check for requiring admin/mod privileges to execute a command."""
 
     perms = ctx.channel.permissions_for(ctx.author)
 

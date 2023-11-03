@@ -1,1 +1,1 @@
-"Base extensions module"
+"""Base extensions module"""

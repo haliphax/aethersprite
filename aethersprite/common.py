@@ -19,10 +19,6 @@ HOUR = MINUTE * 60
 DAY = HOUR * 24
 #: 15 minutes in seconds
 FIFTEEN_MINS = MINUTE * 15
-#: Thumbs down emoji
-THUMBS_DOWN = '\U0001F44E'
-#: Police officer emoji
-POLICE_OFFICER = '\U0001F46E'
 #: Formatting string for datetime objects
 DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
 
