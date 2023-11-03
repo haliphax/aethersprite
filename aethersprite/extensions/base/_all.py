@@ -18,6 +18,7 @@ _mods = (
     "prefix",
     "roles",
     "settings",
+    "wipe",
     "yeet",
 )
 _package = __name__.replace("._all", "")
