@@ -131,6 +131,11 @@ async def on_disconnect():
 
 
 @bot.event
+async def on_error(method: str, *args, **kwargs):
+    log.exception(f"Error in method {method}\nargs: {args}\nkwargs: {kwargs}\n")
+
+
+@bot.event
 async def on_command_error(ctx: Context, error: Exception):
     """Suppress command check failures and invalid commands."""
 
@@ -208,7 +213,7 @@ async def entrypoint():
             log.debug(f"{key} => {out!r}")
 
     # here we go!
-    await bot.start(token)
+    await bot.start(token=token)
 
 
 import_module(".webapp", __name__)
