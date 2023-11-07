@@ -40,6 +40,7 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
     assert payload.member.guild
     if (
         payload.user_id == bot.user.id
+        or payload.guild_id not in wipes
         or wipes[payload.guild_id] != payload.message_id
     ):
         return
