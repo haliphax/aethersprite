@@ -40,15 +40,13 @@ if typing.TYPE_CHECKING:
     from .filters import SettingFilter
 
 # 3rd party
+from discord.ext.commands import Context
 from sqlitedict import SqliteDict
 
 # local
 from . import data_folder
 
 # TODO cleanup settings for missing servers/channels on startup
-
-settings = {}
-"""Setting definitions"""
 
 
 class Setting(object):
@@ -90,7 +88,7 @@ class Setting(object):
         self.filter = filter
         """The filter used to manipulate setting input/output"""
 
-    def _ctxkey(self, ctx, channel: str | None = None) -> str:
+    def _ctxkey(self, ctx: Context, channel: int | None = None) -> str:
         """
         Get the key to use when storing/accessing the setting.
 
@@ -102,6 +100,7 @@ class Setting(object):
             The composite key
         """
 
+        assert ctx.guild
         key = str(
             ctx.guild["id"] if isinstance(ctx.guild, dict) else ctx.guild.id
         )
@@ -113,10 +112,10 @@ class Setting(object):
 
     def set(
         self,
-        ctx,
-        value: str,
+        ctx: Context,
+        value: str | None,
         raw: bool = False,
-        channel: str | None = None,
+        channel: int | None = None,
     ) -> bool:
         """
         Change the setting's value.
@@ -157,7 +156,9 @@ class Setting(object):
 
         return True
 
-    def get(self, ctx, raw: bool = False) -> str | None:
+    def get(
+        self, ctx: Context, raw: bool = False, channel: int | None = None
+    ) -> str | None:
         """
         Get the setting's value.
 
@@ -170,7 +171,7 @@ class Setting(object):
             The setting's value
         """
 
-        key = self._ctxkey(ctx)
+        key = self._ctxkey(ctx, channel)
         val = (
             self._values[key][self.name]
             if key in self._values and self.name in self._values[key]
@@ -210,3 +211,7 @@ def register(
     settings[name] = Setting(
         name, default, validator, channel, description, filter=filter
     )
+
+
+settings: dict[str, Setting] = {}
+"""Setting definitions"""

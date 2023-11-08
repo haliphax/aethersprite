@@ -62,7 +62,7 @@ class Settings(Cog):
             channel = ctx.channel  # type: ignore
             assert channel
 
-        val = settings[name].get(ctx, channel=channel)
+        val = settings[name].get(ctx, channel=channel.id)
         default = settings[name].default
         await ctx.send(
             f":gear: `{name}`\n"
@@ -104,7 +104,7 @@ class Settings(Cog):
 
             return
 
-        if settings[name].set(ctx, value, channel=channel):
+        if settings[name].set(ctx, value, channel=channel.id):
             await ctx.send(f":thumbsup: Value updated.")
             log.info(
                 f"{ctx.author} updated setting {name}: {value} in {channel}"
@@ -146,7 +146,7 @@ class Settings(Cog):
 
             return
 
-        settings[name].set(ctx, None, raw=True, channel=channel)
+        settings[name].set(ctx, None, raw=True, channel=channel.id)
         await ctx.send(":negative_squared_cross_mark: Setting cleared.")
         log.info(f"{ctx.author} cleared setting {name} in {channel}")
 
