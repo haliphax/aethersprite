@@ -1,14 +1,12 @@
 """Setting filters module"""
 
 # stdlib
-import re
 from typing import Any
 
 # 3rd party
 from discord.ext.commands import Context
 
 # local
-from . import log
 from .common import (
     get_channel_for_id,
     get_id_for_channel,
