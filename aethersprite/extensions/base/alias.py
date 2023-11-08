@@ -56,21 +56,21 @@ class Alias(Cog):
         als = aliases[guild]
 
         if alias in als:
-            await ctx.send(f":newspaper: Already exists.")
+            await ctx.send(":newspaper: Already exists.")
 
             return
 
         cmd = bot.get_command(command)
 
         if cmd is None:
-            await ctx.send(f":scream: No such command!")
+            await ctx.send(":scream: No such command!")
 
             return
 
         als[alias] = command
         aliases[guild] = als
         log.info(f"{ctx.author} added alias {alias} for {command}")
-        await ctx.send(f":sunglasses: Done.")
+        await ctx.send(":sunglasses: Done.")
 
     @command(name="alias.remove")
     async def remove(self, ctx: Context, alias: str):

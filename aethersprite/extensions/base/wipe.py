@@ -9,7 +9,6 @@
 #      than x days old on a schedule
 
 # typing
-from typing import Optional
 
 # 3rd party
 from discord.ext.commands import Bot, check, command, Context

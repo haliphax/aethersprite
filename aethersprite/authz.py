@@ -2,7 +2,7 @@
 
 # stdlib
 from os import environ
-from typing import Sequence, Union
+from typing import Sequence
 
 # 3rd party
 from discord import DMChannel, Member, Role

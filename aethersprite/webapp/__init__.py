@@ -2,7 +2,6 @@
 
 # stdlib
 from importlib import import_module
-from inspect import ismodule
 
 # 3rd party
 from flask import Flask

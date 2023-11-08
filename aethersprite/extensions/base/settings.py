@@ -105,12 +105,12 @@ class Settings(Cog):
             return
 
         if settings[name].set(ctx, value, channel=channel.id):
-            await ctx.send(f":thumbsup: Value updated.")
+            await ctx.send(":thumbsup: Value updated.")
             log.info(
                 f"{ctx.author} updated setting {name}: {value} in {channel}"
             )
         else:
-            await ctx.send(f":thumbsdown: Error updating value.")
+            await ctx.send(":thumbsdown: Error updating value.")
             log.warn(
                 f"{ctx.author} failed to update setting {name}: {value} "
                 f"in {channel}"

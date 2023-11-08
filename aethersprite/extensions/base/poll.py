@@ -7,11 +7,8 @@ import re
 
 # 3rd party
 from discord import Color, Embed, Message, Member
-from discord.abc import GuildChannel
-from discord.channel import TextChannel
 from discord.ext.commands import check, command, Context
 from discord.ext.commands.bot import Bot
-from discord.guild import Guild
 from discord.raw_models import RawReactionActionEvent
 from sqlitedict import SqliteDict
 

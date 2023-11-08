@@ -1,7 +1,6 @@
 """Aethersprite Discord bot/framework"""
 
 # stdlib
-from asyncio import new_event_loop
 from importlib import import_module
 import logging
 from os import environ

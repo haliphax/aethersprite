@@ -10,7 +10,6 @@ from aethersprite.settings import register, settings
 
 # 3rd party
 from discord import Member
-from discord.channel import TextChannel
 from discord.ext.commands import Bot
 
 # filters

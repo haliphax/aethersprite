@@ -3,10 +3,9 @@
 # stdlib
 import asyncio as aio
 from datetime import datetime, timedelta
-from typing import Optional
 
 # 3rd party
-from discord import Color, Embed, Guild, Member, Message, TextChannel
+from discord import Color, Embed, Message
 from discord.errors import NotFound
 from discord.ext.commands import Bot, check, command, Context
 from discord.raw_models import RawReactionActionEvent
@@ -76,7 +75,7 @@ async def _get_message(
 ):
     roles_: list[str] = settings["roles.catalog"].get(ctx)[:10]  # type: ignore
     embed = Embed(
-        title=f":billed_cap: Available roles",
+        title=":billed_cap: Available roles",
         description="Use post reactions to manage role membership",
         color=Color.purple(),
     )

@@ -15,6 +15,7 @@ packages = ["aethersprite"]
 dependencies = { file = "requirements/requirements.txt" }
 
 [tool.setuptools.dynamic.optional-dependencies]
+dev = { file = "requirements/dev.txt" }
 docs = { file = "requirements/docs.txt" }
 
 [tool.black]

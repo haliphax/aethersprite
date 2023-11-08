@@ -63,7 +63,7 @@ class Only(Cog):
         ourchan = ours[chan_id]
 
         if command in ourchan:
-            await ctx.send(f":newspaper: Already done.")
+            await ctx.send(":newspaper: Already done.")
 
             return
 
@@ -71,7 +71,7 @@ class Only(Cog):
         ours[chan_id] = ourchan
         onlies[guild] = ours
         log.info(f"{ctx.author} added {command} to {channel} whitelist")
-        await ctx.send(f":shield: Done.")
+        await ctx.send(":shield: Done.")
 
     @command(name="only.remove")
     async def remove(

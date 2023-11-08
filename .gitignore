@@ -1,8 +1,10 @@
-**/*.egg-info/
-**/*.sqlite3
-**/__pycache__/
+*.egg-info/
+*.sqlite3
 /.env
+/.ruff-cache/
 /.vscode/
 /config.toml
 /data/
 /html/
+__pycache__/
+node_modules/

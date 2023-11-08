@@ -1,7 +1,6 @@
 """Yeet cog"""
 
 # stdlib
-import typing
 
 # 3rd party
 from discord import DMChannel, TextChannel
@@ -53,13 +52,13 @@ class Yeet(Cog):
         key = f"{server_key}#{channel.id}"
         guild = str(ctx.guild.id)
 
-        if not ctx.guild.id in yeets:
+        if ctx.guild.id not in yeets:
             yeets[guild] = set([])
 
         ys = yeets[guild]
 
         if (key in ys and not server) or (server_key in ys and server):
-            await ctx.send(f":newspaper: Already done.")
+            await ctx.send(":newspaper: Already done.")
 
             return
 
@@ -75,7 +74,7 @@ class Yeet(Cog):
         log.info(
             f"{ctx.author} yeeted {server_key if server else key} in {ctx.channel}"
         )
-        await ctx.send(f":boom: Yeet!")
+        await ctx.send(":boom: Yeet!")
 
     @command(name="unyeet")
     async def remove(
