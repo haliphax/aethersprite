@@ -155,19 +155,19 @@ async def require_roles_from_setting(
     from my_super_secret_special_code import get_roles
 
     authz = partial(require_roles, get_roles())
-    authz_setting = partial(require_roles_from_setting, setting='setting.name')
+    authz_setting = partial(require_roles_from_setting, setting="setting.name")
 
     @command()
     @check(authz)
     async def my_command(ctx):
-        await ctx.send('You are authorized. Congratulations!')
+        await ctx.send("You are authorized. Congratulations!")
 
     @command()
     @check(authz_setting)
     async def my_other_command(ctx):
         # to set via bot command: !set setting.name SomeRoleName, SomeOtherRole
-        await ctx.send('You are a member of one of the authorized roles. '
-                        'Congratulations!')
+        await ctx.send("You are a member of one of the authorized roles. "
+                        "Congratulations!")
     ```
 
     Args:

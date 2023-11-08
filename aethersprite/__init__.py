@@ -5,7 +5,7 @@ from asyncio import new_event_loop
 from importlib import import_module
 import logging
 from os import environ
-from os.path import sep
+from os.path import isfile, sep
 from typing import Optional
 from random import seed
 
@@ -42,7 +42,10 @@ config = {
 
 # Load config from file and merge with defaults
 config_file = environ.get("AETHERSPRITE_CONFIG", "config.toml")
-config = {**config, **toml.load(config_file)}
+
+if isfile(config_file):
+    config = {**config, **toml.load(config_file)}
+
 data_folder = f"{config['bot']['data_folder']}{sep}"
 
 log = logging.getLogger(__name__)
@@ -60,7 +63,7 @@ async def help_proxy(ctx: Context, command: Optional[str] = None):
         await ctx.send_help(command)
 
 
-class MyHelp(PrettyHelp):
+class _MyHelp(PrettyHelp):
     def __init__(self):
         super().__init__(delete_invoke=True)
 
@@ -96,7 +99,7 @@ activity = Activity(name=f"@me {_help}", type=ActivityType.listening)
 intents: Intents = Intents.default()
 intents.members = True
 intents.message_content = True
-_helpcmd = MyHelp()
+_helpcmd = _MyHelp()
 
 
 def get_prefixes(bot: Bot, message: Message):
