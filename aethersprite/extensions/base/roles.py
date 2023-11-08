@@ -36,7 +36,7 @@ class DirectoryUpdateFilter(RoleFilter):
         super().__init__(*args, **kwargs)
 
     def in_(self, ctx: Context, value: str) -> list[int] | None:
-        "Filter input."
+        """Filter input."""
 
         assert ctx.guild
         val = super().in_(ctx, value)
@@ -74,7 +74,7 @@ async def _get_message(
     msg: Message | None = None,
     expiry: str | None = None,
 ):
-    roles_ = settings["roles.catalog"].get(ctx)[:10]
+    roles_: list[str] = settings["roles.catalog"].get(ctx)[:10]  # type: ignore
     embed = Embed(
         title=f":billed_cap: Available roles",
         description="Use post reactions to manage role membership",
@@ -109,7 +109,7 @@ async def roles(ctx: Context):
 
     assert ctx.guild
 
-    expiry_raw = settings["roles.postexpiry"].get(ctx)
+    expiry_raw: int = settings["roles.postexpiry"].get(ctx)  # type: ignore
     expiry = seconds_to_str(expiry_raw)
     roles_ = settings["roles.catalog"].get(ctx)
 
@@ -215,7 +215,9 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
         return
 
     fake_ctx = FakeContext(guild=guild)
-    setting = settings["roles.catalog"].get(fake_ctx, raw=True)
+    setting: list[int] = settings["roles.catalog"].get(
+        fake_ctx, raw=True  # type: ignore
+    )
     roles_ = sorted(
         [r for r in guild.roles if r.id in setting],
         key=lambda x: x.name.lower(),
@@ -262,7 +264,9 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent):
     member = guild.get_member(payload.user_id)
     assert member
     fake_ctx = FakeContext(guild=guild)
-    setting = settings["roles.catalog"].get(fake_ctx, raw=True)
+    setting: list[int] = settings["roles.catalog"].get(
+        fake_ctx, raw=True  # type: ignore
+    )
     roles_ = sorted(
         [r for r in guild.roles if r.id in setting],
         key=lambda x: x.name.lower(),
@@ -354,6 +358,7 @@ async def setup(bot: Bot):
     bot.add_listener(on_raw_reaction_remove)
     bot.add_listener(on_ready)
 
+    bot.add_command(catalog)
     bot.add_command(roles)
 
 

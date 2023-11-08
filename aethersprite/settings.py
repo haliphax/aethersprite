@@ -158,7 +158,7 @@ class Setting(object):
 
     def get(
         self, ctx: Context, raw: bool = False, channel: int | None = None
-    ) -> str | None:
+    ) -> typing.Any | None:
         """
         Get the setting's value.
 
