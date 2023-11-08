@@ -29,23 +29,30 @@ class SettingFilter(object):
     def __init__(self, setting: str):
         self.setting = setting
 
-    def in_(self, ctx: Context, value: str | None) -> None:
+    def in_(self, ctx: Context, value: str | None) -> Any | None:
         """
         Must override; input filter method.
 
-        :param ctx: The current context
-        :param value: The incoming value
+        Args:
+            ctx: The current context
+            value: The incoming value
+
+        Returns:
+            The raw setting value(s), for reference
         """
 
         raise NotImplementedError()
 
-    def out(self, ctx: Context, value: Any) -> Any:
+    def out(self, ctx: Context, value: Any) -> Any | None:
         """
         Must override; output filter method.
 
-        :param ctx: The current context
-        :param value: The raw setting value
-        :returns: The filtered setting value
+        Args:
+            ctx: The current context
+            value: The raw setting value
+
+        Returns:
+            The filtered setting value(s)
         """
 
         raise NotImplementedError()
@@ -66,8 +73,12 @@ class ChannelFilter(SettingFilter):
         """
         Filter setting input.
 
-        :param ctx: The current context
-        :param value: The incoming value
+        Args:
+            ctx: The current context
+            value: The incoming value
+
+        Returns:
+            The raw setting value (a list of channel IDs)
         """
 
         if not value:
@@ -103,9 +114,12 @@ class ChannelFilter(SettingFilter):
         """
         Filter setting output.
 
-        :param ctx: The current context
-        :param value: The raw setting value: a list of channel IDs
-        :returns: The filtered setting value: a list of channel names
+        Args:
+            ctx: The current context
+            value: The raw setting value: a list of channel IDs
+
+        Returns:
+            The filtered setting value (a list of channel names)
         """
 
         if value is None:
@@ -141,8 +155,12 @@ class RoleFilter(SettingFilter):
         """
         Filter setting input.
 
-        :param ctx: The current context
-        :param value: The incoming value
+        Args:
+            ctx: The current context
+            value: The incoming value
+
+        Returns:
+            The raw setting value (a list of role IDs)
         """
 
         if not value:
@@ -178,9 +196,12 @@ class RoleFilter(SettingFilter):
         """
         Filter setting output.
 
-        :param ctx: The current context
-        :param value: The raw setting value: a list of role IDs
-        :returns: The filtered setting value: a list of role names
+        Args:
+            ctx: The current context
+            value: The raw setting value: a list of role IDs
+
+        Returns:
+            The filtered setting value (a list of role names)
         """
 
         if value is None:

@@ -17,6 +17,7 @@ bot: Bot
 
 
 class Alias(Cog):
+
     """Alias commands; add and remove command aliases"""
 
     @staticmethod

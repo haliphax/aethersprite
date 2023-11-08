@@ -17,8 +17,16 @@ owner = config["bot"].get("owner", environ.get("NCFACBOT_OWNER", None))
 _help = config["bot"]["help_command"]
 
 
-async def channel_only(ctx):
-    """Check for bot commands that should only operate in a channel"""
+async def channel_only(ctx) -> bool:
+    """
+    Check for bot commands that should only operate in a channel.
+
+    Args:
+        ctx: The current context
+
+    Returns:
+        Whether the user is authorized
+    """
 
     if isinstance(ctx.channel, DMChannel):
         await ctx.send("This command must be used in a channel.")
@@ -32,8 +40,12 @@ def is_in_any_role(user: Member, roles: Sequence[Role]) -> bool:
     """
     Whether or not a member is in any of the given roles.
 
-    :param user: The user in question
-    :param roles: The roles to check for membership
+    Args:
+        user: The user in question
+        roles: The roles to check for membership
+
+    Returns:
+        Whether the user is authorized
     """
 
     if len(roles) > 0 and len([r for r in user.roles if r in roles]) > 0:
@@ -47,7 +59,8 @@ async def react_if_not_help(ctx: Context):
     If the command was not invoked as an alias of the help command, react with
     the police officer emoji.
 
-    :param ctx: The current context
+    Args:
+        ctx: The current context
     """
 
     cog = ctx.bot.get_cog("alias")
@@ -68,11 +81,17 @@ async def react_if_not_help(ctx: Context):
             f"{ctx.command}"
         )
 
-    return
 
+async def require_admin(ctx: Context) -> bool:
+    """
+    Check for requiring admin/mod privileges to execute a command.
 
-async def require_admin(ctx: Context):
-    """Check for requiring admin/mod privileges to execute a command."""
+    Args:
+        ctx: The current context
+
+    Returns:
+        Whether the user is authorized
+    """
 
     assert isinstance(ctx.author, Member)
     perms = ctx.channel.permissions_for(ctx.author)
@@ -95,8 +114,12 @@ async def require_roles(ctx: Context, roles: Sequence[Role]) -> bool:
     Check for requiring particular roles to execute a command. Membership in at
     least one of the roles is requied to pass the filter.
 
-    :param ctx: The current context
-    :param roles: The roles to authorize
+    Args:
+        ctx: The current context
+        roles: The roles to authorize
+
+    Returns:
+        Whether the user is authorized
     """
 
     assert isinstance(ctx.author, Member)
@@ -114,41 +137,45 @@ async def require_roles_from_setting(
 ) -> bool:
     """
     Check for requiring particular roles (loaded from the given setting) to
-    execute a command. For more than one setting (if ``setting`` is a
+    execute a command. For more than one setting (if `setting` is a
     list/tuple), the aggregate list will be used. Membership in at least one of
     the roles pulled from the settings is required to pass the filter.
 
     If this check is used and the setting is empty or nonexistent, the default
     behavior is to allow anyone and everyone to use the command. If you would
-    like for it to default to "closed" behavior, set the ``open_by_default``
-    argument to ``False``.
+    like for it to default to "closed" behavior, set the `open_by_default`
+    argument to `False`.
 
-    Example, if your setting with role(s) is ``setting.name``:
+    Example, if your setting with role(s) is `setting.name`:
 
-    .. code-block:: python
+    ```python
+    from functools import partial
+    from discord.ext.commands import check, command
+    from aethersprite.authz require_roles, import require_roles_from_setting
+    from my_super_secret_special_code import get_roles
 
-        from functools import partial
-        from discord.ext.commands import check, command
-        from aethersprite.authz require_roles, import require_roles_from_setting
-        from my_super_secret_special_code import get_roles
+    authz = partial(require_roles, get_roles())
+    authz_setting = partial(require_roles_from_setting, setting='setting.name')
 
-        authz = partial(require_roles, get_roles())
-        authz_setting = partial(require_roles_from_setting, setting='setting.name')
+    @command()
+    @check(authz)
+    async def my_command(ctx):
+        await ctx.send('You are authorized. Congratulations!')
 
-        @command()
-        @check(authz)
-        async def my_command(ctx):
-            await ctx.send('You are authorized. Congratulations!')
+    @command()
+    @check(authz_setting)
+    async def my_other_command(ctx):
+        # to set via bot command: !set setting.name SomeRoleName, SomeOtherRole
+        await ctx.send('You are a member of one of the authorized roles. '
+                        'Congratulations!')
+    ```
 
-        @command()
-        @check(authz_setting)
-        async def my_other_command(ctx):
-            # to set via bot command: !set setting.name SomeRoleName, SomeOtherRole
-            await ctx.send('You are a member of one of the authorized roles. '
-                           'Congratulations!')
+    Args:
+        setting: The name of the setting to pull the roles from
+        setting: str or list or tuple
 
-    :param setting: The name of the setting to pull the roles from
-    :type setting: str or list or tuple
+    Returns:
+        Whether the user is authorized
     """
 
     assert isinstance(ctx.author, Member)

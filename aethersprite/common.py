@@ -39,9 +39,12 @@ def get_channel_for_id(guild, id: int) -> str | None:
     """
     Return channel name for given guild and channel ID.
 
-    :param guild: The guild object to search
-    :param id: The channel ID to search for
-    :returns: The name of the channel
+    Args:
+        guild: The guild object to search
+        id: The channel ID to search for
+
+    Returns:
+        The name of the channel
     """
 
     chans = [c.name for c in guild.channels if c.id == id]
@@ -53,9 +56,12 @@ def get_id_for_channel(guild, channel: str) -> int | None:
     """
     Return channel ID for given guild and channel name.
 
-    :param guild: The guild object to search
-    :param channel: The channel to search for
-    :returns: The ID of the channel
+    Args:
+        guild: The guild object to search
+        channel: The channel to search for
+
+    Returns:
+        The ID of the channel
     """
 
     channel = channel.lower() if channel is not None else channel
@@ -71,8 +77,11 @@ def get_mixed_channels(value: str) -> list[Any]:
     it will be empty otherwise. The second element in each pair will be the
     plain text of the string token; it will be empty otherwise.
 
-    :param value: The value to match against
-    :returns: A series of group pairs (channel ID, channel text)
+    Args:
+        value: The value to match against
+
+    Returns:
+        A series of group pairs (channel ID, channel text)
     """
 
     return re.findall(r"<#(\d+)> ?|([-_a-zA-Z0-9]+)[, ]*", value.strip())
@@ -82,9 +91,12 @@ def get_id_for_role(guild, role: str) -> int | None:
     """
     Return role ID for given guild and role name.
 
-    :param guild: The guild object to search
-    :param role: The role to search for
-    :returns: The ID of the role
+    Args:
+        guild: The guild object to search
+        role: The role to search for
+
+    Returns:
+        The ID of the role
     """
 
     role = role.lower() if role is not None else role
@@ -97,9 +109,12 @@ def get_role_for_id(guild, id: int) -> str | None:
     """
     Return role name for given guild and role ID.
 
-    :param guild: The guild object to search
-    :param id: The role ID to search for
-    :returns: The name of the role
+    Args:
+        guild: The guild object to search
+        id: The role ID to search for
+
+    Returns:
+        The name of the role
     """
 
     roles = [c.name for c in guild.roles if c.id == id]
@@ -114,20 +129,25 @@ def get_mixed_roles(value: str) -> list[Any]:
     it will be empty otherwise. The second element in each pair will be the
     plain text of the string token; it will be empty otherwise.
 
-    :param value: The value to match against
-    :returns: A series of group pairs (role ID, role text)
+    Args:
+        value: The value to match against
+
+    Returns:
+        A series of group pairs (role ID, role text)
     """
 
     return re.findall(r"<@&(\d+)> ?|([^,]+)[, ]*", value.strip())
 
 
-def get_timespan_chunks(string: str):
+def get_timespan_chunks(string: str) -> tuple:
     """
     Search string for chunks of timespan parameters, like 5d 10h 15m, etc.
 
-    :param string: The string to search
-    :returns: ``(days: int, hours: int, minutes: int)``
-    :rtype: tuple
+    Args:
+        string: The string to search
+
+    Returns:
+        A tuple in the form: `(days: int, hours: int, minutes: int)`
     """
 
     s = re.search(r".*?(-?\d+)d.*", string)
@@ -145,10 +165,11 @@ def seconds_to_str(ts):
     Convert a span of seconds into a human-readable format (e.g. "5 days
     8 hours 1 minute 36 seconds").
 
-    :param ts: The span to convert
-    :type ts: int
-    :returns: The human-readable representation
-    :rtype: str
+    Args:
+        ts: The span to convert
+
+    Returns:
+        The human-readable representation
     """
 
     seconds = ceil(ts)

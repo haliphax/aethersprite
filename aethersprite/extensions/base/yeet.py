@@ -12,10 +12,10 @@ from sqlitedict import SqliteDict
 from aethersprite import data_folder, log
 from aethersprite.authz import require_admin
 
-#: Yeets database
 yeets = SqliteDict(
     f"{data_folder}yeet.sqlite3", tablename="yeets", autocommit=True
 )
+"""Yeets database"""
 
 
 class Yeet(Cog):

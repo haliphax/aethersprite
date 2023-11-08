@@ -11,7 +11,7 @@ from aethersprite.authz import channel_only, require_roles_from_setting
 from aethersprite.filters import RoleFilter
 from aethersprite.settings import register, settings
 
-#: messages
+# messages
 MSG_NO_SETTING = ":person_shrugging: No such setting exists."
 
 authz = partial(

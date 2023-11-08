@@ -22,7 +22,6 @@ from discord.ext.commands import (
 from pretty_help import PrettyHelp
 import toml
 
-#: Configuration
 config = {
     "bot": {
         "data_folder": ".",
@@ -39,14 +38,16 @@ config = {
         },
     },
 }
+"""Configuration"""
 
 # Load config from file and merge with defaults
 config_file = environ.get("AETHERSPRITE_CONFIG", "config.toml")
 config = {**config, **toml.load(config_file)}
 data_folder = f"{config['bot']['data_folder']}{sep}"
 
-#: Root logger instance
 log = logging.getLogger(__name__)
+"""Root logger instance"""
+
 log.setLevel(getattr(logging, config["bot"].get("log_level", "INFO")))
 _help = config["bot"].get("help_command", "aehelp")
 
@@ -89,8 +90,8 @@ streamHandler.setFormatter(
 )
 log.addHandler(streamHandler)
 
-#: Activity on login
 activity = Activity(name=f"@me {_help}", type=ActivityType.listening)
+"""Activity on login"""
 
 intents: Intents = Intents.default()
 intents.members = True
@@ -117,8 +118,8 @@ def get_prefixes(bot: Bot, message: Message):
     return base + [prefix]
 
 
-#: The bot itself
 bot = Bot(command_prefix=get_prefixes, intents=intents, help_command=_helpcmd)
+"""The bot itself"""
 
 
 @bot.event

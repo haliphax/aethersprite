@@ -1,6 +1,5 @@
 """
-Settings module; interfaced with via
-:mod:`aethersprite.extensions.base.settings`
+Settings module; interfaced with via `aethersprite.extensions.base.settings`
 
 This provides methods by which extension authors can register and use settings
 in their code, and end users can manipulate those settings via bot commands
@@ -8,31 +7,29 @@ in their code, and end users can manipulate those settings via bot commands
 
 Examples for registering a setting and getting/changing/resetting its value:
 
-.. note::
+> There are commands for doing each of these things already in the base
+> extension mentioned above that provide authorization checks, but these are
+> just simple examples.
 
-    There are commands for doing each of these things already in the base
-    extension mentioned above that provide authorization checks, but these are
-    just simple examples.
+```python
+from discord.ext.commands import command
+from aethersprite.settings import register, settings
 
-.. code:: python
+register("my.setting", "default value", False, lambda x: True,
+         "There are many settings like it, but this one is mine.")
 
-    from discord.ext.commands import command
-    from aethersprite.settings import register, settings
+@command()
+async def check(ctx):
+    await ctx.send(settings["my.setting"].get(ctx))
 
-    register('my.setting', 'default value', False, lambda x: True,
-             'There are many settings like it, but this one is mine.')
+@command()
+async def change(ctx):
+    settings["my.setting"].set(ctx, "new value")
 
-    @command()
-    async def check(ctx):
-        await ctx.send(settings['my.setting'].get(ctx))
-
-    @command()
-    async def change(ctx):
-        settings['my.setting'].set(ctx, 'new value')
-
-    @command()
-    async def reset(ctx):
-        settings['my.setting'].clear(ctx)
+@command()
+async def reset(ctx):
+    settings["my.setting"].clear(ctx)
+```
 """
 
 # stdlib
@@ -93,14 +90,16 @@ class Setting(object):
         self.filter = filter
         """The filter used to manipulate setting input/output"""
 
-    def _ctxkey(self, ctx, channel: str | None = None):
+    def _ctxkey(self, ctx, channel: str | None = None) -> str:
         """
         Get the key to use when storing/accessing the setting.
 
-        :param ctx: The Discord connection context
-        :param channel: The channel (if not the same as the context)
-        :returns: The composite key
-        :rtype: str
+        Args:
+            ctx: The Discord connection context
+            channel: The channel (if not the same as the context)
+
+        Returns:
+            The composite key
         """
 
         key = str(
@@ -118,16 +117,18 @@ class Setting(object):
         value: str,
         raw: bool = False,
         channel: str | None = None,
-    ):
+    ) -> bool:
         """
         Change the setting's value.
 
-        :param ctx: The Discord connection context
-        :param value: The value to assign (or ``None`` for the default)
-        :param raw: Set to True to bypass filtering
-        :param channel: The channel (if not the same as the context)
-        :returns: Success
-        :rtype: bool
+        Args:
+            ctx: The Discord connection context
+            value: The value to assign (or ``None`` for the default)
+            raw: Set to True to bypass filtering
+            channel: The channel (if not the same as the context)
+
+        Returns:
+            Success
         """
 
         key = self._ctxkey(ctx, channel)
@@ -156,15 +157,17 @@ class Setting(object):
 
         return True
 
-    def get(self, ctx, raw: bool = False, channel: str | None = None):
+    def get(self, ctx, raw: bool = False) -> str | None:
         """
         Get the setting's value.
 
-        :param ctx: The Discord connection context
-        :param raw: Set to True to bypass filtering
-        :param channel: The channel (if not the same as the context)
-        :returns: The setting's value
-        :rtype: str
+        Args:
+            ctx: The Discord connection context
+            raw: Set to True to bypass filtering
+            channel: The channel (if not the same as the context)
+
+        Returns:
+            The setting's value
         """
 
         key = self._ctxkey(ctx)
@@ -191,11 +194,12 @@ def register(
     """
     Register a setting.
 
-    :param name: The name of the setting
-    :param default: The default value if none is provided
-    :param validator: The validation function for the setting's value
-    :param channel: If this is a channel (and not a guild) setting
-    :param filter:
+    Args:
+        name: The name of the setting
+        default: The default value if none is provided
+        validator: The validation function for the setting's value
+        channel: If this is a channel (and not a guild) setting
+        filter: The filter to use for setting/getting values
     """
 
     global settings
