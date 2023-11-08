@@ -166,8 +166,9 @@ async def require_roles_from_setting(
     @check(authz_setting)
     async def my_other_command(ctx):
         # to set via bot command: !set setting.name SomeRoleName, SomeOtherRole
-        await ctx.send("You are a member of one of the authorized roles. "
-                        "Congratulations!")
+        await ctx.send(
+            "You are a member of one of the authorized roles. Congratulations!"
+        )
     ```
 
     Args:
