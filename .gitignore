@@ -1,8 +1,8 @@
 **/*.egg-info/
 **/*.sqlite3
 **/__pycache__/
-.env
-.vscode/
-config.toml
-data/
-docs/
+/.env
+/.vscode/
+/config.toml
+/data/
+/docs/
