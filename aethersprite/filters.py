@@ -14,6 +14,8 @@ from .common import (
     get_mixed_channels,
     get_mixed_roles,
     get_role_for_id,
+    get_timespan_chunks,
+    seconds_to_str,
 )
 
 
@@ -41,7 +43,7 @@ class SettingFilter(object):
 
         raise NotImplementedError()
 
-    def out(self, ctx: Context, value: Any) -> Any | None:
+    def out(self, ctx: Context, value: Any | None) -> Any | None:
         """
         Must override; output filter method.
 
@@ -107,7 +109,7 @@ class ChannelFilter(SettingFilter):
     def out(
         self,
         ctx: Context,
-        value: list[int],
+        value: list[int] | None,
     ) -> list[str | None] | str | None:
         """
         Filter setting output.
@@ -189,7 +191,7 @@ class RoleFilter(SettingFilter):
     def out(
         self,
         ctx: Context,
-        value: list[int],
+        value: list[int] | None,
     ) -> list[str | None] | str | None:
         """
         Filter setting output.
@@ -214,3 +216,53 @@ class RoleFilter(SettingFilter):
             return roles[0]
 
         return None
+
+
+class SecondsFilter(SettingFilter):
+
+    """Filter used for converting strings to number of seconds values"""
+
+    def __init__(self, setting: str):
+        super().__init__(setting)
+
+    def in_(self, ctx: Context, value: str | None) -> int | None:
+        """
+        Filter setting input.
+
+        Args:
+            ctx: The current context
+            value: The incoming value
+
+        Returns:
+            The raw setting value (an integer)
+        """
+
+        if not value:
+            return
+
+        try:
+            return int(value)
+        except ValueError:
+            days, hours, minutes = get_timespan_chunks(value)
+            return minutes * 60 + hours * 3600 + days * 86400
+
+    def out(
+        self,
+        ctx: Context,
+        value: int | None,
+    ) -> str | None:
+        """
+        Filter setting output.
+
+        Args:
+            ctx: The current context
+            value: The raw setting value (an integer)
+
+        Returns:
+            The filtered setting value (days, hours, minutes)
+        """
+
+        if not value:
+            return
+
+        return seconds_to_str(value)
