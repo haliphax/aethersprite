@@ -1,49 +1,54 @@
-"Only cog"
+"""Only cog"""
 
-# stdlib
-from functools import partial
-import typing
+# TODO server whitelist
 
 # 3rd party
-from discord import DMChannel, TextChannel
-from discord.ext.commands import Cog, command
-from discord_argparse import ArgumentConverter
-from discord_argparse.argparse import OptionalArgument
+from discord import DMChannel
+from discord.channel import TextChannel
+from discord.ext.commands import Cog, command, Context
 from sqlitedict import SqliteDict
 
 # local
 from aethersprite import data_folder, log
 from aethersprite.authz import channel_only, require_admin
 
-#: Only whitelist database
-onlies = SqliteDict(f"{data_folder}only.sqlite3", tablename="onlies", autocommit=True)
-#: Argument converter for optional channel argument by keyword
-channel_arg = ArgumentConverter(
-    channel=OptionalArgument(TextChannel, "The channel to use (if not this one)")
+onlies = SqliteDict(
+    f"{data_folder}only.sqlite3", tablename="onlies", autocommit=True
 )
+"""Only whitelist database"""
 
 
 class Only(Cog):
-    "Only commands; disable all commands except for those in a whitelist"
+    """Only commands; disable all commands except for those in a whitelist"""
 
     def __init__(self, bot):
         self.bot = bot
 
     @command(name="only.add")
     async def add(
-        self, ctx, command: str, *, params: channel_arg = channel_arg.defaults()
+        self,
+        ctx: Context,
+        command: str,
+        channel: TextChannel | None = None,
     ):
         """
         Add the given command to the Only whitelist
 
         Enables <command> in this channel.
 
-        Use the 'channel' parameter to specify a channel other than the current one.
+        You may specify a channel other than the current one.
 
-        Example: only.add test channel=#lobby
+        Examples:
+            !only.add test
+            !only.add test #lobby
         """
 
-        channel = params["channel"] if "channel" in params else ctx.channel
+        assert ctx.guild
+
+        if not channel:
+            channel = ctx.channel  # type: ignore
+            assert channel
+
         chan_id = str(channel.id)
         guild = str(ctx.guild.id)
 
@@ -70,23 +75,35 @@ class Only(Cog):
 
     @command(name="only.remove")
     async def remove(
-        self, ctx, command, *, params: channel_arg = channel_arg.defaults()
+        self,
+        ctx: Context,
+        command: str,
+        channel: TextChannel | None = None,
     ):
         """
         Remove the given command from the Only whitelist
 
         If whitelisting is enabled for this channel, the removed command can no longer be executed.
 
-        Use the 'channel' parameter to specify a channel other than the current one.
+        You may provide a channel other than the current one.
 
-        Example: only.remove test channel=#lobby
+        Examples:
+            !only.remove test
+            !only.remove test #lobby
         """
 
-        channel = params["channel"] if "channel" in params else ctx.channel
+        assert ctx.guild
+
+        if not channel:
+            channel = ctx.channel  # type: ignore
+            assert channel
+
         chan_id = str(channel.id)
         guild = str(ctx.guild.id)
-        ours = onlies[guild] if guild in onlies else None
-        ourchan = ours[chan_id] if ours is not None and chan_id in ours else None
+        ours = onlies[guild] if guild in onlies else {}
+        ourchan = (
+            ours[chan_id] if ours is not None and chan_id in ours else None
+        )
 
         if ourchan is None:
             await ctx.send(":person_shrugging: None set.")
@@ -111,20 +128,25 @@ class Only(Cog):
     @command(name="only.list")
     async def list(
         self,
-        ctx,
-        server: typing.Optional[bool] = False,
-        *,
-        params: channel_arg = channel_arg.defaults(),
+        ctx: Context,
+        channel: TextChannel | None = None,
     ):
         """
         List all current channel's whitelisted commands
 
-        Use the 'channel' parameter to specify a channel other than the current one.
+        You may provide a channel other than the current one.
 
-        Example: only.list channel=#lobby"
+        Examples:
+            !only.list
+            !only.list #lobby
         """
 
-        channel = params["channel"] if "channel" in params else ctx.channel
+        assert ctx.guild
+
+        if not channel:
+            channel = ctx.channel  # type: ignore
+            assert channel
+
         chan_id = str(channel.id)
         guild = str(ctx.guild.id)
 
@@ -136,7 +158,7 @@ class Only(Cog):
         if channel not in ours:
             ours[channel] = set([])
 
-        output = "**, **".join(ours[chan_id])
+        output = "**, **".join(ours.get(chan_id, []))
 
         if not len(output):
             output = "None"
@@ -145,22 +167,35 @@ class Only(Cog):
         await ctx.send(f":guard: **{output}**")
 
     @command(name="only.reset")
-    async def reset(self, ctx, *, params: channel_arg = channel_arg.defaults()):
+    async def reset(
+        self,
+        ctx: Context,
+        channel: TextChannel | None = None,
+    ):
         """
         Reset Only whitelist
 
         Using this command will disable whitelisting behavior and remove the existing whitelist.
 
-        Use the 'channel' parameter to specify a channel other than the current one.
+        You may provide a channel other than the current one.
 
-        Example: only.reset channel=#lobby
+        Examples:
+            !only.reset
+            !only.reset #lobby
         """
 
-        channel = params["channel"] if "channel" in params else ctx.channel
+        assert ctx.guild
+
+        if not channel:
+            channel = ctx.channel  # type: ignore
+            assert channel
+
         chan_id = str(channel.id)
         guild = str(ctx.guild.id)
-        ours = onlies[guild] if guild in onlies else None
-        ourchan = ours[chan_id] if ours is not None and chan_id in ours else None
+        ours = onlies[guild] if guild in onlies else {}
+        ourchan = (
+            ours[chan_id] if ours is not None and chan_id in ours else None
+        )
 
         if ourchan is None:
             await ctx.send(":person_shrugging: None set.")
@@ -178,8 +213,11 @@ class Only(Cog):
         log.info(f"{ctx.author} reset Only whitelist for {channel}")
 
 
-async def check_only(ctx):
-    "Check that command is in the Only whitelist"
+async def check_only(ctx: Context):
+    """Check that command is in the Only whitelist"""
+
+    assert ctx.guild
+    assert ctx.command
 
     if isinstance(ctx.channel, DMChannel):
         # can't whitelist commands via DM, since we need a guild to check

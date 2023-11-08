@@ -10,6 +10,7 @@ from aethersprite.settings import register, settings
 
 # 3rd party
 from discord import Member
+from discord.channel import TextChannel
 from discord.ext.commands import Bot
 
 # filters
@@ -26,8 +27,11 @@ async def on_member_join(member: Member):
         return
 
     channel = [c for c in member.guild.channels if c.name == chan_setting][0]
-    log.info(f"Greeting new member {member} in {member.guild.name} " f"#{channel.name}")
-    await channel.send(
+    log.info(
+        f"Greeting new member {member} in {member.guild.name} "
+        f"#{channel.name}"
+    )
+    await channel.send(  # type: ignore
         msg_setting.format(
             mention=member.mention,
             name=member.display_name,

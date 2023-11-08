@@ -44,44 +44,56 @@ if typing.TYPE_CHECKING:
 
 # 3rd party
 from sqlitedict import SqliteDict
+
 # local
 from . import data_folder
 
 # TODO cleanup settings for missing servers/channels on startup
 
-#: Setting definitions
 settings = {}
+"""Setting definitions"""
 
 
 class Setting(object):
 
-    "Setting class; represents an individual setting definition"
+    """Setting class; represents an individual setting definition"""
 
     # Setting values
-    _values = SqliteDict(f'{data_folder}settings.sqlite3', tablename='values',
-                         autocommit=True)
+    _values = SqliteDict(
+        f"{data_folder}settings.sqlite3", tablename="values", autocommit=True
+    )
 
-    def __init__(self, name: str, default: str, validate: callable,
-                 channel: typing.Optional[bool] = False,
-                 description: typing.Optional[str] = None,
-                 filter: 'SettingFilter' = None):
+    def __init__(
+        self,
+        name: str,
+        default: str | None,
+        validate: typing.Callable,
+        channel: bool = False,
+        description: str | None = None,
+        filter: "SettingFilter" | None = None,
+    ):
         if name is None:
-            raise ValueError('Name must not be None')
+            raise ValueError("Name must not be None")
 
-        #: The setting's name
         self.name = name
-        #: Default value
-        self.default = default
-        #: Validator function
-        self.validate = validate
-        #: If this is a channel (and not a guild) setting
-        self.channel = channel
-        #: This setting's description
-        self.description = description
-        #: The filter used to manipulate setting input/output
-        self.filter = filter
+        """The setting's name"""
 
-    def _ctxkey(self, ctx, channel: str = None):
+        self.default = default
+        """Default value"""
+
+        self.validate = validate
+        """Validator function"""
+
+        self.channel = channel
+        """If this is a channel (and not a guild) setting"""
+
+        self.description = description
+        """This setting's description"""
+
+        self.filter = filter
+        """The filter used to manipulate setting input/output"""
+
+    def _ctxkey(self, ctx, channel: str | None = None):
         """
         Get the key to use when storing/accessing the setting.
 
@@ -91,15 +103,22 @@ class Setting(object):
         :rtype: str
         """
 
-        key = str(ctx.guild['id']
-                  if isinstance(ctx.guild, dict) else ctx.guild.id)
+        key = str(
+            ctx.guild["id"] if isinstance(ctx.guild, dict) else ctx.guild.id
+        )
 
         if self.channel:
-            key += f'#{ctx.channel.id if channel is None else channel}'
+            key += f"#{ctx.channel.id if channel is None else channel}"
 
         return key
 
-    def set(self, ctx, value: str, raw: bool = False, channel: str = None):
+    def set(
+        self,
+        ctx,
+        value: str,
+        raw: bool = False,
+        channel: str | None = None,
+    ):
         """
         Change the setting's value.
 
@@ -116,7 +135,12 @@ class Setting(object):
 
         try:
             if not raw and self.filter is not None:
-                value = self.filter.in_(ctx, value)
+                filtered = self.filter.in_(ctx, value)
+
+                if not filtered:
+                    return False
+
+                value = filtered
         except ValueError:
             return False
 
@@ -132,7 +156,7 @@ class Setting(object):
 
         return True
 
-    def get(self, ctx, raw: bool = False, channel: str = None):
+    def get(self, ctx, raw: bool = False, channel: str | None = None):
         """
         Get the setting's value.
 
@@ -144,9 +168,11 @@ class Setting(object):
         """
 
         key = self._ctxkey(ctx)
-        val = self._values[key][self.name] \
-                if key in self._values and self.name in self._values[key] \
-                else None
+        val = (
+            self._values[key][self.name]
+            if key in self._values and self.name in self._values[key]
+            else None
+        )
 
         if not raw and self.filter is not None:
             val = self.filter.out(ctx, val)
@@ -154,10 +180,14 @@ class Setting(object):
         return self.default if val is None else val
 
 
-def register(name: str, default: str, validator: callable,
-             channel: typing.Optional[bool] = False,
-             description: typing.Optional[str] = None,
-             filter: typing.Optional['SettingFilter'] = None):
+def register(
+    name: str,
+    default: typing.Any | None,
+    validator: typing.Callable,
+    channel: bool = False,
+    description: str | None = None,
+    filter: "SettingFilter" | None = None,
+):
     """
     Register a setting.
 
@@ -171,7 +201,8 @@ def register(name: str, default: str, validator: callable,
     global settings
 
     if name in settings:
-        raise Exception(f'Setting already exists: {name}')
+        raise Exception(f"Setting already exists: {name}")
 
-    settings[name] = Setting(name, default, validator, channel, description,
-                             filter=filter)
+    settings[name] = Setting(
+        name, default, validator, channel, description, filter=filter
+    )

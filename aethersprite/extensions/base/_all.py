@@ -1,4 +1,4 @@
-"""Load all command extensions"""
+"""Load all extensions"""
 
 # 3rd party
 from discord.ext.commands import Bot

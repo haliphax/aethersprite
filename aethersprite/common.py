@@ -1,7 +1,11 @@
-"Common functions module"
+"""Common functions module"""
+
+# typing
+from typing import Any
 
 # 3rd party
 from discord.ext.commands import Context
+
 # stdlib
 from collections import namedtuple
 from datetime import datetime, timezone
@@ -11,23 +15,27 @@ import re
 from typing import Callable, Tuple
 
 # constants
-#: One minute in seconds
 MINUTE = 60
-#: One hour in seconds
+"""One minute in seconds"""
+
 HOUR = MINUTE * 60
-#: One day in seconds
+"""One hour in seconds"""
+
 DAY = HOUR * 24
-#: 15 minutes in seconds
+"""One day in seconds"""
+
 FIFTEEN_MINS = MINUTE * 15
-#: Formatting string for datetime objects
-DATETIME_FORMAT = '%a %Y-%m-%d %H:%M:%S %Z'
+"""15 minutes in seconds"""
+
+DATETIME_FORMAT = "%a %Y-%m-%d %H:%M:%S %Z"
+"""Formatting string for datetime objects"""
 
 # structs
-#: Fake a context for use in certain functions that expect one
-FakeContext = namedtuple('FakeContext', ('guild',))
+FakeContext = namedtuple("FakeContext", ("guild",))
+"""Fake a context for use in certain functions that expect one"""
 
 
-def get_channel_for_id(guild, id: int) -> str:
+def get_channel_for_id(guild, id: int) -> str | None:
     """
     Return channel name for given guild and channel ID.
 
@@ -41,7 +49,7 @@ def get_channel_for_id(guild, id: int) -> str:
     return chans[0] if len(chans) else None
 
 
-def get_id_for_channel(guild, channel: str) -> int:
+def get_id_for_channel(guild, channel: str) -> int | None:
     """
     Return channel ID for given guild and channel name.
 
@@ -56,7 +64,7 @@ def get_id_for_channel(guild, channel: str) -> int:
     return ids[0] if len(ids) else None
 
 
-def get_mixed_channels(value: str) -> Tuple[Tuple[str, str]]:
+def get_mixed_channels(value: str) -> list[Any]:
     """
     Return a series of group pairs matched from the provided value. The first
     element in each pair will be the channel ID if the match was a mention;
@@ -67,10 +75,10 @@ def get_mixed_channels(value: str) -> Tuple[Tuple[str, str]]:
     :returns: A series of group pairs (channel ID, channel text)
     """
 
-    return re.findall(r'<#(\d+)> ?|([-_a-zA-Z0-9]+)[, ]*', value.strip())
+    return re.findall(r"<#(\d+)> ?|([-_a-zA-Z0-9]+)[, ]*", value.strip())
 
 
-def get_id_for_role(guild, role: str) -> int:
+def get_id_for_role(guild, role: str) -> int | None:
     """
     Return role ID for given guild and role name.
 
@@ -85,7 +93,7 @@ def get_id_for_role(guild, role: str) -> int:
     return ids[0] if len(ids) else None
 
 
-def get_role_for_id(guild, id: int) -> str:
+def get_role_for_id(guild, id: int) -> str | None:
     """
     Return role name for given guild and role ID.
 
@@ -99,7 +107,7 @@ def get_role_for_id(guild, id: int) -> str:
     return roles[0] if len(roles) else None
 
 
-def get_mixed_roles(value: str) -> Tuple[Tuple[str, str]]:
+def get_mixed_roles(value: str) -> list[Any]:
     """
     Return a series of group pairs matched from the provided value. The first
     element in each pair will be the role ID if the match was a mention;
@@ -110,7 +118,7 @@ def get_mixed_roles(value: str) -> Tuple[Tuple[str, str]]:
     :returns: A series of group pairs (role ID, role text)
     """
 
-    return re.findall(r'<@&(\d+)> ?|([^,]+)[, ]*', value.strip())
+    return re.findall(r"<@&(\d+)> ?|([^,]+)[, ]*", value.strip())
 
 
 def get_timespan_chunks(string: str):
@@ -122,11 +130,11 @@ def get_timespan_chunks(string: str):
     :rtype: tuple
     """
 
-    s = re.search(r'.*?(-?\d+)d.*', string)
+    s = re.search(r".*?(-?\d+)d.*", string)
     days = int(s.groups()[0]) if s else 0
-    s = re.search(r'.*?(-?\d+)h.*', string)
+    s = re.search(r".*?(-?\d+)h.*", string)
     hours = int(s.groups()[0]) if s else 0
-    s = re.search(r'.*?(-?\d+)m.*', string)
+    s = re.search(r".*?(-?\d+)m.*", string)
     minutes = int(s.groups()[0]) if s else 0
 
     return (days, hours, minutes)
@@ -164,4 +172,4 @@ def seconds_to_str(ts):
     if seconds > 0:
         until.append(f'{seconds} second{"s" if seconds > 1 else ""}')
 
-    return ', '.join(until)
+    return ", ".join(until)

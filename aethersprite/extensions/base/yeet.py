@@ -6,7 +6,6 @@ import typing
 # 3rd party
 from discord import DMChannel, TextChannel
 from discord.ext.commands import Bot, Cog, command, Context
-from discord_argparse import ArgumentConverter, OptionalArgument
 from sqlitedict import SqliteDict
 
 # local
@@ -14,10 +13,13 @@ from aethersprite import data_folder, log
 from aethersprite.authz import require_admin
 
 #: Yeets database
-yeets = SqliteDict(f"{data_folder}yeet.sqlite3", tablename="yeets", autocommit=True)
+yeets = SqliteDict(
+    f"{data_folder}yeet.sqlite3", tablename="yeets", autocommit=True
+)
 
 
 class Yeet(Cog):
+
     """Yeet commands; enable and disable commands per-server and per-channel"""
 
     def __init__(self, bot):
@@ -28,7 +30,7 @@ class Yeet(Cog):
         self,
         ctx: Context,
         command: str,
-        channel: typing.Optional[TextChannel] = None,
+        channel: TextChannel | None = None,
     ):
         """
         Disable the given command
@@ -40,8 +42,13 @@ class Yeet(Cog):
             !yeet test #lobby  <-- disables test command in #lobby channel
         """
 
+        assert ctx.guild
         server = True if not channel else False
-        channel = ctx.channel if not channel else channel
+
+        if not channel:
+            channel = ctx.channel  # type: ignore
+            assert channel
+
         server_key = command.lower().strip()
         key = f"{server_key}#{channel.id}"
         guild = str(ctx.guild.id)
@@ -75,7 +82,7 @@ class Yeet(Cog):
         self,
         ctx: Context,
         command: str,
-        channel: typing.Optional[TextChannel] = None,
+        channel: TextChannel | None = None,
     ):
         """
         Enable the given command
@@ -87,8 +94,13 @@ class Yeet(Cog):
             !unyeet test #lobby  <-- enable test command in #lobby channel
         """
 
+        assert ctx.guild
         server = True if not channel else False
-        channel = ctx.channel if not channel else channel
+
+        if not channel:
+            channel = ctx.channel  # type: ignore
+            assert channel
+
         server_key = command.lower().strip()
         key = f"{server_key}#{channel.id}"
         guild = str(ctx.guild.id)
@@ -106,14 +118,16 @@ class Yeet(Cog):
 
         ys.remove(server_key if server else key)
         yeets[guild] = ys
-        log.info(f"{ctx.author} removed {server_key if server else key} in {channel}")
+        log.info(
+            f"{ctx.author} removed {server_key if server else key} in {channel}"
+        )
         await ctx.send(":tada: Re-enabled.")
 
     @command(name="yeets")
     async def list(
         self,
         ctx: Context,
-        channel: typing.Optional[TextChannel] = None,
+        channel: TextChannel | None = None,
     ):
         """
         List all yeeted commands on this server
@@ -125,8 +139,13 @@ class Yeet(Cog):
             !yeets #lobby  <-- list yeets in #lobby channel
         """
 
+        assert ctx.guild
         server = True if not channel else False
-        channel = ctx.channel if not channel else channel
+
+        if not channel:
+            channel = ctx.channel  # type: ignore
+            assert channel
+
         guild = str(ctx.guild.id)
 
         if guild not in yeets:
@@ -160,6 +179,10 @@ async def check_yeet(ctx: Context):
         # settings values
         return True
 
+    assert ctx.channel
+    assert ctx.command
+    assert ctx.guild
+
     guild = str(ctx.guild.id)
 
     if guild not in yeets:
@@ -173,7 +196,7 @@ async def check_yeet(ctx: Context):
             log.debug(
                 f"Suppressing yeeted command from "
                 f"{ctx.author}: {ctx.command.name} in "
-                f"#{ctx.channel.name} ({ctx.guild.name})"
+                f"#{ctx.channel.name} ({ctx.guild.name})"  # type: ignore
             )
 
             return False

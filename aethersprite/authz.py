@@ -64,7 +64,8 @@ async def react_if_not_help(ctx: Context):
     if ctx.invoked_with not in help_aliases:
         await ctx.message.add_reaction(POLICE_OFFICER)
         log.warn(
-            f"{ctx.author} attempted to access unauthorized command " f"{ctx.command}"
+            f"{ctx.author} attempted to access unauthorized command "
+            f"{ctx.command}"
         )
 
     return
@@ -73,6 +74,7 @@ async def react_if_not_help(ctx: Context):
 async def require_admin(ctx: Context):
     """Check for requiring admin/mod privileges to execute a command."""
 
+    assert isinstance(ctx.author, Member)
     perms = ctx.channel.permissions_for(ctx.author)
 
     if (
@@ -83,7 +85,7 @@ async def require_admin(ctx: Context):
     ):
         return True
 
-    await react_if_not_help()
+    await react_if_not_help(ctx)
 
     return False
 
@@ -97,6 +99,8 @@ async def require_roles(ctx: Context, roles: Sequence[Role]) -> bool:
     :param roles: The roles to authorize
     """
 
+    assert isinstance(ctx.author, Member)
+
     if is_in_any_role(ctx.author, roles):
         return True
 
@@ -106,7 +110,7 @@ async def require_roles(ctx: Context, roles: Sequence[Role]) -> bool:
 
 
 async def require_roles_from_setting(
-    ctx: Context, setting: Union[str, Sequence], open_by_default=True
+    ctx: Context, setting: str | Sequence, open_by_default=True
 ) -> bool:
     """
     Check for requiring particular roles (loaded from the given setting) to
@@ -146,6 +150,8 @@ async def require_roles_from_setting(
     :param setting: The name of the setting to pull the roles from
     :type setting: str or list or tuple
     """
+
+    assert isinstance(ctx.author, Member)
 
     perms = ctx.channel.permissions_for(ctx.author)
 

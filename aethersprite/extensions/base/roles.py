@@ -1,4 +1,4 @@
-"Roles self-service cog"
+"""Roles self-service cog"""
 
 # stdlib
 import asyncio as aio
@@ -29,28 +29,34 @@ directories = SqliteDict(postdb_file, tablename="catalog", autocommit=True)
 
 
 class DirectoryUpdateFilter(RoleFilter):
-    "Automatically update directory post when roles.catalog is updated"
+
+    """Automatically update directory post when roles.catalog is updated"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def in_(self, ctx: Context, value: str) -> None:
+    def in_(self, ctx: Context, value: str) -> list[int] | None:
         "Filter input."
 
+        assert ctx.guild
         val = super().in_(ctx, value)
-        directory = directories[ctx.guild.id] if ctx.guild.id in directories else None
+        directory = (
+            directories[ctx.guild.id] if ctx.guild.id in directories else None
+        )
 
         if directory is None:
             return val
 
-        chan: TextChannel = ctx.guild.get_channel(directory["channel"])
+        chan = ctx.guild.get_channel(directory["channel"])
 
         if chan is None:
             return val
 
         async def update():
             try:
-                msg = await chan.fetch_message(directory["message"])
+                msg = await chan.fetch_message(  # type: ignore
+                    directory["message"],
+                )
                 await _get_message(ctx, msg)
             except NotFound:
                 pass
@@ -64,7 +70,9 @@ roles_filter = DirectoryUpdateFilter("roles.catalog")
 
 
 async def _get_message(
-    ctx: Context, msg: Optional[Message] = None, expiry: Optional[str] = None
+    ctx: Context,
+    msg: Message | None = None,
+    expiry: str | None = None,
 ):
     roles_ = settings["roles.catalog"].get(ctx)[:10]
     embed = Embed(
@@ -83,7 +91,7 @@ async def _get_message(
         count += 1
 
     if msg is None:
-        msg: Message = await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
     else:
         await msg.edit(embed=embed)
         await msg.clear_reactions()
@@ -97,15 +105,21 @@ async def _get_message(
 @command()
 @check(channel_only)
 async def roles(ctx: Context):
-    "Manage your membership in available roles"
+    """Manage your membership in available roles"""
+
+    assert ctx.guild
 
     expiry_raw = settings["roles.postexpiry"].get(ctx)
     expiry = seconds_to_str(expiry_raw)
     roles_ = settings["roles.catalog"].get(ctx)
 
     if roles_ is None or len(roles_) == 0:
-        await ctx.send(":person_shrugging: There are no available self-service roles.")
-        log.warn(f"{ctx.author} invoked roles self-service, but no roles are available")
+        await ctx.send(
+            ":person_shrugging: There are no available self-service roles."
+        )
+        log.warn(
+            f"{ctx.author} invoked roles self-service, but no roles are available"
+        )
 
         return
 
@@ -125,7 +139,9 @@ async def roles(ctx: Context):
 @check(channel_only)
 @check(require_admin)
 async def catalog(ctx: Context):
-    "Create a permanent roles catalog post in the current channel."
+    """Create a permanent roles catalog post in the current channel."""
+
+    assert ctx.guild
 
     roles_ = settings["roles.catalog"].get(ctx)
 
@@ -144,11 +160,13 @@ async def catalog(ctx: Context):
 
     if guild_id in directories:
         existing = directories[guild_id]
-        chan: TextChannel = ctx.guild.get_channel(existing["channel"])
+        chan = ctx.guild.get_channel(existing["channel"])
 
         if chan is not None:
             try:
-                msg = await chan.fetch_message(existing["message"])
+                msg = await chan.fetch_message(  # type: ignore
+                    existing["message"],
+                )
                 await msg.delete()
             except NotFound:
                 pass
@@ -161,13 +179,18 @@ async def catalog(ctx: Context):
 
 
 async def on_raw_reaction_add(payload: RawReactionActionEvent):
-    "Handle on_reaction_add event."
+    """Handle on_reaction_add event."""
+
+    assert bot.user
+    assert payload.guild_id
 
     if payload.user_id == bot.user.id:
         return
 
     directory = (
-        directories[payload.guild_id] if payload.guild_id in directories else None
+        directories[payload.guild_id]
+        if payload.guild_id in directories
+        else None
     )
 
     if payload.message_id not in posts and (
@@ -175,10 +198,15 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
     ):
         return
 
-    guild: Guild = bot.get_guild(payload.guild_id)
-    channel: TextChannel = guild.get_channel(payload.channel_id)
-    message: Message = await channel.fetch_message(payload.message_id)
-    member: Member = guild.get_member(payload.user_id)
+    guild = bot.get_guild(payload.guild_id)
+    assert guild
+    channel = guild.get_channel(payload.channel_id)
+    assert channel
+    message = await channel.fetch_message(  # type: ignore
+        payload.message_id,
+    )
+    member = guild.get_member(payload.user_id)
+    assert member
     split = str(payload.emoji).split("\ufe0f")
 
     if len(split) != 2:
@@ -189,7 +217,8 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
     fake_ctx = FakeContext(guild=guild)
     setting = settings["roles.catalog"].get(fake_ctx, raw=True)
     roles_ = sorted(
-        [r for r in guild.roles if r.id in setting], key=lambda x: x.name.lower()
+        [r for r in guild.roles if r.id in setting],
+        key=lambda x: x.name.lower(),
     )
     which = int(split[0])
 
@@ -204,13 +233,18 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
 
 
 async def on_raw_reaction_remove(payload: RawReactionActionEvent):
-    "Handle on_reaction_remove event."
+    """Handle on_reaction_remove event."""
+
+    assert bot.user
+    assert payload.guild_id
 
     if payload.user_id == bot.user.id:
         return
 
     directory = (
-        directories[payload.guild_id] if payload.guild_id in directories else None
+        directories[payload.guild_id]
+        if payload.guild_id in directories
+        else None
     )
 
     if payload.message_id not in posts and (
@@ -223,12 +257,15 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent):
     if len(split) != 2:
         return
 
-    guild: Guild = bot.get_guild(payload.guild_id)
-    member: Member = guild.get_member(payload.user_id)
+    guild = bot.get_guild(payload.guild_id)
+    assert guild
+    member = guild.get_member(payload.user_id)
+    assert member
     fake_ctx = FakeContext(guild=guild)
     setting = settings["roles.catalog"].get(fake_ctx, raw=True)
     roles_ = sorted(
-        [r for r in guild.roles if r.id in setting], key=lambda x: x.name.lower()
+        [r for r in guild.roles if r.id in setting],
+        key=lambda x: x.name.lower(),
     )
     which = int(split[0])
 
@@ -241,14 +278,18 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent):
 
 
 async def on_ready():
-    "Clear expired/missing roles posts on startup."
+    """Clear expired/missing roles posts on startup."""
 
     # clean up missing directories
     for guild_id, directory in directories.items():
         try:
-            guild: Guild = bot.get_guild(int(guild_id))
-            chan: TextChannel = guild.get_channel(directory["channel"])
-            msg = await chan.fetch_message(directory["message"])
+            guild = bot.get_guild(int(guild_id))
+            assert guild
+            chan = guild.get_channel(directory["channel"])
+            assert chan
+            msg = await chan.fetch_message(  # type: ignore
+                directory["message"],
+            )
         except NotFound:
             log.warn(f"Deleted missing directory post for {guild_id}")
             del directories[guild_id]
@@ -271,12 +312,15 @@ def _delete(id: int):
         return
 
     post = posts[id]
-    guild: Guild = bot.get_guild(post["guild"])
-    channel: TextChannel = guild.get_channel(post["channel"])
+    guild = bot.get_guild(post["guild"])
+    assert guild
+    channel = guild.get_channel(post["channel"])
 
     async def f():
         try:
-            msg: Message = await channel.fetch_message(id)
+            msg: Message = await channel.fetch_message(  # type: ignore
+                id,
+            )
             await msg.delete()
         except NotFound:
             pass

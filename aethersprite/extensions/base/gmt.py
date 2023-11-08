@@ -1,8 +1,7 @@
-"GMT time check and offset command"
+"""GMT time check and offset command"""
 
 # stdlib
 from datetime import datetime, timedelta
-import typing
 
 # 3rd party
 from discord.ext.commands import Bot, command, Context
@@ -25,7 +24,7 @@ async def _time(ctx: Context, tz: str, offset: str | None):
 
 
 @command(brief="Get current time or offset in GMT")
-async def gmt(ctx: Context, *, offset: typing.Optional[str]):
+async def gmt(ctx: Context, *, offset: str | None = None):
     """
     Get current time in GMT or offset by days, hours, and minutes.
 
@@ -40,7 +39,7 @@ async def gmt(ctx: Context, *, offset: typing.Optional[str]):
 
 
 @command(brief="Get current time or offset in UTC")
-async def utc(ctx: Context, *, offset: typing.Optional[str]):
+async def utc(ctx: Context, *, offset: str | None = None):
     """
     Get current time in UTC or offset by days, hours, and minutes.
 

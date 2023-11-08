@@ -86,7 +86,7 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
 @command()
 @check(channel_only)
 @check(require_admin)
-async def wipe(ctx: Context, str: Optional[str] = None):
+async def wipe(ctx: Context):
     """Delete all messages in a channel."""
 
     assert ctx.guild

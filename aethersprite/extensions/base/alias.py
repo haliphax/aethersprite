@@ -1,26 +1,29 @@
-"Alias cog"
+"""Alias cog"""
 
 # 3rd party
-from discord.ext.commands import Bot, command, Cog
+from discord.ext.commands import Bot, Cog, command, Context
 from sqlitedict import SqliteDict
 
 # local
 from aethersprite import data_folder, log
 from aethersprite.authz import channel_only, require_admin
 
-#: Aliases database
 aliases = SqliteDict(
     f"{data_folder}alias.sqlite3", tablename="aliases", autocommit=True
 )
+"""Aliases database"""
+
+bot: Bot
 
 
 class Alias(Cog):
-    "Alias commands; add and remove command aliases"
+    """Alias commands; add and remove command aliases"""
 
     @staticmethod
-    def get_aliases(ctx, cmd):
-        "Get aliases for the given command and context."
+    def get_aliases(ctx: Context, cmd: str):
+        """Get aliases for the given command and context."""
 
+        assert ctx.guild
         mylist = list()
         guild = str(ctx.guild.id)
 
@@ -40,9 +43,10 @@ class Alias(Cog):
         self.aliases = aliases
 
     @command(name="alias.add")
-    async def add(self, ctx, alias: str, command: str):
-        "Add an alias of <alias> for <command>"
+    async def add(self, ctx: Context, alias: str, command: str):
+        """Add an alias of <alias> for <command>"""
 
+        assert ctx.guild
         guild = str(ctx.guild.id)
 
         if ctx.guild.id not in aliases:
@@ -55,7 +59,7 @@ class Alias(Cog):
 
             return
 
-        cmd = ctx.bot.get_command(command)
+        cmd = bot.get_command(command)
 
         if cmd is None:
             await ctx.send(f":scream: No such command!")
@@ -68,9 +72,10 @@ class Alias(Cog):
         await ctx.send(f":sunglasses: Done.")
 
     @command(name="alias.remove")
-    async def remove(self, ctx, alias: str):
-        "Remove <alias>"
+    async def remove(self, ctx: Context, alias: str):
+        """Remove <alias>"""
 
+        assert ctx.guild
         guild = str(ctx.guild.id)
         als = aliases[guild] if guild in aliases else None
 
@@ -90,9 +95,10 @@ class Alias(Cog):
         await ctx.send(":wastebasket: Removed.")
 
     @command(name="alias.list")
-    async def list(self, ctx):
-        "List all command aliases"
+    async def list(self, ctx: Context):
+        """List all command aliases"""
 
+        assert ctx.guild
         guild = str(ctx.guild.id)
 
         if guild not in aliases:
@@ -108,7 +114,10 @@ class Alias(Cog):
         await ctx.send(f":detective: **{output}**")
 
 
-async def setup(bot: Bot):
+async def setup(bot_: Bot):
+    global bot
+
+    bot = bot_
     cog = Alias(bot)
 
     for c in cog.get_commands():

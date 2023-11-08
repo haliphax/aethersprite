@@ -13,7 +13,7 @@ from aethersprite.settings import register, settings
 
 
 async def check_name_only(ctx: Context):
-    "If the bot wasn't mentioned, refuse the command."
+    """If the bot wasn't mentioned, refuse the command."""
 
     # don't bother with DMs
     if isinstance(ctx.channel, DMChannel):

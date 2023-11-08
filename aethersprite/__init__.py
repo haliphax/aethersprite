@@ -101,6 +101,7 @@ _helpcmd = MyHelp()
 def get_prefixes(bot: Bot, message: Message):
     from .settings import settings
 
+    assert bot.user
     user_id = bot.user.id
     base = [f"<@!{user_id}> ", f"<@{user_id}> "]
     default = [config.get("bot", {}).get("prefix", "!")]
@@ -149,17 +150,19 @@ async def on_command_error(ctx: Context, error: Exception):
             return
 
         bot: Bot = ctx.bot
-        cog: Alias | None = bot.get_cog("Alias")
+        cog: Alias | None = bot.get_cog("Alias")  # type: ignore
 
         if cog is None:
             return
 
+        assert ctx.guild
         guild = str(ctx.guild.id)
         aliases = cog.aliases[guild] if guild in cog.aliases else None
 
         if aliases is None:
             return
 
+        assert ctx.prefix
         name = ctx.message.content.replace(ctx.prefix, "").split(" ")[0].strip()
 
         if name not in aliases:

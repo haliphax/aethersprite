@@ -1,14 +1,16 @@
-"GitHub URL command"
+"""GitHub URL command"""
 
 # 3rd party
-from discord.ext.commands import Bot, command
+from discord.ext.commands import Bot, command, Context
 
 # local
 from aethersprite import log
 
 
-@command(brief="GitHub URL for bot source code, feature requests", pass_context=True)
-async def github(ctx):
+@command(
+    brief="GitHub URL for bot source code, feature requests", pass_context=True
+)
+async def github(ctx: Context):
     """
     This bot is running on Aethersprite, an open source bot software built with discord.py. My source code is available for free. Contributions in the form of code, bug reports, and feature requests are all welcome.
 

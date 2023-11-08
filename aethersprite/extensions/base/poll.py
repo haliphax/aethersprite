@@ -7,6 +7,7 @@ import re
 
 # 3rd party
 from discord import Color, Embed, Message, Member
+from discord.abc import GuildChannel
 from discord.channel import TextChannel
 from discord.ext.commands import check, command, Context
 from discord.ext.commands.bot import Bot
@@ -33,9 +34,11 @@ from aethersprite.settings import register, settings
 BAR_WIDTH = 20
 POLL_EXPIRY = 86400 * 90  # 90 days
 
-bot: Bot = None
+bot: Bot
 # database
-polls = SqliteDict(f"{data_folder}poll.sqlite3", tablename="polls", autocommit=True)
+polls = SqliteDict(
+    f"{data_folder}poll.sqlite3", tablename="polls", autocommit=True
+)
 # filters
 create_filter = RoleFilter("poll.createroles")
 vote_filter = RoleFilter("poll.voteroles")
@@ -102,7 +105,7 @@ async def poll(ctx: Context, *, options: str):
     await ctx.message.delete()
 
 
-def _get_embed(poll):
+def _get_embed(poll: dict):
     total = sum([int(o["count"]) for _, o in poll["options"].items()])
     open = "open" if poll["open"] else "closed"
     prohib_text = "Close" if poll["open"] else "Open"
@@ -119,7 +122,9 @@ def _get_embed(poll):
 
     for key, opt in poll["options"].items():
         count = int(opt["count"])
-        rawpct = round(0 if (total == 0 or count == 0) else (count / total) * 100, 2)
+        rawpct = round(
+            0 if (total == 0 or count == 0) else (count / total) * 100, 2
+        )
         pct = 0 if (total == 0 or count == 0) else round((count / total) * 20)
         left = 20 - pct
         bar = f"{SOLID_BLOCK * pct}{SHADE_BLOCK * left}"
@@ -132,7 +137,12 @@ def _get_embed(poll):
     return embed
 
 
-async def _update_poll(member: Member, message: Message, emoji: str, adjustment: int):
+async def _update_poll(
+    member: Member,
+    message: Message,
+    emoji: str,
+    adjustment: int,
+):
     poll = polls[message.id]
     opts = poll["options"]
     opt = opts[emoji]
@@ -204,14 +214,21 @@ def _allowed(setting: str, message: Message, member: Member) -> bool:
 async def on_raw_reaction_add(payload: RawReactionActionEvent):
     """Handle on_reaction_add event."""
 
+    assert bot.user
+    assert payload.member
+
     if payload.user_id == bot.user.id or payload.message_id not in polls:
         return
 
     poll = polls[payload.message_id]
-    channel: TextChannel = payload.member.guild.get_channel(payload.channel_id)
-    msg: Message = await channel.fetch_message(payload.message_id)
+    channel = payload.member.guild.get_channel(payload.channel_id)
+    assert channel
+    msg: Message = await channel.fetch_message(  # type: ignore
+        payload.message_id,
+    )
 
     async def _delete():
+        assert payload.member
         prompt = poll["prompt"]
         delete = payload.member.id in poll["delete"]
         confirm = payload.member.id in poll["confirm"]
@@ -260,14 +277,22 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
 async def on_raw_reaction_remove(payload: RawReactionActionEvent):
     "Handle on_reaction_remove event."
 
+    assert bot.user
+    assert payload.guild_id
+
     if payload.user_id == bot.user.id or payload.message_id not in polls:
         return
 
     poll = polls[payload.message_id]
-    guild: Guild = bot.get_guild(payload.guild_id)
-    member: Member = guild.get_member(payload.user_id)
-    channel: TextChannel = guild.get_channel(payload.channel_id)
-    msg: Message = await channel.fetch_message(payload.message_id)
+    guild = bot.get_guild(payload.guild_id)
+    assert guild
+    member = guild.get_member(payload.user_id)
+    assert member
+    channel = guild.get_channel(payload.channel_id)
+    assert channel
+    msg: Message = await channel.fetch_message(  # type: ignore
+        payload.message_id,
+    )
 
     if payload.emoji.name == WASTEBASKET and member.id in poll["delete"]:
         poll["delete"].remove(member.id)
@@ -281,7 +306,9 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent):
 
         return
 
-    if payload.emoji.name == PROHIBITED and _allowed("poll.createroles", msg, member):
+    if payload.emoji.name == PROHIBITED and _allowed(
+        "poll.createroles", msg, member
+    ):
         poll["open"] = True
         polls[msg.id] = poll
         await msg.edit(embed=_get_embed(poll))

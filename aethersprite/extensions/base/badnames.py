@@ -1,4 +1,6 @@
-"Badnames extension; automatically kick users whose names match a blacklist."
+"""
+Badnames extension; automatically kick users whose names match a blacklist.
+"""
 
 # local
 from aethersprite import log
@@ -10,7 +12,7 @@ from discord.ext.commands import Bot
 
 
 async def on_member_join(member: Member):
-    "Check member names against blacklist on join."
+    """Check member names against blacklist on join."""
 
     badnames_setting: str = settings["badnames"].get(member)
 

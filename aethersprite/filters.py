@@ -1,8 +1,8 @@
-"Setting filters module"
+"""Setting filters module"""
 
 # stdlib
 import re
-from typing import Any, List
+from typing import Any
 
 # 3rd party
 from discord.ext.commands import Context
@@ -20,15 +20,16 @@ from .common import (
 
 
 class SettingFilter(object):
-    "A class with methods for filtering a setting's input and output"
 
-    #: The name of the setting to filter
-    setting: str = None
+    """A class with methods for filtering a setting's input and output"""
+
+    setting: str | None = None
+    """The name of the setting to filter"""
 
     def __init__(self, setting: str):
         self.setting = setting
 
-    def in_(self, ctx: Context, value: str) -> None:
+    def in_(self, ctx: Context, value: str | None) -> None:
         """
         Must override; input filter method.
 
@@ -51,22 +52,26 @@ class SettingFilter(object):
 
 
 class ChannelFilter(SettingFilter):
-    "Filter used for converting channel names to IDs and back"
 
-    #: True to allow multiple values
+    """Filter used for converting channel names to IDs and back"""
+
     multiple: bool = False
+    """True to allow multiple values"""
 
     def __init__(self, setting: str, multiple: bool = False):
         super().__init__(setting)
         self.multiple = multiple
 
-    def in_(self, ctx: Context, value: str) -> None:
+    def in_(self, ctx: Context, value: str | None) -> list[int] | None:
         """
         Filter setting input.
 
         :param ctx: The current context
         :param value: The incoming value
         """
+
+        if not value:
+            return
 
         channels = get_mixed_channels(value)
         ids = []
@@ -90,7 +95,11 @@ class ChannelFilter(SettingFilter):
 
         return ids
 
-    def out(self, ctx: Context, value: List[int]) -> List[str]:
+    def out(
+        self,
+        ctx: Context,
+        value: list[int],
+    ) -> list[str | None] | str | None:
         """
         Filter setting output.
 
@@ -118,22 +127,26 @@ class ChannelFilter(SettingFilter):
 
 
 class RoleFilter(SettingFilter):
-    "Filter used for converting role names to IDs and back"
 
-    #: True to allow multiple values
+    """Filter used for converting role names to IDs and back"""
+
     multiple: bool = True
+    """True to allow multiple values"""
 
     def __init__(self, setting: str, multiple: bool = True):
         super().__init__(setting)
         self.multiple = multiple
 
-    def in_(self, ctx: Context, value: str) -> None:
+    def in_(self, ctx: Context, value: str | None) -> list[int] | None:
         """
         Filter setting input.
 
         :param ctx: The current context
         :param value: The incoming value
         """
+
+        if not value:
+            return
 
         roles = get_mixed_roles(value)
         ids = []
@@ -157,7 +170,11 @@ class RoleFilter(SettingFilter):
 
         return ids
 
-    def out(self, ctx: Context, value: List[int]) -> List[str]:
+    def out(
+        self,
+        ctx: Context,
+        value: list[int],
+    ) -> list[str | None] | str | None:
         """
         Filter setting output.
 

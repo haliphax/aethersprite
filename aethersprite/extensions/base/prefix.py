@@ -1,4 +1,4 @@
-"Prefix command"
+"""Prefix setting"""
 
 # 3rd party
 from discord.ext.commands import Context
@@ -15,7 +15,7 @@ prefixes = SqliteDict(
 
 
 def get_prefixes(ctx: Context):
-    "Get bot prefixes."
+    """Get bot prefixes."""
 
     return settings["prefix"].get(ctx)
 
