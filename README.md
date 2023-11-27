@@ -1,6 +1,6 @@
 # Aethersprite
 
-A [Discord] bot and extension framework
+A [Discord][] bot and extension framework
 
 ![Aethersprite](https://github.com/haliphax/aethersprite/raw/assets/aethersprite.jpg)
 
@@ -13,16 +13,16 @@ A [Discord] bot and extension framework
 ## 📣 Features
 
 - Multi-server, multi-channel capable
-- Built on [discord.py], so new commands are easy to create and integrate
+- Built on [discord.py][], so new commands are easy to create and integrate
 - Server- and channel-specific settings framework for command customization
   - Input and output filters for further customization of settings
 - Role-based authorization for commands
 - Persistence of data and scheduled events during downtime
-- [Flask]-based web application for web hooks, pages, file storage, etc.
+- [FastAPI][]-based web application for web hooks, pages, file storage, etc.
 - Deal with friendly role and channel names in commands, but store reliable IDs
   for permanence
-- [TOML] configuration file for immutable settings
-- Able to import external command modules as [extension packs]
+- [TOML][] configuration file for immutable settings
+- Able to import external command modules as [extension packs][]
 
 [Back to top](#aethersprite)
 
@@ -76,15 +76,15 @@ operate based entirely on events.
 
 ## 🎁 Extension packs
 
-- [ncfacbot] - The [Nexus Clash] Faction Discord Bot
+- [ncfacbot][] - The [Nexus Clash][] Faction Discord Bot
 
 [Back to top](#aethersprite)
 
 [discord.py]: https://discordpy.readthedocs.io
-[Discord]: https://discordapp.com
-[Discord Bot Safe README]: ./ncfacbot/extensions/safe.md
+[discord]: https://discordapp.com
+[discord bot safe readme]: ./ncfacbot/extensions/safe.md
 [extension packs]: #extension-packs
-[Flask]: https://flask.palletsprojects.com
+[fastapi]: https://fastapi.tiangolo.com
 [ncfacbot]: https://github.com/haliphax/ncfacbot
-[Nexus Clash]: https://www.nexusclash.com
-[TOML]: https://github.com/toml-lang/toml
+[nexus clash]: https://www.nexusclash.com
+[toml]: https://github.com/toml-lang/toml

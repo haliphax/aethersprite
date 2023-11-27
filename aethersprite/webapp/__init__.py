@@ -4,20 +4,16 @@
 from importlib import import_module
 
 # 3rd party
-from flask import Flask
-from werkzeug.middleware.proxy_fix import ProxyFix
+from fastapi import APIRouter, FastAPI
 
 # local
 from .. import config, log
 
-app = Flask(__name__)
-"""Flask application"""
+app = FastAPI()
+"""Web application"""
 
-app.config.update(config["webapp"]["flask"])
-proxies = config.get("webapp", {}).get("proxies", None)
-
-if proxies is not None:
-    app.wsgi_app = ProxyFix(app.wsgi_app, proxies)
+router = APIRouter()
+"""Router for web application"""
 
 
 def _load_ext(ext, package=None):
@@ -31,9 +27,11 @@ def _load_ext(ext, package=None):
         return
 
     log.info(f"Web app setup: {mod.__name__}")
-    mod.setup_webapp(app)
+    mod.setup_webapp(app, router)
 
 
 # probe extensions for web app hooks
 for ext in config["bot"]["extensions"]:
     _load_ext(ext)
+
+app.include_router(router)
