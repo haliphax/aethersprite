@@ -5,6 +5,8 @@ A [Discord][] bot and extension framework
 ![Aethersprite](https://github.com/haliphax/aethersprite/raw/assets/aethersprite.jpg)
 
 - [Features](#features)
+- [Installing](#installing)
+- [Running](#running)
 - [Command categories](#command-categories)
 - [Independent commands](#independent-commands)
 - [Independent settings](#independent-settings)
@@ -23,6 +25,38 @@ A [Discord][] bot and extension framework
   for permanence
 - [TOML][] configuration file for immutable settings
 - Able to import external command modules as [extension packs][]
+
+[Back to top](#aethersprite)
+
+## 👷 Installing
+
+First, make a `config.toml` file from the provided `config.example.toml` file,
+providing it with your username, API token, and any settings tweaks you wish to
+apply.
+
+Then, install the bot package in your Python environment of choice:
+
+```shell
+pip install -U 'aethersprite@git+https://github.com/haliphax/aethersprite.git'
+```
+
+[Back to top](#aethersprite)
+
+## 🏃 Running
+
+Commands must be run in the same directory as your `config.toml` file.
+
+To start the Discord bot:
+
+```shell
+python -m aethersprite
+```
+
+To start the web application:
+
+```shell
+python -m aethersprite.webapp
+```
 
 [Back to top](#aethersprite)
 
