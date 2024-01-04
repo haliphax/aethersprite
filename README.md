@@ -55,6 +55,8 @@ These categories (referred to as "Cogs") provide multiple commands.
   Allow members to manage their own membership in chosen roles
 - `roles.catalog`
   Like `roles`, but uses a permanent post rather than on-demand access
+- `wipe`
+  Wipes all messages in the current channel (after confirmation)
 
 [Back to top](#aethersprite)
 
