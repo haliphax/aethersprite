@@ -79,6 +79,7 @@ operate based entirely on events.
 ## 🎁 Extension packs
 
 - [ncfacbot][] - The [Nexus Clash][] Faction Discord Bot
+- [Realm TTRPG Bot][]
 
 [Back to top](#aethersprite)
 
@@ -89,4 +90,5 @@ operate based entirely on events.
 [fastapi]: https://fastapi.tiangolo.com
 [ncfacbot]: https://github.com/haliphax/ncfacbot
 [nexus clash]: https://www.nexusclash.com
+[realm ttrpg bot]: https://github.com/realm-ttrpg/discord-bot
 [toml]: https://github.com/toml-lang/toml
