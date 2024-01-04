@@ -61,11 +61,11 @@ class Setting(object):
     def __init__(
         self,
         name: str,
-        default: str | None,
+        default: typing.Any | None,
         validate: typing.Callable,
         channel: bool = False,
         description: str | None = None,
-        filter: "SettingFilter" | None = None,
+        filter: "SettingFilter | None" = None,
     ):
         if name is None:
             raise ValueError("Name must not be None")
@@ -137,7 +137,7 @@ class Setting(object):
             if not raw and self.filter is not None:
                 filtered = self.filter.in_(ctx, value)
 
-                if not filtered:
+                if filtered is None:
                     return False
 
                 value = filtered
@@ -190,7 +190,7 @@ def register(
     validator: typing.Callable,
     channel: bool = False,
     description: str | None = None,
-    filter: "SettingFilter" | None = None,
+    filter: "SettingFilter | None" = None,
 ):
     """
     Register a setting.

@@ -3,6 +3,9 @@
 # 3rd party
 from discord.ext.commands import Context
 
+# api
+from aethersprite.settings import settings
+
 # local
 from .setting_filter import SettingFilter
 
@@ -26,10 +29,12 @@ class BooleanFilter(SettingFilter):
             The raw setting value (a boolean)
         """
 
-        if not value:
+        if value is None:
             return
 
-        return bool(value)
+        # boolean settings are just toggles; if they're set, they are the
+        # opposite of the default
+        return not settings[self.setting].default
 
     def out(
         self,

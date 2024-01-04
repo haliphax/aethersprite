@@ -86,6 +86,8 @@ class Settings(Cog):
 
         You may provide a channel other than the current one.
 
+        When used on a boolean (True/False) setting, ANY VALUE will toggle the setting to the opposite of its default value.
+
         Examples:
             !set key value
             !set key value #lobby

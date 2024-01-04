@@ -11,7 +11,7 @@ class SettingFilter(object):
 
     """A class with methods for filtering a setting's input and output"""
 
-    setting: str | None = None
+    setting: str
     """The name of the setting to filter"""
 
     def __init__(self, setting: str):
