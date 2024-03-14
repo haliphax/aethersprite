@@ -112,7 +112,7 @@ def get_prefixes(bot: Bot, message: Message):
     if "prefix" not in settings:
         return base + default
 
-    prefix = settings["prefix"].get(message)
+    prefix = settings["prefix"].get(message)  # type: ignore
 
     if prefix is None:
         return base + default
@@ -194,6 +194,22 @@ async def on_resumed():
     log.info("Connection resumed")
 
 
+async def _load_ext(ext: str, package: str | None = None):
+    mod = import_module(ext, package)
+
+    if hasattr(mod, "META_EXTENSION") and mod.META_EXTENSION:
+        for child in mod._mods:
+            await _load_ext(f"..{child}", ext)
+
+        return
+
+    if not hasattr(mod, "setup"):
+        return
+
+    log.info(f"Bot extension setup: {mod.__name__}")
+    await bot.load_extension(mod.__name__)
+
+
 async def entrypoint():
     token = config["bot"].get("token", environ.get("DISCORD_TOKEN", None))
     # need credentials
@@ -205,9 +221,9 @@ async def entrypoint():
     bot.remove_command("help")
     bot.add_command(help_proxy)
 
-    # load extensions
+    # probe extensions for bot hooks
     for ext in config["bot"]["extensions"]:
-        await bot.load_extension(ext)
+        await _load_ext(ext)
 
     if log.level >= logging.DEBUG:
         for key, evs in bot.extra_events.items():
