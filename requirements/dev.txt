@@ -4,7 +4,7 @@
 #
 #    pip-compile dev.in
 #
-black==23.11.0
+black==24.3.0
     # via -r dev.in
 cfgv==3.4.0
     # via pre-commit
