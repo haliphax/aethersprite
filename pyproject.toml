@@ -22,7 +22,7 @@ docs = { file = "requirements/docs.txt" }
 line-length = 80
 
 [tool.ruff]
-ignore = [
+lint.ignore = [
 	# ambiguous variable name
 	"E741",
 ]
