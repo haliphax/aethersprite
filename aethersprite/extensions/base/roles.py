@@ -28,7 +28,6 @@ directories = SqliteDict(postdb_file, tablename="catalog", autocommit=True)
 
 
 class DirectoryUpdateFilter(RoleFilter):
-
     """Automatically update directory post when roles.catalog is updated"""
 
     def __init__(self, *args, **kwargs):
@@ -215,7 +214,8 @@ async def on_raw_reaction_add(payload: RawReactionActionEvent):
 
     fake_ctx = FakeContext(guild=guild)
     setting: list[int] = settings["roles.catalog"].get(
-        fake_ctx, raw=True  # type: ignore
+        fake_ctx,
+        raw=True,  # type: ignore
     )
     roles_ = sorted(
         [r for r in guild.roles if r.id in setting],
@@ -264,7 +264,8 @@ async def on_raw_reaction_remove(payload: RawReactionActionEvent):
     assert member
     fake_ctx = FakeContext(guild=guild)
     setting: list[int] = settings["roles.catalog"].get(
-        fake_ctx, raw=True  # type: ignore
+        fake_ctx,
+        raw=True,  # type: ignore
     )
     roles_ = sorted(
         [r for r in guild.roles if r.id in setting],

@@ -18,7 +18,6 @@ yeets = SqliteDict(
 
 
 class Yeet(Cog):
-
     """Yeet commands; enable and disable commands per-server and per-channel"""
 
     def __init__(self, bot):

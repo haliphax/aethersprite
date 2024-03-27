@@ -9,7 +9,6 @@ from .setting_filter import SettingFilter
 
 
 class SecondsFilter(SettingFilter):
-
     """Filter used for converting strings to number of seconds values"""
 
     def __init__(self, setting: str):

@@ -8,7 +8,6 @@ from discord.ext.commands import Context
 
 
 class SettingFilter(object):
-
     """A class with methods for filtering a setting's input and output"""
 
     setting: str

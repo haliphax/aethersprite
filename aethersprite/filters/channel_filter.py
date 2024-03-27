@@ -9,7 +9,6 @@ from .setting_filter import SettingFilter
 
 
 class ChannelFilter(SettingFilter):
-
     """Filter used for converting channel names to IDs and back"""
 
     multiple: bool = False

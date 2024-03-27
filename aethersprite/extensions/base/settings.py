@@ -23,7 +23,6 @@ authz = partial(
 
 
 class Settings(Cog):
-
     """
     Settings commands
 

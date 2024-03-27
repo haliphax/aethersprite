@@ -50,7 +50,6 @@ from . import data_folder
 
 
 class Setting(object):
-
     """Setting class; represents an individual setting definition"""
 
     # Setting values

@@ -7,7 +7,6 @@ from .setting_filter import SettingFilter
 
 
 class RoleFilter(SettingFilter):
-
     """Filter used for converting role names to IDs and back"""
 
     multiple: bool = True

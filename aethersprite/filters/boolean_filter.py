@@ -11,7 +11,6 @@ from .setting_filter import SettingFilter
 
 
 class BooleanFilter(SettingFilter):
-
     """Filter used for converting strings to boolean values"""
 
     def __init__(self, setting: str):
