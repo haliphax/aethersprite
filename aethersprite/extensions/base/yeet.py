@@ -163,7 +163,7 @@ class Yeet(Cog):
             output = "None"
 
         log.info(
-            f'{ctx.author} viewed {"server " if server else""}yeet '
+            f"{ctx.author} viewed {'server ' if server else ''}yeet "
             f"list in {channel}"
         )
         await ctx.send(f":v: **{output}**")

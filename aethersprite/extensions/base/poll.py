@@ -107,7 +107,7 @@ def _get_embed(poll: dict):
     open = "open" if poll["open"] else "closed"
     prohib_text = "Close" if poll["open"] else "Open"
     embed = Embed(
-        title=f':bar_chart: {poll["prompt"] or "Poll"}',
+        title=f":bar_chart: {poll['prompt'] or 'Poll'}",
         description=f"Poll is: {open}",
         color=Color.blue(),
     )
@@ -126,9 +126,9 @@ def _get_embed(poll: dict):
         left = 20 - pct
         bar = f"{SOLID_BLOCK * pct}{SHADE_BLOCK * left}"
         embed.add_field(
-            name=f'{key} {opt["text"]}',
+            name=f"{key} {opt['text']}",
             inline=False,
-            value=f'{bar} {opt["count"]} ({rawpct}%)',
+            value=f"{bar} {opt['count']} ({rawpct}%)",
         )
 
     return embed
@@ -164,11 +164,11 @@ async def _update_poll(
     verb = "voted" if adjustment > 0 else "retracted vote"
 
     if acted:
-        log.info(f'{member} {verb} for {emoji} - {poll["prompt"]}')
+        log.info(f"{member} {verb} for {emoji} - {poll['prompt']}")
     else:
         log.warn(
             f"Ignored vote for {emoji} by {member} in {message.id} - "
-            f'{poll["prompt"]} (reacts are out of sync)'
+            f"{poll['prompt']} (reacts are out of sync)"
         )
 
     await message.edit(embed=_get_embed(poll))

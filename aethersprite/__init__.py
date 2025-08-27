@@ -213,9 +213,9 @@ async def _load_ext(ext: str, package: str | None = None):
 async def entrypoint():
     token = config["bot"].get("token", environ.get("DISCORD_TOKEN", None))
     # need credentials
-    assert (
-        token is not None
-    ), "bot.token not in config and DISCORD_TOKEN not in env variables"
+    assert token is not None, (
+        "bot.token not in config and DISCORD_TOKEN not in env variables"
+    )
     # for any commands or scheduled tasks, etc. that need random numbers
     seed()
     bot.remove_command("help")

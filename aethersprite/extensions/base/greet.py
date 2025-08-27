@@ -27,8 +27,7 @@ async def on_member_join(member: Member):
 
     channel = [c for c in member.guild.channels if c.name == chan_setting][0]
     log.info(
-        f"Greeting new member {member} in {member.guild.name} "
-        f"#{channel.name}"
+        f"Greeting new member {member} in {member.guild.name} #{channel.name}"
     )
     await channel.send(  # type: ignore
         msg_setting.format(

@@ -145,7 +145,7 @@ async def catalog(ctx: Context):
 
     if roles_ is None or len(roles_) == 0:
         await ctx.send(
-            ":person_shrugging: There are no available " "self-service roles."
+            ":person_shrugging: There are no available self-service roles."
         )
         log.warn(
             f"{ctx.author} attempted to post roles catalog, but no roles "

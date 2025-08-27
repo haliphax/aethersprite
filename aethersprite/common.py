@@ -173,20 +173,20 @@ def seconds_to_str(ts):
 
     if seconds >= DAY:
         days = floor(seconds / DAY)
-        until.append(f'{days} day{"s" if days > 1 else ""}')
+        until.append(f"{days} day{'s' if days > 1 else ''}")
         seconds = seconds % DAY
 
     if seconds >= HOUR:
         hours = floor(seconds / HOUR)
-        until.append(f'{hours} hour{"s" if hours > 1 else ""}')
+        until.append(f"{hours} hour{'s' if hours > 1 else ''}")
         seconds = seconds % HOUR
 
     if seconds >= MINUTE:
         minutes = floor(seconds / MINUTE)
-        until.append(f'{minutes} minute{"s" if minutes > 1 else ""}')
+        until.append(f"{minutes} minute{'s' if minutes > 1 else ''}")
         seconds = seconds % MINUTE
 
     if seconds > 0:
-        until.append(f'{seconds} second{"s" if seconds > 1 else ""}')
+        until.append(f"{seconds} second{'s' if seconds > 1 else ''}")
 
     return ", ".join(until)
