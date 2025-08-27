@@ -1,8 +1,6 @@
 colorlog
 discord-pretty-help
 discord.py
-fastapi
 pytz
 sqlitedict
 toml
-uvicorn[standard]

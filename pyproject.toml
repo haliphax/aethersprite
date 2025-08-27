@@ -17,6 +17,7 @@ dependencies = { file = "requirements/requirements.txt" }
 [tool.setuptools.dynamic.optional-dependencies]
 dev = { file = "requirements/dev.txt" }
 docs = { file = "requirements/docs.txt" }
+web = { file = "requirements/web.txt" }
 
 [tool.black]
 line-length = 80

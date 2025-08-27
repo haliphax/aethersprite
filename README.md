@@ -40,6 +40,9 @@ Then, install the bot package in your Python environment of choice:
 pip install -U 'aethersprite@git+https://github.com/haliphax/aethersprite.git'
 ```
 
+> ℹ️ If you wish to take advantage of web modules, be sure to add the `[web]`
+> optional dependency specifier to the package source.
+
 [Back to top](#aethersprite)
 
 ## 🏃 Running
