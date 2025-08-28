@@ -236,6 +236,3 @@ async def entrypoint():
 
     # here we go!
     await bot.start(token=token)
-
-
-import_module(".webapp", __name__)
