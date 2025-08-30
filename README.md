@@ -41,7 +41,11 @@ pip install -U 'aethersprite@git+https://github.com/haliphax/aethersprite.git'
 ```
 
 > ℹ️ If you wish to take advantage of web modules, be sure to add the `[web]`
-> optional dependency specifier to the package source.
+> optional dependency specifier to the package source, like so:
+
+```shell
+pip install -U 'aethersprite[web]@git+https://github.com/haliphax/aethersprite.git'
+```
 
 [Back to top](#aethersprite)
 
